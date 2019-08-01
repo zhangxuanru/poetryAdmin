@@ -1,0 +1,23 @@
+{
+  "admin API接口服务端口":"提供后台访问端口",
+  "apiPort":8082,
+
+  "API接口读超时":"单位是毫秒",
+  "apiReadTimeOut":5000,
+
+  "API接口写超时":"单位是毫秒",
+  "apiWriteTimeOut":5000,
+
+  "ETCD集群列表":"配置多个,避免单点",
+  "etcdEndPoints":["39.105.141.152:2379"],
+
+  "ETCD连接超时":"单位豪秒",
+  "etcdDialTimeOut":5000,
+
+  "静态页面地址":"前后端分离",
+  "webroot":"./webroot",
+
+  "viewDir": "D:/server/gitData/goPath/poetryAdmin/master/app/views/",
+  "staticDomain": "http://192.168.33.111:3031/"
+}
+
