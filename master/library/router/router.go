@@ -9,10 +9,11 @@ import (
 )
 
 func InitRouter(mux *http.ServeMux) {
-	mux.HandleFunc("/admin", CallAction(controllers.Index))     //后台首页
+	mux.HandleFunc("/admin", CallAction(controllers.Admin))     //后台首页
 	mux.HandleFunc("/welcome", CallAction(controllers.WelCome)) //欢迎页
 	mux.HandleFunc("/login", CallAction(controllers.Login))     //登录，退出
-	mux.HandleFunc("/grabs", CallAction(controllers.Grabs))     //一键抓取
+	mux.HandleFunc("/grabs", CallAction(controllers.Grabs))     //一键抓取列表
+	mux.HandleFunc("/grabsImpl", CallAction(controllers.GrabsImpl))
 }
 
 func CallAction(handlerFunc http.HandlerFunc) http.HandlerFunc {
@@ -32,9 +33,13 @@ func before(writer http.ResponseWriter, request *http.Request) {
 	if request.RequestURI == "/login" {
 		return
 	}
-	adminCookie, _ := request.Cookie(logic.LoginCookieName)
-	userCookie, _ := request.Cookie(logic.LoginCookieUserName)
-	passCookie, _ := request.Cookie(logic.LoginCookiePassword)
+	adminCookie, e1 := request.Cookie(logic.LoginCookieName)
+	userCookie, e2 := request.Cookie(logic.LoginCookieUserName)
+	passCookie, e3 := request.Cookie(logic.LoginCookiePassword)
+	if e1 != nil || e2 != nil || e3 != nil {
+		http.Redirect(writer, request, "/login", 301)
+		return
+	}
 	if adminCookie.Value == "" || userCookie.Value == "" || passCookie.Value == "" {
 		http.Redirect(writer, request, "/login", 301)
 	}

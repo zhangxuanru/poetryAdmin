@@ -11,7 +11,7 @@
     </div>
     <div class="x-body">
       <xblock>
-        <button class="layui-btn layui-btn-danger" onclick="delAll()"><i class="layui-icon"></i>批量删除</button>
+        <button class="layui-btn layui-btn-danger" onclick="delAll()"><i class="layui-icon"></i>批量抓取</button>
         <span class="x-right" style="line-height:40px">共有数据：88 条</span>
       </xblock>
       <table class="layui-table x-admin">
@@ -34,87 +34,19 @@
               <div class="layui-unselect layui-form-checkbox" lay-skin="primary" data-id='2'><i class="layui-icon">&#xe605;</i></div>
             </td>
             <td>1</td>
-            <td>抓取作者</td>
+            <td>诗词网</td>
             <td>2019-08-10</td>
-            <td>执行完成</td>
-            <td class="td-manage">
-              <a onclick="member_stop(this,'10001')" href="javascript:;"  title="启用">
-                <i class="layui-icon">&#xe601;</i>
-              </a>
-              <a title="编辑"  onclick="x_admin_show('编辑','member-edit.html',600,400)" href="javascript:;">
-                <i class="layui-icon">&#xe642;</i>
-              </a>
-              <a onclick="x_admin_show('修改密码','member-password.html',600,400)" title="修改密码" href="javascript:;">
-                <i class="layui-icon">&#xe631;</i>
-              </a>
-              <a title="删除" onclick="member_del(this,'要删除的id')" href="javascript:;">
-                <i class="layui-icon">&#xe640;</i>
-              </a>
-            </td>
-          </tr>
-          <tr>
-            <td>
-              <div class="layui-unselect layui-form-checkbox" lay-skin="primary" data-id='2'><i class="layui-icon">&#xe605;</i></div>
-            </td>
-            <td>1</td>
-            <td>抓取作者</td>
-            <td>2019-08-10</td>
-            <td>执行完成</td>
-            <td class="td-manage">
-              <a onclick="member_stop(this,'10001')" href="javascript:;"  title="启用">
-                <i class="layui-icon">&#xe601;</i>
-              </a>
-              <a title="编辑"  onclick="x_admin_show('编辑','member-edit.html',600,400)" href="javascript:;">
-                <i class="layui-icon">&#xe642;</i>
-              </a>
-              <a onclick="x_admin_show('修改密码','member-password.html',600,400)" title="修改密码" href="javascript:;">
-                <i class="layui-icon">&#xe631;</i>
-              </a>
-              <a title="删除" onclick="member_del(this,'要删除的id')" href="javascript:;">
-                <i class="layui-icon">&#xe640;</i>
-              </a>
-            </td>
-          </tr>
-          <tr>
-            <td>
-              <div class="layui-unselect layui-form-checkbox" lay-skin="primary" data-id='2'><i class="layui-icon">&#xe605;</i></div>
-            </td>
-            <td>1</td>
-            <td>抓取作者</td>
-            <td>2019-08-10</td>
-            <td>执行完成</td>
-            <td class="td-manage">
-              <a onclick="member_stop(this,'10001')" href="javascript:;"  title="启用">
-                <i class="layui-icon">&#xe601;</i>
-              </a>
-              <a title="编辑"  onclick="x_admin_show('编辑','member-edit.html',600,400)" href="javascript:;">
-                <i class="layui-icon">&#xe642;</i>
-              </a>
-              <a onclick="x_admin_show('修改密码','member-password.html',600,400)" title="修改密码" href="javascript:;">
-                <i class="layui-icon">&#xe631;</i>
-              </a>
-              <a title="删除" onclick="member_del(this,'要删除的id')" href="javascript:;">
-                <i class="layui-icon">&#xe640;</i>
-              </a>
-            </td>
-          </tr>
+            <td class="td-status">
+              <span class="layui-btn layui-btn-normal layui-btn-mini">未执行</span></td>
 
+            <td class="td-manage">
+              <a onclick="member_stop(this,'10001')" href="javascript:;"  title="停止">
+                <i class="layui-icon">&#xe601;</i>
+              </a>
+            </td>
+          </tr>
         </tbody>
-
-
-
       </table>
-      <div class="page">
-        <div>
-          <a class="prev" href="">&lt;&lt;</a>
-          <a class="num" href="">1</a>
-          <span class="current">2</span>
-          <a class="num" href="">3</a>
-          <a class="num" href="">489</a>
-          <a class="next" href="">&gt;&gt;</a>
-        </div>
-      </div>
-
     </div>
     <script>
       layui.use('laydate', function(){
@@ -133,35 +65,35 @@
 
        /*用户-停用*/
       function member_stop(obj,id){
-          layer.confirm('确认要停用吗？',function(index){
+        var title = $(obj).attr('title') == "执行" ? "停止" :"执行";
+        layer.confirm('确认要'+title+'吗？',function(index){
 
-              if($(obj).attr('title')=='启用'){
+          if($(obj).attr('title')=='执行'){
 
-                //发异步把用户状态进行更改
-                $(obj).attr('title','停用')
-                $(obj).find('i').html('&#xe62f;');
-
-                $(obj).parents("tr").find(".td-status").find('span').addClass('layui-btn-disabled').html('已停用');
-                layer.msg('已停用!',{icon: 5,time:1000});
-
-              }else{
-                $(obj).attr('title','启用')
-                $(obj).find('i').html('&#xe601;');
-
-                $(obj).parents("tr").find(".td-status").find('span').removeClass('layui-btn-disabled').html('已启用');
-                layer.msg('已启用!',{icon: 5,time:1000});
+            //发异步把用户状态进行更改
+            $.post("/grabsImpl",data.field,function(res){
+              if(res.code == "-1"){
+                layer.msg(res.msg,{time: 2000})
               }
-              
-          });
-      }
+              if(res.code == "200"){
+                layer.msg(res.msg,{time: 2000})
+              }
+            },'json');
 
-      /*用户-删除*/
-      function member_del(obj,id){
-          layer.confirm('确认要删除吗？',function(index){
-              //发异步删除数据
-              $(obj).parents("tr").remove();
-              layer.msg('已删除!',{icon:1,time:1000});
-          });
+            $(obj).attr('title','停止')
+            $(obj).find('i').html('&#xe62f;');
+
+            $(obj).parents("tr").find(".td-status").find('span').addClass('layui-btn-disabled').html('已停止');
+            layer.msg('已停止!',{icon: 5,time:1000});
+
+          }else{
+            $(obj).attr('title','执行')
+            $(obj).find('i').html('&#xe601;');
+            $(obj).parents("tr").find(".td-status").find('span').removeClass('layui-btn-disabled').html('正在执行');
+            layer.msg('正在执行!',{icon: 5,time:1000});
+          }
+
+        });
       }
 
 

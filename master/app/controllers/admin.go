@@ -10,7 +10,7 @@ func init() {
 	base = initBase()
 }
 
-func Index(writer http.ResponseWriter, request *http.Request) {
+func Admin(writer http.ResponseWriter, request *http.Request) {
 	err := base.DisplayHtmlLayOut(writer, "index.html", nil, nil)
 	base.DisplayErrorHtml(writer, err)
 }
