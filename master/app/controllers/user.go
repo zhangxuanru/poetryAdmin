@@ -5,20 +5,22 @@ import (
 	"poetryAdmin/master/app/logic"
 )
 
+//登录操作
 func Login(w http.ResponseWriter, req *http.Request) {
 	var (
-		loginStatus bool
-		userLogic   *logic.UserLogin
+		loginStatus        bool
+		userLogic          *logic.UserLogin
+		userName, passWord string
 	)
 	if req.Method == http.MethodGet {
-		//userLogic = logic.NewUserLogin("", "", w)
-		//userLogic.DelLoginCookie()
-		err := base.DisplayHtmlLayOut(w, "login.html", nil, nil)
-		base.DisplayErrorHtml(w, err)
+		logic.NewUserLogin("", "", w).DelLoginCookie()
+		if err := base.DisplayHtmlLayOut(w, "login.html", nil, nil); err != nil {
+			base.DisplayErrorHtml(w, err)
+		}
 		return
 	}
-	userName := req.PostFormValue("username")
-	passWord := req.PostFormValue("password")
+	userName = req.PostFormValue("username")
+	passWord = req.PostFormValue("password")
 	userLogic = logic.NewUserLogin(userName, passWord, w)
 	if err := userLogic.ValidateLogin(); err != nil {
 		base.OutPutRespJson(w, nil, err.Error(), logic.RespFail)

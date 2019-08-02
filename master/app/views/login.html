@@ -3,7 +3,7 @@
 <body class="login-bg">
     
     <div class="login layui-anim layui-anim-up">
-        <div class="message">poetryAdmin诗词后台登录</div>
+        <div class="message">poetryAdmin后台管理系统</div>
         <div id="darkbannerwrap"></div>
         
         <form method="post" class="layui-form" >
@@ -36,7 +36,7 @@
                       }
                       if(res.code == "200"){
                           layer.msg(res.msg,{time: 2000})
-                          setTimeout(window.location.href="/admin",1000);
+                          setTimeout(window.location.href="/admin",2000);
                       }
                   },'json');
                   return false;
