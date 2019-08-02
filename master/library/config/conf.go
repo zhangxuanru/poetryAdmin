@@ -13,6 +13,7 @@ type Config struct {
 	WebRoot         string `json:"webroot"`
 	ViewDir         string `json:"viewDir"`
 	StaticDomain    string `json:"staticDomain"`
+	BaseDomain      string `json:"baseDomain"`
 }
 
 var (

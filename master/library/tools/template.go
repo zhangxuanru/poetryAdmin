@@ -1,7 +1,6 @@
 package tools
 
 import (
-	"fmt"
 	"html/template"
 	"net/http"
 )
@@ -12,17 +11,17 @@ type Tpl struct {
 	Data        interface{}
 	Writer      http.ResponseWriter
 	ViewPath    string
+	LayOutPath  string
 }
 
 func (t *Tpl) Display() (err error) {
-	t.LayOutFiles = append(t.LayOutFiles, t.FileName)
 	for key, fileName := range t.LayOutFiles {
-		t.LayOutFiles[key] = t.ViewPath + fileName
+		//此处注意， 如果在方法中修改属性数据下标对应的值，则外面的值也会改变***
+		t.LayOutFiles[key] = t.LayOutPath + fileName
 	}
-	fmt.Println(t.LayOutFiles)
-
+	t.LayOutFiles = append(t.LayOutFiles, t.ViewPath+t.FileName)
 	must := template.Must(template.ParseFiles(t.LayOutFiles...))
-	err = must.Execute(t.Writer, t.Data)
+	err = must.ExecuteTemplate(t.Writer, t.FileName, t.Data)
 	return err
 }
 

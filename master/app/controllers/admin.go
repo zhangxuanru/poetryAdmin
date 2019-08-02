@@ -1,21 +1,23 @@
 package controllers
 
 import (
-	"fmt"
 	"net/http"
-	"poetryAdmin/master/library/config"
 )
 
+var base *Base
+
+func init() {
+	base = initBase()
+}
+
 func Index(writer http.ResponseWriter, request *http.Request) {
+	err := base.DisplayHtmlLayOut(writer, "index.html", nil, nil)
+	base.PrintError(writer, err)
+}
 
-	//file := config.G_Conf.ViewDir + "index.html"
-	//must := template.Must(template.ParseFiles(file))
-	//
-	data := make(map[string]interface{})
-	data["static"] = config.G_Conf.StaticDomain
-
-	err := DisplayLayOut(writer, "index.html", data, nil)
-
-	fmt.Println("-----test----", err)
-	//must.Execute(writer, data)
+func WelCome(writer http.ResponseWriter, req *http.Request) {
+	err := base.DisplayHtmlLayOut(writer, "welcome.html", nil, []string{
+		"public/header.html",
+	})
+	base.PrintError(writer, err)
 }

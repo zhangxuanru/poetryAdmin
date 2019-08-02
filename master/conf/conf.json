@@ -18,6 +18,7 @@
   "webroot":"./webroot",
 
   "viewDir": "D:/server/gitData/goPath/poetryAdmin/master/app/views/",
-  "staticDomain": "http://192.168.33.111:3031/"
+  "staticDomain": "http://192.168.33.111:3031/",
+  "baseDomain": "http://127.0.0.1:8082/"
 }
 
