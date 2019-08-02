@@ -1,7 +1,9 @@
 package controllers
 
 import (
+	"github.com/sirupsen/logrus"
 	"net/http"
+	"poetryAdmin/master/app/logic"
 	"poetryAdmin/master/library/config"
 	"poetryAdmin/master/library/tools"
 )
@@ -53,9 +55,32 @@ func (b *Base) DisplayHtml(w http.ResponseWriter, fileName string, data interfac
 }
 
 //显示错误，后期可用于集中处理错误，像跳转等逻辑啥的
-func (b *Base) PrintError(w http.ResponseWriter, err error) {
+func (b *Base) DisplayErrorHtml(w http.ResponseWriter, err error) {
 	if err != nil {
-		w.Write([]byte(err.Error()))
+		layOut := []string{"public/header.html"}
+		data := make(map[string]interface{})
+		data["error"] = err.Error()
+		b.DisplayHtmlLayOut(w, "error.html", data, layOut)
 		return
 	}
+}
+
+//输出json到response
+func (b *Base) OutPutRespJson(w http.ResponseWriter, data interface{}, msg string, code int) {
+	resp := logic.NewRespData(data, msg, code)
+	err := b.OutPutJson(w, resp)
+	if err != nil {
+		logrus.Debug("err:", err, "data:", resp)
+		logrus.Info("err:", err, "data:", resp)
+	}
+	return
+}
+
+//输出JSON
+func (b *Base) OutPutJson(w http.ResponseWriter, data interface{}) (err error) {
+	var outPutData []byte
+	outPutData, err = config.G_Json.Marshal(data)
+	w.Header().Set("Content-Type", "application/json")
+	_, err = w.Write(outPutData)
+	return err
 }

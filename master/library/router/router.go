@@ -26,16 +26,23 @@ func CallAction(handlerFunc http.HandlerFunc) http.HandlerFunc {
 
 //记录请求日志,以后完善
 func before(writer http.ResponseWriter, request *http.Request) {
-	var (
-		cookieData *http.Cookie
-		err        error
-	)
-	if request.RequestURI == "/login" {
-		return
-	}
-	if cookieData, err = request.Cookie("poetry"); err != nil {
-		http.Redirect(writer, request, "/login", 301)
-		return
-	}
-	logrus.Info(cookieData.Value)
+	//return
+	//if request.RequestURI == "/login" {
+	//	return
+	//}
+	//logrus.Info("----before---")
+	//adminCookie, _ := request.Cookie(logic.LoginCookieName)
+	//userCookie, _ := request.Cookie(logic.LoginCookieUserName)
+	//passCookie, _ := request.Cookie(logic.LoginCookiePassword)
+	//if adminCookie.Value == "" || userCookie.Value == "" || passCookie.Value == "" {
+	//	logrus.Info("cookie err:", adminCookie, "--", userCookie, "--", passCookie)
+	//	http.Redirect(writer, request, "/login", 301)
+	//}
+	//login := logic.NewUserLogin(userCookie.Value, passCookie.Value, writer)
+	//if strings.Compare(login.LoginDataMd5(), adminCookie.Value) == 0 {
+	//	logrus.Info("md5==md5")
+	//	//return
+	//}
+	//logrus.Info("md5:", login.LoginDataMd5(), "adminc:", adminCookie.Value)
+	//http.Redirect(writer, request, "/login", 301)
 }

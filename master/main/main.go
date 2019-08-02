@@ -7,6 +7,7 @@ import (
 	"poetryAdmin/master/library/config"
 	"poetryAdmin/master/library/logger"
 	"poetryAdmin/master/library/server"
+	"poetryAdmin/master/library/validate"
 	"runtime"
 )
 
@@ -22,14 +23,20 @@ func initConfFile() {
 	logrus.Info("加载配置文件:",confFile)
 }
 
+func init()  {
+	initEnv()
+	initConfFile()
+}
+
 func main() {
 	var (
 		err error
 	)
-	initEnv()
 	logger.InitLogger()
-	initConfFile()
 	if err = config.InitConfig(confFile); err != nil {
+		goto PRINTERR
+	}
+	if err = validate.InitValidate();err!=nil{
 		goto PRINTERR
 	}
 	if err = server.InitHttpServer(); err != nil {

@@ -3,7 +3,7 @@
 <body class="login-bg">
     
     <div class="login layui-anim layui-anim-up">
-        <div class="message">x-admin2.0-管理登录</div>
+        <div class="message">poetryAdmin诗词后台登录</div>
         <div id="darkbannerwrap"></div>
         
         <form method="post" class="layui-form" >
@@ -20,12 +20,30 @@
         $(function  () {
             layui.use('form', function(){
               var form = layui.form;
+
               // layer.msg('玩命卖萌中', function(){
               //   //关闭后的操作
               //   });
               //监听提交
               form.on('submit(login)', function(data){
                 // alert(888)
+
+ //-------
+                  console.log(data.field)
+                  $.post("/login",data.field,function(res){
+                      if(res.code == "-1"){
+                           layer.msg(res.msg,{time: 2000})
+                      }
+                      if(res.code == "200"){
+                          layer.msg(res.msg,{time: 2000})
+                          setTimeout(window.location.href="/admin",1000);
+                      }
+                  },'json');
+                  return false;
+
+//-------
+
+
                 layer.msg(JSON.stringify(data.field),function(){
                     location.href='index.html'
                 });
