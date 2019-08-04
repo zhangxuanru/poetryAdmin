@@ -1,8 +1,8 @@
 package redis
 
 import (
+	"errors"
 	redigo "github.com/gomodule/redigo/redis"
-	"poetryAdmin/master/library/config"
 	"time"
 )
 
@@ -10,7 +10,7 @@ var G_RedisPool *redigo.Pool
 
 func InitRedis(addr string) (err error) {
 	if addr == "" {
-		addr = config.G_Conf.RedisHost
+		return errors.New("addr is nil")
 	}
 	var dial redigo.Conn
 	G_RedisPool = &redigo.Pool{

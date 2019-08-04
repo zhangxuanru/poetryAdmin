@@ -1,7 +1,6 @@
 package logic
 
 import (
-	"poetryAdmin/master/library/config"
 	"poetryAdmin/master/library/redis"
 	"time"
 )
@@ -22,20 +21,8 @@ func NewPublishMsg(PubTile string, TaskMark RedisTaskMark) *PublishMsg {
 	}
 }
 
-func (p *PublishMsg) BindJson() (string, error) {
-	bytes, e := config.G_Json.Marshal(p)
-	if e != nil {
-		return "", e
-	}
-	return string(bytes), nil
-}
-
 //发布数据
-func (p *PublishMsg) PublishData(channel string) (reply interface{}, err error) {
-	var data string
-	if data, err = p.BindJson(); err != nil {
-		return nil, err
-	}
+func (p *PublishMsg) PublishData(channel string, data string) (reply interface{}, err error) {
 	reply, err = redis.Publish(channel, data)
 	return reply, err
 }
