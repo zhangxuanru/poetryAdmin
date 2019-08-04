@@ -14,6 +14,8 @@ type Config struct {
 	ViewDir         string `json:"viewDir"`
 	StaticDomain    string `json:"staticDomain"`
 	BaseDomain      string `json:"baseDomain"`
+	RedisHost       string `json:"redis_host"`
+	PubChannelTitle string `json:"pubChannelTitle"`
 }
 
 var (

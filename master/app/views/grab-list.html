@@ -37,7 +37,7 @@
             <td>诗词网</td>
             <td>2019-08-10</td>
             <td class="td-status">
-              <span class="layui-btn layui-btn-normal layui-btn-mini">未执行</span></td>
+              <span class="layui-btn layui-btn-normal layui-btn-mini">{{if .redisData}} 执行中 {{else}}未执行{{end}}</span></td>
 
             <td class="td-manage">
               <a onclick="member_stop(this,'10001')" href="javascript:;"  title="停止">

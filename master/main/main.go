@@ -6,6 +6,7 @@ import (
 	"os"
 	"poetryAdmin/master/library/config"
 	"poetryAdmin/master/library/logger"
+	"poetryAdmin/master/library/redis"
 	"poetryAdmin/master/library/server"
 	"poetryAdmin/master/library/validate"
 	"runtime"
@@ -20,10 +21,10 @@ func initEnv() {
 func initConfFile() {
 	dir, _ := os.Getwd()
 	confFile = dir + "/master/conf/conf.json"
-	logrus.Info("加载配置文件:",confFile)
+	logrus.Info("加载配置文件:", confFile)
 }
 
-func init()  {
+func init() {
 	initEnv()
 	initConfFile()
 }
@@ -36,7 +37,10 @@ func main() {
 	if err = config.InitConfig(confFile); err != nil {
 		goto PRINTERR
 	}
-	if err = validate.InitValidate();err!=nil{
+	if err = redis.InitRedis(config.G_Conf.RedisHost); err != nil {
+		goto PRINTERR
+	}
+	if err = validate.InitValidate(); err != nil {
 		goto PRINTERR
 	}
 	if err = server.InitHttpServer(); err != nil {
@@ -44,7 +48,7 @@ func main() {
 	}
 	return
 PRINTERR:
-	logrus.Debug("err:",err)
+	logrus.Debug("err:", err)
 	fmt.Println(err)
 	return
 }

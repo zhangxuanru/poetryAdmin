@@ -17,8 +17,19 @@
   "静态页面地址":"前后端分离",
   "webroot":"./webroot",
 
+  "模板地址":"具体模板的文件目录",
   "viewDir": "D:/server/gitData/goPath/poetryAdmin/master/app/views/",
+
+  "静态页面域名":"静态页面域名",
   "staticDomain": "http://192.168.33.111:3031/",
-  "baseDomain": "http://127.0.0.1:8082/"
+
+  "当前站点域名":"当前站点域名",
+  "baseDomain": "http://127.0.0.1:8082/",
+
+  "redis服务器地址":"redis服务器地址",
+  "redis_host": "127.0.0.1:6379",
+
+  "redis发布订阅的频道":"redis发布订阅的频道",
+  "pubChannelTitle" : "task"
 }
 
