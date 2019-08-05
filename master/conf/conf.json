@@ -27,7 +27,7 @@
   "baseDomain": "http://127.0.0.1:8082/",
 
   "redis服务器地址":"redis服务器地址",
-  "redis_host": "49.235.22.112:6379",
+  "redis_host": "127.0.0.1:6379",
 
   "redis发布订阅的频道":"redis发布订阅的频道",
   "pubChannelTitle" : "task"
