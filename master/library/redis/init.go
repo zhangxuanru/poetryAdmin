@@ -3,6 +3,7 @@ package redis
 import (
 	"errors"
 	redigo "github.com/gomodule/redigo/redis"
+	"github.com/sirupsen/logrus"
 	"time"
 )
 
@@ -12,10 +13,12 @@ func InitRedis(addr string) (err error) {
 	if addr == "" {
 		return errors.New("addr is nil")
 	}
+	logrus.Debug("redis addr:", addr)
 	var dial redigo.Conn
 	G_RedisPool = &redigo.Pool{
 		Dial: func() (conn redigo.Conn, e error) {
 			dial, err = redigo.Dial("tcp", addr)
+			logrus.Debug("redis dial error:", err)
 			if err != nil {
 				return nil, err
 			}

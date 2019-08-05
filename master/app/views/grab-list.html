@@ -34,13 +34,13 @@
               <div class="layui-unselect layui-form-checkbox" lay-skin="primary" data-id='2'><i class="layui-icon">&#xe605;</i></div>
             </td>
             <td>1</td>
-            <td>诗词网</td>
+            <td><a href="/grabsList" title="查看抓取结果列表"> 诗词网</a></td>
             <td>2019-08-10</td>
             <td class="td-status">
-              <span class="layui-btn layui-btn-normal layui-btn-mini">{{if .redisData}} 执行中 {{else}}未执行{{end}}</span></td>
+              <span class="layui-btn layui-btn-normal layui-btn-mini">{{if .is_run}} 执行中 {{else}}未执行{{end}}</span></td>
 
             <td class="td-manage">
-              <a onclick="member_stop(this,'10001')" href="javascript:;"  title="停止">
+              <a onclick="startTask(this,'10001')" href="javascript:;"  title="执行">
                 <i class="layui-icon">&#xe601;</i>
               </a>
             </td>
@@ -49,6 +49,7 @@
       </table>
     </div>
     <script>
+      var isRun = "{{.is_run}}"
       layui.use('laydate', function(){
         var laydate = layui.laydate;
         
@@ -64,34 +65,41 @@
       });
 
        /*用户-停用*/
-      function member_stop(obj,id){
-        var title = $(obj).attr('title') == "执行" ? "停止" :"执行";
-        layer.confirm('确认要'+title+'吗？',function(index){
-
-          if($(obj).attr('title')=='执行'){
-
-            //发异步把用户状态进行更改
-            $.post("/grabsImpl",data.field,function(res){
-              if(res.code == "-1"){
+      function startTask(obj,id){
+        if (isRun.length >0 ){
+          layer.msg('正在执行中,请不要重复执行!',{icon: 5,time:1000});
+          return;
+        }
+        layer.confirm('确认要执行吗？',function(index){
+          //发异步把用户状态进行更改
+          $.post("/grabsImpl",{},function(res){
+            if(res.code == "-1"){
                 layer.msg(res.msg,{time: 2000})
-              }
-              if(res.code == "200"){
+            }
+            if(res.code == "200"){
                 layer.msg(res.msg,{time: 2000})
-              }
-            },'json');
+            }
+          },'json');
+          $(obj).parents("tr").find(".td-status").find('span').removeClass('layui-btn-disabled').html('正在执行');
+          layer.msg('正在执行!',{icon: 5,time:1000});
 
-            $(obj).attr('title','停止')
-            $(obj).find('i').html('&#xe62f;');
 
-            $(obj).parents("tr").find(".td-status").find('span').addClass('layui-btn-disabled').html('已停止');
-            layer.msg('已停止!',{icon: 5,time:1000});
-
-          }else{
-            $(obj).attr('title','执行')
-            $(obj).find('i').html('&#xe601;');
-            $(obj).parents("tr").find(".td-status").find('span').removeClass('layui-btn-disabled').html('正在执行');
-            layer.msg('正在执行!',{icon: 5,time:1000});
-          }
+          // if($(obj).attr('title')=='执行'){
+          //
+          //
+          //
+          //   $(obj).attr('title','停止')
+          //   $(obj).find('i').html('&#xe62f;');
+          //
+          //   $(obj).parents("tr").find(".td-status").find('span').addClass('layui-btn-disabled').html('已停止');
+          //   layer.msg('已停止!',{icon: 5,time:1000});
+          //
+          // }else{
+          //   $(obj).attr('title','执行')
+          //   $(obj).find('i').html('&#xe601;');
+          //   $(obj).parents("tr").find(".td-status").find('span').removeClass('layui-btn-disabled').html('正在执行');
+          //   layer.msg('正在执行!',{icon: 5,time:1000});
+          // }
 
         });
       }

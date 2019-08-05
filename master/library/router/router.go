@@ -9,11 +9,12 @@ import (
 )
 
 func InitRouter(mux *http.ServeMux) {
-	mux.HandleFunc("/admin", CallAction(controllers.Admin))     //后台首页
-	mux.HandleFunc("/welcome", CallAction(controllers.WelCome)) //欢迎页
-	mux.HandleFunc("/login", CallAction(controllers.Login))     //登录，退出
-	mux.HandleFunc("/grabs", CallAction(controllers.Grabs))     //一键抓取列表
-	mux.HandleFunc("/grabsImpl", CallAction(controllers.GrabsImpl))
+	mux.HandleFunc("/admin", CallAction(controllers.Admin))         //后台首页
+	mux.HandleFunc("/welcome", CallAction(controllers.WelCome))     //欢迎页
+	mux.HandleFunc("/login", CallAction(controllers.Login))         //登录，退出
+	mux.HandleFunc("/grabs", CallAction(controllers.Grabs))         //一键抓取列表
+	mux.HandleFunc("/grabsImpl", CallAction(controllers.GrabsImpl)) //发布抓取任务
+	mux.HandleFunc("/grabsList", CallAction(controllers.GrabsList)) //抓取结果列表页
 }
 
 func CallAction(handlerFunc http.HandlerFunc) http.HandlerFunc {

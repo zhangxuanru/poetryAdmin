@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"github.com/sirupsen/logrus"
 	"net/http"
 	"poetryAdmin/master/app/logic"
 	"poetryAdmin/master/library/config"
@@ -10,16 +9,18 @@ import (
 
 //一键抓取列表
 func Grabs(w http.ResponseWriter, r *http.Request) {
-	data, _ := redis.Get(logic.RedisIsTaskAllRun)
+	isRun, _ := redis.Get(logic.RedisIsTaskAllRun)
+	if isRun == nil {
+		isRun = ""
+	}
 	ret := make(map[string]interface{})
-	ret["redisData"] = data.(string)
+	ret["is_run"] = isRun.(string)
 	base.DisplayHtmlLayOut(w, "grab-list.html", ret, nil)
 }
 
 //执行抓取, 写入redis
 func GrabsImpl(w http.ResponseWriter, r *http.Request) {
 	var (
-		reply    interface{}
 		jsonData []byte
 		err      error
 	)
@@ -27,10 +28,9 @@ func GrabsImpl(w http.ResponseWriter, r *http.Request) {
 	if jsonData, err = config.G_Json.Marshal(publicMsg); err != nil {
 		goto OutPutERR
 	}
-	if reply, err = publicMsg.PublishData(config.G_Conf.PubChannelTitle, string(jsonData)); err != nil {
+	if _, err = publicMsg.PublishData(config.G_Conf.PubChannelTitle, string(jsonData)); err != nil {
 		goto OutPutERR
 	}
-	logrus.Info("reply:", reply)
 	base.OutPutRespJson(w, nil, logic.GrabTaskAdd, logic.RespSuccess)
 	return
 OutPutERR:
@@ -40,4 +40,9 @@ OutPutERR:
 		base.OutPutRespJson(w, nil, logic.RespFailMsg, logic.RespFail)
 	}
 	return
+}
+
+//抓取结果列表页
+func GrabsList(w http.ResponseWriter, r *http.Request) {
+	w.Write([]byte("抓取结果列表页"))
 }
