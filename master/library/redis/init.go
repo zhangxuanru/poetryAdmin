@@ -18,8 +18,8 @@ func InitRedis(addr string) (err error) {
 	G_RedisPool = &redigo.Pool{
 		Dial: func() (conn redigo.Conn, e error) {
 			dial, err = redigo.Dial("tcp", addr)
-			logrus.Debug("redis dial error:", err)
 			if err != nil {
+				logrus.Debug("redis dial error:", err)
 				return nil, err
 			}
 			return dial, err

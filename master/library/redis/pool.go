@@ -54,7 +54,9 @@ func Get(key interface{}) (data interface{}, err error) {
 	}
 	defer conn.Close()
 	data, err = conn.Do("GET", key)
-	logrus.Debug("redis err:", err)
+	if err != nil {
+		logrus.Debug("redis err:", err)
+	}
 	return
 }
 
