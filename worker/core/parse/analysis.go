@@ -39,7 +39,9 @@ func (a *Analysis) ParseSubscribeData() {
 func (a *Analysis) ReceiveMsgToSubMsg(msg []byte) (err error) {
 	subscribeMsg := NewSubscribeMsg()
 	err = config.G_Json.Unmarshal(msg, &subscribeMsg)
-	logrus.Debugf("subscribeMsg:%+v", subscribeMsg)
+	if err != nil {
+		logrus.Debugf("err:%+v", err)
+	}
 	a.SubReceiveMsg = *subscribeMsg
 	return err
 }

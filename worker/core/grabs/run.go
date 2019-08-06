@@ -8,10 +8,7 @@ import (
 )
 
 func Run() (err error) {
-	var (
-		subReceiveChan chan []byte
-	)
-	subReceiveChan = make(chan []byte)
+	subReceiveChan := make(chan []byte)
 	go parse.NewAnalysis(subReceiveChan).ParseSubscribeData()
 	if err = redis.SubScribe(config.G_Conf.PubChannelTitle, subReceiveChan); err != nil {
 		logrus.Debug("SubScribe err:", err)

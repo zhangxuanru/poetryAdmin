@@ -3,6 +3,7 @@ package parse
 import (
 	"github.com/sirupsen/logrus"
 	"poetryAdmin/worker/core/define"
+	"poetryAdmin/worker/core/engine/entrance"
 )
 
 //分发
@@ -21,8 +22,7 @@ func (d *Dispatch) Execution() {
 	}
 	switch d.Msg.TaskMark {
 	case define.GrabPoetryAll:
-		logrus.Info("Execution:", d.Msg.PubTile)
-		logrus.Info("Execution 开始执行, 执行所有抓取")
-
+		logrus.Info("Execution start :", d.Msg.PubTile)
+		entrance.NewRunAll().Run()
 	}
 }

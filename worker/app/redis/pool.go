@@ -4,6 +4,7 @@ import (
 	"errors"
 	redigo "github.com/gomodule/redigo/redis"
 	"github.com/sirupsen/logrus"
+	"reflect"
 )
 
 func RedisPool() *redigo.Pool {
@@ -87,16 +88,33 @@ func Get(key interface{}) (data interface{}, err error) {
 }
 
 //设置一个key
-func Set(key string, val ...interface{}) {
+func Set(args ...interface{}) (reply interface{}, err error) {
 	var conn redigo.Conn
-	var err error
 	if conn, err = GetConn(); err != nil {
 		logrus.Debug("redis err:", err)
 		return
 	}
 	defer conn.Close()
-	reply, err := conn.Do("SET", key, val)
-	//c.Do("SET", "mykey", "superWang", "EX", "5")
-	logrus.Debug("err:", err)
-	logrus.Debug("reply:", reply)
+	reply, err = conn.Do("SET", args...)
+	//c.Do("SET", "mykey", "superWang", "EX", "5","NX")
+	return
+}
+
+//设置一个key，只有不存在时才设置成功
+func SetNx(key string, val string, expire string) (lock bool, err error) {
+	var (
+		reply  interface{}
+		locRet string
+	)
+	if reply, err = Set(key, val, "EX", expire, "NX"); err != nil {
+		return false, err
+	}
+	if reply == nil {
+		return false, errors.New("设置失败")
+	}
+	locRet = reflect.ValueOf(reply).String()
+	if locRet != "OK" || locRet != "ok" {
+		return false, errors.New("设置失败")
+	}
+	return true, nil
 }
