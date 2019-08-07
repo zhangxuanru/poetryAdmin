@@ -20,7 +20,7 @@ const (
 type RedisTaskMark string
 
 const (
-	GrabPoetryAll RedisTaskMark = "All" //抓取所有数据
+	GrabPoetryAll RedisTaskMark = "poetryAll" //抓取所有数据
 )
 
 type TaskStatus int

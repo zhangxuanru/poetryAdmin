@@ -6,11 +6,10 @@ import (
 	"poetryAdmin/worker/app/config"
 	"poetryAdmin/worker/app/logger"
 	"poetryAdmin/worker/app/redis"
-	"poetryAdmin/worker/core/grabs"
+	"poetryAdmin/worker/core/subscribe"
 	"reflect"
 	"runtime"
 	"strings"
-	"time"
 )
 
 var confFile string
@@ -42,12 +41,10 @@ func main() {
     if err = redis.InitRedis(config.G_Conf.RedisHost);err!=nil{
 		goto PRINTERR
 	}
-    if err = grabs.Run();err!=nil{
+    if err = subscribe.InitGrasp();err!=nil{
 		goto PRINTERR
 	}
-    for{
-         time.Sleep(10 * time.Second)
-	}
+    logrus.Info("end .... worker")
 	return
  PRINTERR:
  	logrus.Debug("err:",err)
