@@ -7,10 +7,11 @@ import (
 )
 
 type Config struct {
-	RedisHost       string `json:"redis_host"`
-	PubChannelTitle string `json:"pubChannelTitle"`
-	GuShiWenUrl     string `json:"gushiwenUrl"`
-	ShiCiMingJuUrl  string `json:"shicimingjuUrl"`
+	RedisHost         string `json:"redis_host"`
+	PubChannelTitle   string `json:"pubChannelTitle"`
+	GuShiWenIndexUrl  string `json:"gushiwenIndexUrl"`
+	GuShiWenPoetryUrl string `json:"gushiwenPoetryUrl"`
+	ShiCiMingJuUrl    string `json:"shicimingjuUrl"`
 }
 
 var (

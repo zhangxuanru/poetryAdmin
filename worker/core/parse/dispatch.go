@@ -29,5 +29,6 @@ func (d *Dispatch) Execution() {
 		logrus.Info("Execution start :", d.Msg.PubTile)
 		poetry.NewRunAll().Run()
 	}
+	logrus.Info("end Dispatch Execution.......")
 	return
 }
