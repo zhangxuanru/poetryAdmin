@@ -1,6 +1,8 @@
 package data
 
-import "github.com/sirupsen/logrus"
+import (
+	"github.com/sirupsen/logrus"
+)
 
 //抓取结果处理
 type GraspResult struct {
@@ -52,6 +54,6 @@ func (g *GraspResult) PrintMsg() {
 		}
 	}
 PRINTERR:
-	logrus.Debug("Execution error:", err)
+	logrus.Debug("Execution end:")
 	return
 }

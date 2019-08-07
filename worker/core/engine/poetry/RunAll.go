@@ -1,7 +1,6 @@
 package poetry
 
 import (
-	"poetryAdmin/worker/app/redis"
 	"poetryAdmin/worker/core/data"
 	"poetryAdmin/worker/core/define"
 	"poetryAdmin/worker/core/grasp/poetry/Index"
@@ -18,10 +17,11 @@ func NewRunAll() *RunAll {
 
 //执行全站抓取
 func (r *RunAll) Run() {
-	if _, err := redis.SetNx(r.GetLockKey(), "1", "3600"); err != nil {
-		go data.G_GraspResult.PushErrorAndClose(err)
-		return
-	}
+	//先获取锁  临时注释
+	//if _, err := redis.SetNx(r.GetLockKey(), "1", "3600"); err != nil {
+	//	go data.G_GraspResult.PushErrorAndClose(err)
+	//	return
+	//}
 	r.Execution()
 	return
 }

@@ -2,6 +2,7 @@ package tools
 
 import (
 	"context"
+	"errors"
 	"io/ioutil"
 	"net"
 	"net/http"
@@ -38,6 +39,9 @@ func (h *HttpReq) HttpGet(url string) (response *http.Response, bytes []byte, er
 	h.DefaultHeader()
 	if response, err = client.Do(h.request); err != nil {
 		return
+	}
+	if response.StatusCode != http.StatusOK {
+		return nil, nil, errors.New("")
 	}
 	defer response.Body.Close()
 	bytes, err = ioutil.ReadAll(response.Body)

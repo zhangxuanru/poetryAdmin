@@ -3,10 +3,10 @@ package test
 import (
 	"github.com/sirupsen/logrus"
 	"os"
-	"path/filepath"
 	"poetryAdmin/worker/app/config"
 	"poetryAdmin/worker/app/logger"
 	"poetryAdmin/worker/app/redis"
+	"strings"
 )
 
 var confFile string
@@ -18,7 +18,7 @@ func initConfigFile() (err error) {
 	if dir, err = os.Getwd(); err != nil {
 		return err
 	}
-	filepath.Split(dir)
+	dir = strings.TrimRight(dir, "/test")
 	confFile = dir + "/config/config.json"
 	return
 }

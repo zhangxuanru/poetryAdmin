@@ -3,6 +3,7 @@ module poetryAdmin
 go 1.12
 
 require (
+	github.com/PuerkitoBio/goquery v1.5.0 // indirect
 	github.com/go-playground/locales v0.12.1
 	github.com/go-playground/universal-translator v0.16.0
 	github.com/gomodule/redigo v2.0.0+incompatible
@@ -13,6 +14,7 @@ require (
 	github.com/onsi/ginkgo v1.8.0 // indirect
 	github.com/onsi/gomega v1.5.0 // indirect
 	github.com/sirupsen/logrus v1.4.2
+	github.com/smartystreets/goconvey v0.0.0-20190731233626-505e41936337
 	github.com/x-cray/logrus-prefixed-formatter v0.5.2
 	golang.org/x/crypto v0.0.0-20190701094942-4def268fd1a4 // indirect
 	gopkg.in/go-playground/assert.v1 v1.2.1 // indirect
