@@ -7,9 +7,7 @@ import (
 	"poetryAdmin/worker/app/logger"
 	"poetryAdmin/worker/app/redis"
 	"poetryAdmin/worker/core/subscribe"
-	"reflect"
 	"runtime"
-	"strings"
 )
 
 var confFile string
@@ -49,17 +47,4 @@ func main() {
  PRINTERR:
  	logrus.Debug("err:",err)
 	return
-}
-
-
-func test1()  {
-	reply, err := redis.Set("test3", "4", "EX", "3600", "NX")
-
-	logrus.Info("test1 reply:",reply)
-	logrus.Info("test1 err:",err)
-
-	s := reflect.ValueOf(reply).String()
-	lower := strings.ToLower(s)
-	logrus.Info("lower:",lower)
-
 }

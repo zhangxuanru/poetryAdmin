@@ -35,6 +35,6 @@ func (r *RunAll) GetLockKey() (key string) {
 
 //执行抓取
 func (r *RunAll) Execution() {
-	go Index.NewIndex().GetAllData()
+	Index.NewIndex().GetAllData()
 	defer data.G_GraspResult.PushCloseMark(true)
 }

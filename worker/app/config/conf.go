@@ -12,6 +12,7 @@ type Config struct {
 	GuShiWenIndexUrl  string `json:"gushiwenIndexUrl"`
 	GuShiWenPoetryUrl string `json:"gushiwenPoetryUrl"`
 	ShiCiMingJuUrl    string `json:"shicimingjuUrl"`
+	Env               string `json:"env"`
 }
 
 var (

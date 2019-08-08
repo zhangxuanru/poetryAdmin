@@ -1,6 +1,7 @@
 package tools
 
 import (
+	"io/ioutil"
 	"os"
 )
 
@@ -13,4 +14,9 @@ func PathExists(file string) (ret bool, err error) {
 		return false, err
 	}
 	return true, nil
+}
+
+//读取文件内容
+func ReadFile(file string) (bytes []byte, err error) {
+	return ioutil.ReadFile(file)
 }

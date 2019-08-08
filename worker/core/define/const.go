@@ -1,5 +1,7 @@
 package define
 
+const TestEnv = "test" //单元测试标识
+
 type RedisTaskMark string
 
 const (
@@ -18,4 +20,10 @@ type RedisKey string
 
 const (
 	RedisIsTaskAllRun RedisKey = "task_run_all"
+)
+
+type DataFormat string
+
+const (
+	HomeFormatSign DataFormat = "index"
 )
