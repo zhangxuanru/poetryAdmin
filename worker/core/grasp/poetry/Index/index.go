@@ -68,20 +68,59 @@ func (i *Index) GetPoetryCategory() {
 		}
 		i.CategoryData[j] = result
 	})
-	data.G_GraspResult.SendData(i.CategoryData)
+	home := &define.HomeFormat{
+		Identifier: define.HomePoetryCategoryFormatSign,
+		Data:       i.CategoryData,
+	}
+	data.G_GraspResult.SendData(home)
 	return
 }
 
 //首页-名句分类
 func (i *Index) GetPoetryFamousCategory() {
 	defer i.group.Done()
-	data.G_GraspResult.SendData("1223232323")
+	if len(i.Content) == 0 || i.GoQuery == nil {
+		logrus.Debug("GetPoetryFamousCategory() i.Content is nil or i.query is nil")
+		return
+	}
+	i.GoQuery.Find(".right>.sons:nth-child(2)>.cont>a").Each(func(j int, selection *goquery.Selection) {
+		href, _ := selection.Attr("href")
+		result := &define.TextHrefFormat{
+			Href: href,
+			Text: selection.Text(),
+		}
+		logrus.Infoln("href:", href, "text:", selection.Text())
+		i.FamousData[j] = result
+	})
+	home := &define.HomeFormat{
+		Identifier: define.HomePoetryFamousFormatSign,
+		Data:       i.FamousData,
+	}
+	data.G_GraspResult.SendData(home)
+	return
 }
 
 //首页-作者
 func (i *Index) GetPoetryAuthor() {
 	defer i.group.Done()
-	data.G_GraspResult.SendData("GetPoetryAuthorGetPoetryAuthorGetPoetryAuthorGetPoetryAuthor")
+	if len(i.Content) == 0 || i.GoQuery == nil {
+		logrus.Debug("GetPoetryAuthor() i.Content is nil or i.query is nil")
+		return
+	}
+	i.GoQuery.Find(".right>.sons:nth-child(3)>.cont>a").Each(func(j int, selection *goquery.Selection) {
+		href, _ := selection.Attr("href")
+		result := &define.TextHrefFormat{
+			Href: href,
+			Text: selection.Text(),
+		}
+		i.AuthorData[j] = result
+	})
+	home := &define.HomeFormat{
+		Identifier: define.HomePoetryAuthorFormatSign,
+		Data:       i.AuthorData,
+	}
+	data.G_GraspResult.SendData(home)
+	return
 }
 
 //获取首页html内容
@@ -93,9 +132,10 @@ func (i *Index) GetIndexSource() (err error) {
 	if config.G_Conf.Env == define.TestEnv {
 		bytes, err = i.IndexTestFile()
 	} else {
-		if bytes, err = base.GetHtml(config.G_Conf.GuShiWenIndexUrl); err != nil {
-			return
-		}
+		bytes, err = base.GetHtml(config.G_Conf.GuShiWenIndexUrl)
+	}
+	if err != nil {
+		return
 	}
 	if len(bytes) > 0 {
 		i.Content = string(bytes)

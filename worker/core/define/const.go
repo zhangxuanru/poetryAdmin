@@ -25,5 +25,7 @@ const (
 type DataFormat string
 
 const (
-	HomeFormatSign DataFormat = "index"
+	HomePoetryCategoryFormatSign DataFormat = "indexPoetryCategory" //首页-诗文分类
+	HomePoetryFamousFormatSign   DataFormat = "indexPoetryFamous"   //首页-名句
+	HomePoetryAuthorFormatSign   DataFormat = "indexPoetryAuthor"   //首页-作者
 )
