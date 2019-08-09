@@ -24,7 +24,15 @@ func TestGrabsIndex(t *testing.T) {
 		parse.NewDispatch(SubReceiveMsg).Execution()
 		time.Sleep(5 * time.Second)
 	})
+}
 
+func TestAA(t *testing.T) {
+	yin := tools.PinYin("王安石")
+	logrus.Info("yin:", yin)
+
+	s := []rune(yin)
+	logrus.Infoln(yin[:1])
+	logrus.Infoln(string(s[1]))
 }
 
 func TestA(t *testing.T) {

@@ -64,8 +64,9 @@ func (i *Index) GetPoetryCategory() {
 	i.GoQuery.Find(".right>.sons").Eq(0).Find(".cont>a").Each(func(j int, selection *goquery.Selection) {
 		href, _ := selection.Attr("href")
 		result := &define.TextHrefFormat{
-			Href: href,
-			Text: selection.Text(),
+			Href:         href,
+			Text:         selection.Text(),
+			ShowPosition: define.CategoryPosition,
 		}
 		i.CategoryData[j] = result
 	})
@@ -88,8 +89,9 @@ func (i *Index) GetPoetryFamousCategory() {
 	i.GoQuery.Find(".right>.sons").Eq(1).Find(".cont>a").Each(func(j int, selection *goquery.Selection) {
 		href, _ := selection.Attr("href")
 		result := &define.TextHrefFormat{
-			Href: href,
-			Text: selection.Text(),
+			Href:         href,
+			Text:         selection.Text(),
+			ShowPosition: define.FamousPosition,
 		}
 		i.FamousData[j] = result
 	})

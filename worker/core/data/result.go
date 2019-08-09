@@ -30,7 +30,9 @@ func NewGraspResult() *GraspResult {
 
 //发送错误消息
 func (g *GraspResult) PushError(err error) {
-	g.err <- err
+	if err != nil {
+		g.err <- err
+	}
 }
 
 //发送错误消息并关闭协和

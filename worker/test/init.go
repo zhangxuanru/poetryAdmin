@@ -5,6 +5,7 @@ import (
 	"os"
 	"poetryAdmin/worker/app/config"
 	"poetryAdmin/worker/app/logger"
+	"poetryAdmin/worker/app/models"
 	"poetryAdmin/worker/app/redis"
 	"strings"
 )
@@ -33,6 +34,9 @@ func init() {
 		goto PRINTERR
 	}
 	if err = redis.InitRedis(config.G_Conf.RedisHost); err != nil {
+		goto PRINTERR
+	}
+	if err = models.InitDb(); err != nil {
 		goto PRINTERR
 	}
 PRINTERR:

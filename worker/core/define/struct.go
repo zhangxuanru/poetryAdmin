@@ -8,6 +8,7 @@ type HomeFormat struct {
 
 //首页保存的数据格式
 type TextHrefFormat struct {
-	Text string
-	Href string
+	Text         string
+	Href         string
+	ShowPosition ShowPosition
 }
