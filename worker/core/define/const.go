@@ -29,3 +29,5 @@ const (
 	HomePoetryFamousFormatSign   DataFormat = "indexPoetryFamous"   //首页-名句
 	HomePoetryAuthorFormatSign   DataFormat = "indexPoetryAuthor"   //首页-作者
 )
+
+type DataMap map[interface{}]*TextHrefFormat

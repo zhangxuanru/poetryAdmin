@@ -9,27 +9,28 @@ import (
 	"poetryAdmin/worker/app/tools"
 	"poetryAdmin/worker/core/data"
 	"poetryAdmin/worker/core/define"
+	"poetryAdmin/worker/core/grasp/poetry/Author"
+	"poetryAdmin/worker/core/grasp/poetry/Category"
+	"poetryAdmin/worker/core/grasp/poetry/Famous"
 	"poetryAdmin/worker/core/grasp/poetry/base"
 	"sync"
 )
-
-type dataMap map[interface{}]*define.TextHrefFormat
 
 //抓取首页
 type Index struct {
 	Content      string
 	GoQuery      *goquery.Document
-	CategoryData dataMap //首页分类数据
-	AuthorData   dataMap //首页作者数据
-	FamousData   dataMap //首页名句数据
+	CategoryData define.DataMap //首页分类数据
+	AuthorData   define.DataMap //首页作者数据
+	FamousData   define.DataMap //首页名句数据
 	group        *sync.WaitGroup
 }
 
 func NewIndex() *Index {
 	return &Index{
-		CategoryData: make(dataMap),
-		AuthorData:   make(dataMap),
-		FamousData:   make(dataMap),
+		CategoryData: make(define.DataMap),
+		AuthorData:   make(define.DataMap),
+		FamousData:   make(define.DataMap),
 		group:        &sync.WaitGroup{},
 	}
 }
@@ -60,7 +61,7 @@ func (i *Index) GetPoetryCategory() {
 		logrus.Debug("GetPoetryCategory() i.Content is nil or i.query is nil")
 		return
 	}
-	i.GoQuery.Find(".right>.sons:nth-child(1)>.cont>a").Each(func(j int, selection *goquery.Selection) {
+	i.GoQuery.Find(".right>.sons").Eq(0).Find(".cont>a").Each(func(j int, selection *goquery.Selection) {
 		href, _ := selection.Attr("href")
 		result := &define.TextHrefFormat{
 			Href: href,
@@ -73,6 +74,7 @@ func (i *Index) GetPoetryCategory() {
 		Data:       i.CategoryData,
 	}
 	data.G_GraspResult.SendData(home)
+	Category.NewCategory().GraspByIndexData(home)
 	return
 }
 
@@ -83,13 +85,12 @@ func (i *Index) GetPoetryFamousCategory() {
 		logrus.Debug("GetPoetryFamousCategory() i.Content is nil or i.query is nil")
 		return
 	}
-	i.GoQuery.Find(".right>.sons:nth-child(2)>.cont>a").Each(func(j int, selection *goquery.Selection) {
+	i.GoQuery.Find(".right>.sons").Eq(1).Find(".cont>a").Each(func(j int, selection *goquery.Selection) {
 		href, _ := selection.Attr("href")
 		result := &define.TextHrefFormat{
 			Href: href,
 			Text: selection.Text(),
 		}
-		logrus.Infoln("href:", href, "text:", selection.Text())
 		i.FamousData[j] = result
 	})
 	home := &define.HomeFormat{
@@ -97,6 +98,7 @@ func (i *Index) GetPoetryFamousCategory() {
 		Data:       i.FamousData,
 	}
 	data.G_GraspResult.SendData(home)
+	Famous.NewFamous().GraspByIndexData(home)
 	return
 }
 
@@ -107,7 +109,7 @@ func (i *Index) GetPoetryAuthor() {
 		logrus.Debug("GetPoetryAuthor() i.Content is nil or i.query is nil")
 		return
 	}
-	i.GoQuery.Find(".right>.sons:nth-child(3)>.cont>a").Each(func(j int, selection *goquery.Selection) {
+	i.GoQuery.Find(".right>.sons").Eq(2).Find(".cont>a").Each(func(j int, selection *goquery.Selection) {
 		href, _ := selection.Attr("href")
 		result := &define.TextHrefFormat{
 			Href: href,
@@ -120,6 +122,7 @@ func (i *Index) GetPoetryAuthor() {
 		Data:       i.AuthorData,
 	}
 	data.G_GraspResult.SendData(home)
+	Author.NewAuthor().GraspByIndexData(home)
 	return
 }
 
