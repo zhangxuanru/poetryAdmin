@@ -7,6 +7,8 @@ import (
 	"time"
 )
 
+var TableAuthor = "poetry_author"
+
 //poetry_author作者表
 type Author struct {
 	Id           int    `orm:"column(id);auto"`
@@ -31,13 +33,16 @@ func init() {
 }
 
 func (c *Author) TableName() string {
-	return "poetry_author"
+	return TableAuthor
 }
 
 //根据首页的数据保存作者信息
 func InsertMultiAuthorByDataMap(data define.DataMap) (i int64, err error) {
-	var authors []Author
-	var acronym string
+	var (
+		authors   []Author
+		authorRow Author
+		acronym   string
+	)
 	for _, ret := range data {
 		if ret.Text == "更多>>" {
 			continue
@@ -55,10 +60,23 @@ func InsertMultiAuthorByDataMap(data define.DataMap) (i int64, err error) {
 			Pinyin:      pinyin,
 			Acronym:     acronym,
 		}
-		authors = append(authors, au)
+		authorRow, _ = GetAuthorDataByAuthorName(au.Author)
+		if authorRow.Id > 0 {
+			au.Id = authorRow.Id
+			_, _ = orm.NewOrm().Update(&au, "source_url", "update_date", "pinyin", "acronym")
+			au.Id = 0
+		} else {
+			authors = append(authors, au)
+		}
 	}
 	if len(authors) > 0 {
 		i, err = orm.NewOrm().InsertMulti(len(authors), authors)
 	}
+	return
+}
+
+//根据作者姓名查询作者信息
+func GetAuthorDataByAuthorName(authorName string) (author Author, err error) {
+	_, err = orm.NewOrm().QueryTable(TableAuthor).Filter("author", authorName).All(&author)
 	return
 }

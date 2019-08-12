@@ -4,6 +4,7 @@ import (
 	"github.com/PuerkitoBio/goquery"
 	"github.com/sirupsen/logrus"
 	. "github.com/smartystreets/goconvey/convey"
+	"poetryAdmin/worker/app/models"
 	"poetryAdmin/worker/app/tools"
 	"poetryAdmin/worker/core/define"
 	"poetryAdmin/worker/core/parse"
@@ -27,6 +28,12 @@ func TestGrabsIndex(t *testing.T) {
 }
 
 func TestAA(t *testing.T) {
+	categorys, err := models.GetAuthorDataByAuthorName("李白")
+
+	logrus.Infof("%+v", categorys)
+	logrus.Info(err)
+	return
+
 	yin := tools.PinYin("王安石")
 	logrus.Info("yin:", yin)
 
