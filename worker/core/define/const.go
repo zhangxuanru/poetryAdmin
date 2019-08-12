@@ -29,13 +29,17 @@ const (
 type DataFormat string
 
 const (
-	HomePoetryCategoryFormatSign DataFormat = "indexPoetryCategory" //首页-诗文分类
-	HomePoetryFamousFormatSign   DataFormat = "indexPoetryFamous"   //首页-名句
-	HomePoetryAuthorFormatSign   DataFormat = "indexPoetryAuthor"   //首页-作者
+	HomePoetryCategoryFormatSign       DataFormat = "indexPoetryCategory"      //首页-诗文分类
+	HomePoetryFamousFormatSign         DataFormat = "indexPoetryFamous"        //首页-名句
+	HomePoetryAuthorFormatSign         DataFormat = "indexPoetryAuthor"        //首页-作者
+	CategoryPoetryAuthorListFormatSign DataFormat = "categoryPoetryAuthorList" //诗文分类-体裁与诗，作者对应列表
 )
 
 //首页抓取保存的数据列表
 type DataMap map[interface{}]*TextHrefFormat
+
+//诗文分类保存的数据列表
+type PoetryDataMap map[interface{}][]interface{}
 
 //显示的位置
 type ShowPosition int

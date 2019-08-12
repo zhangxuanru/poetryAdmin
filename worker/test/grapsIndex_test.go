@@ -4,9 +4,10 @@ import (
 	"github.com/PuerkitoBio/goquery"
 	"github.com/sirupsen/logrus"
 	. "github.com/smartystreets/goconvey/convey"
-	"poetryAdmin/worker/app/models"
 	"poetryAdmin/worker/app/tools"
+	"poetryAdmin/worker/core/data"
 	"poetryAdmin/worker/core/define"
+	"poetryAdmin/worker/core/grasp/poetry/Category"
 	"poetryAdmin/worker/core/parse"
 	"testing"
 	"time"
@@ -27,22 +28,32 @@ func TestGrabsIndex(t *testing.T) {
 	})
 }
 
-func TestAA(t *testing.T) {
-	categorys, err := models.GetAuthorDataByAuthorName("李白")
-
-	logrus.Infof("%+v", categorys)
-	logrus.Info(err)
-	return
-
-	yin := tools.PinYin("王安石")
-	logrus.Info("yin:", yin)
-
-	s := []rune(yin)
-	logrus.Infoln(yin[:1])
-	logrus.Infoln(string(s[1]))
+//测试诗文类型详情页
+func TestCategory(t *testing.T) {
+	go data.NewGraspResult().PrintMsg()
+	home := &define.HomeFormat{
+		Identifier: "test",
+		Data: define.DataMap{
+			1: &define.TextHrefFormat{
+				Href: "test",
+				Text: "test",
+			},
+		},
+	}
+	Category.NewCategory().GraspByIndexData(home)
+	time.Sleep(5 * time.Second)
 }
 
 func TestA(t *testing.T) {
+	str := "芙蓉楼送辛渐(王昌龄)"
+	go func(str string) {
+		logrus.Info("go:", str)
+	}(str)
+	return
+
+	//any := strings.LastIndex(str, "(")
+	logrus.Info(str[:18], "----", str[18:])
+	return
 	file := "D:/server/gitData/goPath/poetryAdmin/worker/test/index.html"
 	bytes, err := tools.ReadFile(file)
 	logrus.Info("err:", err)
