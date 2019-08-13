@@ -35,8 +35,9 @@ func TestCategory(t *testing.T) {
 		Identifier: "test",
 		Data: define.DataMap{
 			1: &define.TextHrefFormat{
-				Href: "test",
-				Text: "test",
+				Href:         "https://so.gushiwen.org/gushi/tangshi.aspx",
+				Text:         "唐诗三百",
+				ShowPosition: 1,
 			},
 		},
 	}

@@ -3,7 +3,9 @@ package data
 import (
 	"github.com/sirupsen/logrus"
 	"poetryAdmin/worker/app/models"
+	"poetryAdmin/worker/app/tools"
 	"poetryAdmin/worker/core/define"
+	"time"
 )
 
 //保存抓取结果... 分发到各自的module中执行数据库操作
@@ -16,10 +18,55 @@ func NewStorage() *Storage {
 	return new(Storage)
 }
 
-//载入数据
+//载入data数据
 func (s *Storage) LoadData(format *define.HomeFormat) {
 	s.FormatData = format
 	s.DistributionModule()
+}
+
+//载入诗词类型详情页数据
+func (s *Storage) LoadCategoryPoetryData(data interface{}, params interface{}) {
+	var (
+		format    *define.TextHrefFormat
+		categorys models.Category
+		genreId   int64 //体裁ID
+		err       error
+		ok        bool
+	)
+	dataMap := data.(*define.PoetryDataMap)
+	if len(*dataMap) == 0 {
+		return
+	}
+	format, ok = params.(*define.TextHrefFormat)
+	for genreTitle, authorList := range *dataMap {
+		if genreTitle != "无" && ok {
+			if categorys, err = models.GetDataByCrcAndCateName(tools.Crc32(format.Href), format.Text, int(format.ShowPosition)); err != nil {
+				G_GraspResult.PushError(err)
+				continue
+			}
+			//保存 诗文体裁
+			gen := &models.Genre{
+				GenreName: genreTitle.(string),
+				AddDate:   time.Now().Unix(),
+			}
+			if genreId, _ = models.SaveGenre(gen); genreId > 0 {
+				//保存诗文类别体裁关联表
+				cateGem := &models.CategoryGenre{
+					CatId:   categorys.Id,
+					GenreId: genreId,
+				}
+				_, err = models.NewCategoryGenre().SaveCategoryGenre(cateGem)
+			}
+		}
+		for _, author := range authorList {
+			list := author.(*define.PoetryAuthorList)
+			//写入诗词表 poetry_content
+			//写入作者表 poetry_author
+			//写入诗词关联表 poetry_content_relation
+			logrus.Infoln(list)
+			logrus.Info("-----")
+		}
+	}
 }
 
 //分发模块

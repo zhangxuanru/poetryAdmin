@@ -9,20 +9,22 @@ const ChanMaxLen = 5000
 
 //抓取结果处理
 type GraspResult struct {
-	err     chan error
-	close   chan bool
-	Data    chan *define.HomeFormat
-	storage *Storage
+	err       chan error
+	close     chan bool
+	Data      chan *define.HomeFormat
+	ParseData chan *define.ParseData
+	storage   *Storage
 }
 
 var G_GraspResult *GraspResult
 
 func NewGraspResult() *GraspResult {
 	result := &GraspResult{
-		err:     make(chan error),
-		close:   make(chan bool),
-		Data:    make(chan *define.HomeFormat, ChanMaxLen),
-		storage: NewStorage(),
+		err:       make(chan error),
+		close:     make(chan bool),
+		Data:      make(chan *define.HomeFormat, ChanMaxLen),
+		ParseData: make(chan *define.ParseData, ChanMaxLen),
+		storage:   NewStorage(),
 	}
 	G_GraspResult = result
 	return result
@@ -51,12 +53,17 @@ func (g *GraspResult) SendData(data *define.HomeFormat) {
 	g.Data <- data
 }
 
+func (g *GraspResult) SendParseData(parseData *define.ParseData) {
+	g.ParseData <- parseData
+}
+
 //统一处理错误消息
 func (g *GraspResult) PrintMsg() {
 	var (
 		err       error
 		close     bool
 		data      *define.HomeFormat
+		parseData *define.ParseData
 		autoClose bool
 	)
 	for {
@@ -68,6 +75,10 @@ func (g *GraspResult) PrintMsg() {
 			logrus.Debug("Execution error:", err)
 		case data = <-g.Data:
 			g.storage.LoadData(data)
+		case parseData = <-g.ParseData:
+			go func() {
+				parseData.ParseFunc(parseData.Data, parseData.Params)
+			}()
 		case close = <-g.close:
 			if len(g.Data) > 0 {
 				autoClose = true

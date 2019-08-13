@@ -3,7 +3,6 @@ package Category
 import (
 	"errors"
 	"github.com/PuerkitoBio/goquery"
-	"github.com/sirupsen/logrus"
 	"os"
 	"poetryAdmin/worker/app/config"
 	"poetryAdmin/worker/app/tools"
@@ -95,11 +94,12 @@ func (c *Category) FindDocument(bytes []byte, category *define.TextHrefFormat) (
 			}
 		})
 	})
-	sendData := &define.HomeFormat{
-		Identifier: define.CategoryPoetryAuthorListFormatSign,
-		Data:       dataMap,
+	sendData := &define.ParseData{
+		Data:      &dataMap,
+		Params:    category,
+		ParseFunc: data.NewStorage().LoadCategoryPoetryData,
 	}
-	data.G_GraspResult.SendData(sendData)
+	data.G_GraspResult.SendParseData(sendData)
 	go c.goPoetryDetail(&dataMap)
 	return dataMap
 }
@@ -109,14 +109,14 @@ func (c *Category) goPoetryDetail(dataMap *define.PoetryDataMap) {
 	//对作者进行过虑，同一个作者只发一次请求到详情页，
 	//如果没有作者， 则也进入详情页
 
-	for _, ret := range *dataMap {
-		for _, val := range ret {
-			list := val.(*define.PoetryAuthorList)
-			logrus.Infof("map:%+v\n", list)
-
-			//--明天继续 过虑后发送请求
-		}
-	}
+	//for _, ret := range *dataMap {
+	//	for _, val := range ret {
+	//		//	list := val.(*define.PoetryAuthorList)
+	//		//	logrus.Infof("map:%+v\n", list)
+	//
+	//		//--明天继续 过虑后发送请求
+	//	}
+	//}
 }
 
 //读取测试文件内容

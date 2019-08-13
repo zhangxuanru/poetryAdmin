@@ -41,6 +41,13 @@ type DataMap map[interface{}]*TextHrefFormat
 //诗文分类保存的数据列表
 type PoetryDataMap map[interface{}][]interface{}
 
+//数据解析结构
+type ParseData struct {
+	Data      interface{}
+	ParseFunc func(interface{}, interface{})
+	Params    interface{}
+}
+
 //显示的位置
 type ShowPosition int
 
