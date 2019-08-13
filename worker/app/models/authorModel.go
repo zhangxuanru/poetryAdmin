@@ -81,7 +81,7 @@ func InsertMultiAuthorByDataMap(data define.DataMap) (i int64, err error) {
 
 //根据作者姓名查询作者信息
 func GetAuthorDataByAuthorName(authorName string) (author Author, err error) {
-	_, err = orm.NewOrm().QueryTable(TableAuthor).Filter("author", authorName).All(&author)
+	_, err = orm.NewOrm().QueryTable(TableAuthor).Filter("author", authorName).All(&author, "id")
 	return
 }
 

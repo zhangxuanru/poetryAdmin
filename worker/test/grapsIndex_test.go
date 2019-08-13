@@ -42,7 +42,7 @@ func TestCategory(t *testing.T) {
 		},
 	}
 	Category.NewCategory().GraspByIndexData(home)
-	time.Sleep(5 * time.Second)
+	time.Sleep(60 * time.Second)
 }
 
 func TestA(t *testing.T) {

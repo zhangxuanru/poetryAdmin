@@ -79,7 +79,7 @@ func (s *Storage) LoadCategoryPoetryData(data interface{}, params interface{}) {
 				UpdateDate: time.Now().Unix(),
 			}
 			if id, err = models.NewContent().SaveContent(content); err != nil {
-				G_GraspResult.PushError(err)
+				go G_GraspResult.PushError(err)
 				logrus.Debug("SaveContent error:", err)
 				continue
 			}
@@ -96,6 +96,7 @@ func (s *Storage) LoadCategoryPoetryData(data interface{}, params interface{}) {
 			}
 		}
 	}
+	logrus.Infoln("LoadCategoryPoetryData ok.......")
 	return
 }
 

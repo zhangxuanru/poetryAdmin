@@ -59,6 +59,6 @@ func (c *ContentRelation) UpdateRelation(data *ContentRelation, col ...string) (
 	if len(col) == 0 {
 		col = []string{"poetry_id", "author_id", "category_id", "genre_id", "form", "sort", "update_date"}
 	}
-	id, err = orm.NewOrm().Update(&data, col...)
+	id, err = orm.NewOrm().Update(data, col...)
 	return
 }
