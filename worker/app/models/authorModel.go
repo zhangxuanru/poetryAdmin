@@ -36,6 +36,10 @@ func (c *Author) TableName() string {
 	return TableAuthor
 }
 
+func NewAuthor() *Author {
+	return new(Author)
+}
+
 //根据首页的数据保存作者信息
 func InsertMultiAuthorByDataMap(data define.DataMap) (i int64, err error) {
 	var (
@@ -78,5 +82,34 @@ func InsertMultiAuthorByDataMap(data define.DataMap) (i int64, err error) {
 //根据作者姓名查询作者信息
 func GetAuthorDataByAuthorName(authorName string) (author Author, err error) {
 	_, err = orm.NewOrm().QueryTable(TableAuthor).Filter("author", authorName).All(&author)
+	return
+}
+
+//保存作者信息
+func (a *Author) SaveAuthor(data *Author) (id int64, err error) {
+	var (
+		author  Author
+		acronym string
+	)
+	if data.Author == "" {
+		return 0, nil
+	}
+	if author, err = GetAuthorDataByAuthorName(data.Author); err != nil {
+		return 0, err
+	}
+	pinyin := tools.PinYin(data.Author)
+	if len(pinyin) > 0 {
+		acronym = pinyin[:1]
+	}
+	data.AddDate = time.Now().Unix()
+	data.UpdateDate = time.Now().Unix()
+	data.Pinyin = pinyin
+	data.Acronym = acronym
+	if author.Id > 0 {
+		data.Id = author.Id
+		_, _ = orm.NewOrm().Update(data, "update_date", "pinyin", "acronym")
+		return int64(author.Id), nil
+	}
+	id, err = orm.NewOrm().Insert(data)
 	return
 }

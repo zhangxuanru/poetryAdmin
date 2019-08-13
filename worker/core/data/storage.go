@@ -30,6 +30,8 @@ func (s *Storage) LoadCategoryPoetryData(data interface{}, params interface{}) {
 		format    *define.TextHrefFormat
 		categorys models.Category
 		genreId   int64 //体裁ID
+		id        int64 //诗词ID
+		authorId  int64
 		err       error
 		ok        bool
 	)
@@ -60,13 +62,41 @@ func (s *Storage) LoadCategoryPoetryData(data interface{}, params interface{}) {
 		}
 		for _, author := range authorList {
 			list := author.(*define.PoetryAuthorList)
+			//写入作者表
+			author := &models.Author{
+				Author: list.AuthorName,
+			}
+			if authorId, err = models.NewAuthor().SaveAuthor(author); err != nil {
+				G_GraspResult.PushError(err)
+				logrus.Debug("SaveAuthor error:", err)
+			}
 			//写入诗词表 poetry_content
-			//写入作者表 poetry_author
+			content := &models.Content{
+				Title:      list.PoetryTitle,
+				SourceUrl:  list.PoetrySourceUrl,
+				AuthorId:   authorId,
+				AddDate:    time.Now().Unix(),
+				UpdateDate: time.Now().Unix(),
+			}
+			if id, err = models.NewContent().SaveContent(content); err != nil {
+				G_GraspResult.PushError(err)
+				logrus.Debug("SaveContent error:", err)
+				continue
+			}
 			//写入诗词关联表 poetry_content_relation
-			logrus.Infoln(list)
-			logrus.Info("-----")
+			relation := &models.ContentRelation{
+				PoetryId:   id,
+				CategoryId: int64(categorys.Id),
+				GenreId:    genreId,
+				AuthorId:   authorId,
+			}
+			if _, err = models.NewContentRelation().SaveContentRelation(relation); err != nil {
+				G_GraspResult.PushError(err)
+				logrus.Debug("SaveContentRelation error:", err)
+			}
 		}
 	}
+	return
 }
 
 //分发模块
