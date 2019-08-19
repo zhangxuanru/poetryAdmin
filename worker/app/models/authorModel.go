@@ -97,6 +97,9 @@ func (a *Author) SaveAuthor(data *Author) (id int64, err error) {
 	if author, err = GetAuthorDataByAuthorName(data.Author); err != nil {
 		return 0, err
 	}
+	if author.Id > 0 {
+		return int64(author.Id), nil
+	}
 	pinyin := tools.PinYin(data.Author)
 	if len(pinyin) > 0 {
 		acronym = pinyin[:1]
@@ -105,11 +108,11 @@ func (a *Author) SaveAuthor(data *Author) (id int64, err error) {
 	data.UpdateDate = time.Now().Unix()
 	data.Pinyin = pinyin
 	data.Acronym = acronym
-	if author.Id > 0 {
-		data.Id = author.Id
-		_, _ = orm.NewOrm().Update(data, "update_date", "pinyin", "acronym")
-		return int64(author.Id), nil
-	}
+	//if author.Id > 0 {
+	//data.Id = author.Id
+	//_, _ = orm.NewOrm().Update(data, "update_date", "pinyin", "acronym")
+	//	return int64(author.Id), nil
+	//}
 	id, err = orm.NewOrm().Insert(data)
 	return
 }

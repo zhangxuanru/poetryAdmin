@@ -2,15 +2,18 @@ package Category
 
 import (
 	"errors"
+	"fmt"
 	"github.com/PuerkitoBio/goquery"
 	"os"
 	"poetryAdmin/worker/app/config"
 	"poetryAdmin/worker/app/tools"
 	"poetryAdmin/worker/core/data"
 	"poetryAdmin/worker/core/define"
+	"poetryAdmin/worker/core/grasp/poetry/Content"
 	"poetryAdmin/worker/core/grasp/poetry/base"
 	"strings"
 	"sync"
+	"time"
 )
 
 //诗文分类模块 抓取诗文分类
@@ -33,6 +36,7 @@ func (c *Category) GraspByIndexData(data *define.HomeFormat) {
 	c.wg.Add(len(datas))
 	for _, ret := range datas {
 		go c.GetCategorySource(ret.Href, ret)
+		time.Sleep(2 * time.Millisecond)
 	}
 	c.wg.Wait()
 }
@@ -108,15 +112,29 @@ func (c *Category) FindDocument(bytes []byte, category *define.TextHrefFormat) (
 func (c *Category) goPoetryDetail(dataMap *define.PoetryDataMap) {
 	//对作者进行过虑，同一个作者只发一次请求到详情页，
 	//如果没有作者， 则也进入详情页
-
-	//for _, ret := range *dataMap {
-	//	for _, val := range ret {
-	//		//	list := val.(*define.PoetryAuthorList)
-	//		//	logrus.Infof("map:%+v\n", list)
-	//
-	//		//--明天继续 过虑后发送请求
-	//	}
-	//}
+	var (
+		sysMap sync.Map
+	)
+	for _, ret := range *dataMap {
+		for k, val := range ret {
+			list := val.(*define.PoetryAuthorList)
+			key := fmt.Sprintf("author%d", k)
+			if len(list.AuthorName) > 0 {
+				sysMap.Store(list.AuthorName, list)
+			} else {
+				sysMap.Store(key, list)
+			}
+		}
+	}
+	//过虑后发送请求
+	sysMap.Range(func(key, value interface{}) bool {
+		val := value.(*define.PoetryAuthorList)
+		go func() {
+			Content.NewContent().GraspCategoryData(val)
+		}()
+		time.Sleep(5 * time.Millisecond)
+		return true
+	})
 }
 
 //读取测试文件内容

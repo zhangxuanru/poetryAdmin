@@ -8,6 +8,7 @@ import (
 	"poetryAdmin/worker/core/data"
 	"poetryAdmin/worker/core/define"
 	"poetryAdmin/worker/core/grasp/poetry/Category"
+	"poetryAdmin/worker/core/grasp/poetry/Content"
 	"poetryAdmin/worker/core/parse"
 	"testing"
 	"time"
@@ -42,7 +43,24 @@ func TestCategory(t *testing.T) {
 		},
 	}
 	Category.NewCategory().GraspByIndexData(home)
-	time.Sleep(60 * time.Second)
+	time.Sleep(120 * time.Second)
+}
+
+//测试诗文详情页
+func TestContent(t *testing.T) {
+	go data.NewGraspResult().PrintMsg()
+	poetry := &define.PoetryAuthorList{
+		AuthorName:      "柳宗元",
+		PoetryTitle:     "江雪",
+		PoetrySourceUrl: "/shiwenv_58313be2d918.aspx",
+		GenreTitle:      "五言绝句",
+		Category: &define.TextHrefFormat{
+			Text:         "唐诗三百",
+			Href:         "https://so.gushiwen.org/gushi/tangshi.aspx",
+			ShowPosition: 1,
+		},
+	}
+	Content.NewContent().GraspCategoryData(poetry)
 }
 
 func TestA(t *testing.T) {

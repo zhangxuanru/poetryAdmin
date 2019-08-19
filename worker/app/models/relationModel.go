@@ -42,7 +42,8 @@ func (c *ContentRelation) SaveContentRelation(data *ContentRelation) (id int64, 
 	data.AddDate = time.Now().Unix()
 	if content.Id > 0 {
 		data.Id = content.Id
-		return c.UpdateRelation(data)
+		_, err = c.UpdateRelation(data)
+		return int64(content.Id), err
 	}
 	id, err = orm.NewOrm().Insert(data)
 	return

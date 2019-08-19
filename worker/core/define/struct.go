@@ -21,3 +21,39 @@ type PoetryAuthorList struct {
 	GenreTitle      string //体裁名称
 	Category        *TextHrefFormat
 }
+
+//诗词详情
+type PoetryContent struct {
+	Title        string
+	Content      string
+	PoetryId     int64
+	DynastyName  string
+	DynastyUrl   string
+	DynastyId    int64
+	CategoryList []*TextHrefFormat
+	PoetryContentDetail
+	PoetryAuthorDetail
+}
+
+//诗词详情注释，介绍相关
+type PoetryContentDetail struct {
+	Translation        string //译文
+	Notes              string //注释
+	Appreciation       string //赏析
+	CreativeBackground string //创作背景
+	Material           string //参考资料
+}
+
+//作者信息
+type PoetryAuthorDetail struct {
+	AuthorName        string
+	AuthorId          int64
+	AuthorSrcUrl      string
+	AuthorTotalPoetry int //诗词总数
+}
+
+//诗词对应分类信息
+type PoetryCategory struct {
+	poetryId    int64
+	CategoryIds []int64
+}

@@ -34,8 +34,8 @@ func (c *Content) SaveContent(data *Content) (id int64, err error) {
 		return 0, err
 	}
 	if content.Id > 0 {
-		data.Id = content.Id
-		_, _ = c.UpdateContent(data, "update_date")
+		//data.Id = content.Id
+		//_, _ = c.UpdateContent(data, "update_date")
 		return int64(content.Id), nil
 	}
 	id, err = orm.NewOrm().Insert(data)
