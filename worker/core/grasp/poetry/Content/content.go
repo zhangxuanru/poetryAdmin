@@ -74,47 +74,61 @@ func (c *Content) FindDocumentData(html []byte) {
 		}
 		poetryContent.CategoryList = append(poetryContent.CategoryList, format)
 	})
-	conty1 := query.Find(".left>.sons>.contyishang").Eq(0)
-	conty1.Find("p").Each(func(i int, selection *goquery.Selection) {
-		text := selection.Text()
-		if text != "注释" {
-			poetryContent.Translation += text //译文
-		} else {
-			poetryContent.Notes += text //注释
-		}
-	})
-	//poetryContent.Translation, _ = conty1.Find("p").Eq(0).Html() //译文
-	//poetryContent.Notes, _ = conty1.Find("p").Eq(1).Html()       //注释
-	//赏析
-	if poetryContent.Appreciation, err = c.getAppreciation(query); err != nil {
-		poetryContent.Appreciation = ""
-		data.G_GraspResult.PushError(err)
-	}
+	poetryContent.Notes, _ = c.getNotes(query) //译文及注释
+	appreciation, _ := c.getAppreciation(query)
+	poetryContent.Appreciation = strings.Join(appreciation, "#") //赏析
+
+	//创作背景明天继续.... 这里没想好怎么处理
 	poetryContent.CreativeBackground = query.Find(".left>.sons").Eq(4).Find(".contyishang>p").Eq(0).Text()
 
 	logrus.Infof("%+v", poetryContent)
 
 }
 
+//获取译文  译文及注释放在一起
+func (c *Content) getNotes(query *goquery.Document) (body string, err error) {
+	var (
+		notesUrl string
+		id       string
+		bytes    []byte
+		ok       bool
+	)
+	id, ok = query.Find(".left>.sons").Eq(1).Attr("id")
+	id = strings.TrimLeft(id, "fanyi")
+	if ok == false || id == "" {
+		conty1 := query.Find(".left>.sons>.contyishang").Eq(0)
+		conty1.Find("p").Each(func(i int, selection *goquery.Selection) {
+			if html, err := selection.Html(); err == nil {
+				body += html
+			}
+		})
+		return
+	}
+	notesUrl = config.G_Conf.GuShiWenPoetryUrl + "shiwen2017/ajaxfanyi.aspx?id=" + id
+	bytes, err = base.GetHtml(notesUrl)
+	if err != nil {
+		return "", err
+	}
+	body = string(bytes)
+	return
+}
+
 //获取赏析数据
-func (c *Content) getAppreciation(query *goquery.Document) (body string, err error) {
+func (c *Content) getAppreciation(query *goquery.Document) (body []string, err error) {
 	var (
 		appRecId        string
-		ok              bool
 		appreciationUrl string
 	)
-	appRecId, ok = query.Find(".sons").Eq(2).Attr("id")
-	appRecId = strings.TrimLeft(appRecId, "shangxi")
-	if ok == false || appRecId == "" {
-		body = query.Find(".sons").Eq(2).Find(".contyishang>p").Eq(0).Text()
-		body += query.Find(".sons").Eq(2).Find(".contyishang>p").Eq(1).Text()
-		return body, nil
-	}
-	return
-	appreciationUrl = config.G_Conf.GuShiWenPoetryUrl + "shiwen2017/ajaxshangxi.aspx?id=" + appRecId
-	bytes, err := base.GetHtml(appreciationUrl)
-	body = "html:" + string(bytes)
-	return body, err
+	query.Find(".sons").Each(func(i int, selection *goquery.Selection) {
+		idStr, exists := selection.Attr("id")
+		if exists == true && !strings.Contains(idStr, "shangxiquan") && strings.Contains(idStr, "shangxi") {
+			appRecId = strings.TrimLeft(idStr, "shangxi")
+			appreciationUrl = config.G_Conf.GuShiWenPoetryUrl + "shiwen2017/ajaxshangxi.aspx?id=" + appRecId
+			bytes, _ := base.GetHtml(appreciationUrl)
+			body = append(body, string(bytes))
+		}
+	})
+	return body, nil
 }
 
 //读取测试文件内容

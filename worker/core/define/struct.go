@@ -37,7 +37,6 @@ type PoetryContent struct {
 
 //诗词详情注释，介绍相关
 type PoetryContentDetail struct {
-	Translation        string //译文
 	Notes              string //注释
 	Appreciation       string //赏析
 	CreativeBackground string //创作背景
