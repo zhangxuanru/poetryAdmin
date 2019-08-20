@@ -27,13 +27,11 @@ type PoetryContent struct {
 	Title              string
 	Content            string
 	PoetryId           int64
-	DynastyName        string
-	DynastyUrl         string
 	DynastyId          int64
 	CategoryList       []*TextHrefFormat
 	CreativeBackground string //创作背景
-	PoetryAuthorDetail
-	Detail []*PoetryContentData
+	Author             *PoetryAuthorDetail
+	Detail             []*PoetryContentData
 }
 
 //----诗词正文具体数据 诗词详情注释，介绍相关
@@ -55,7 +53,9 @@ type PoetryAuthorDetail struct {
 	AuthorSrcUrl      string //作者介绍页
 	AuthorContentUrl  string //作者诗词列表页
 	AuthorImgUrl      string
-	AuthorTotalPoetry int //诗词总数
+	AuthorTotalPoetry int    //诗词总数
+	DynastyName       string //朝代
+	DynastyUrl        string
 }
 
 //诗词对应分类信息

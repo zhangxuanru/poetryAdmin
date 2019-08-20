@@ -3,6 +3,7 @@ package Content
 import (
 	"errors"
 	"github.com/PuerkitoBio/goquery"
+	"github.com/sirupsen/logrus"
 	"os"
 	"poetryAdmin/worker/app/config"
 	"poetryAdmin/worker/app/tools"
@@ -23,27 +24,46 @@ func NewContent() *Content {
 	return &Content{}
 }
 
-//通过诗文分类 抓取诗文详情数据
+//通过诗文分类 抓取诗文详情数据 https://so.gushiwen.org/shiwenv_4c5705b99143.aspx
 func (c *Content) GraspContentData(poetry *define.PoetryAuthorList) {
+	var (
+		bytes          []byte
+		query          *goquery.Document
+		err            error
+		author         *define.PoetryAuthorDetail
+		authorChan     chan bool
+		authorListChan chan bool
+	)
 	url := config.G_Conf.GuShiWenPoetryUrl + strings.TrimLeft(poetry.PoetrySourceUrl, "/")
-	bytes, err := c.GetContentSource(url)
-	if err != nil {
+	if bytes, err = c.GetContentSource(url); err != nil {
 		data.G_GraspResult.PushError(err)
 		return
 	}
-	content := c.FindDocumentData(bytes)
+	if query, err = tools.NewDocumentFromReader(string(bytes)); err != nil {
+		data.G_GraspResult.PushError(err)
+		return
+	}
+	author = c.getAuthorData(query)
+	authorChan, authorListChan = make(chan bool), make(chan bool)
 	//发送获取作者详情信息请求
-	go Author.NewAuthor().GetAuthorDetail(content.AuthorSrcUrl)
+	authorFun := Author.NewAuthor()
+	authorFun.SourceAuthor = author
+	go authorFun.GetAuthorDetail(author.AuthorSrcUrl, authorChan)
 	//发送获取作者诗词列表所有数据请求
-	go Author.NewAuthor().GetAuthorPoetryList(content.AuthorContentUrl)
+	go authorFun.GetAuthorPoetryList(author.AuthorContentUrl, authorListChan)
+	<-authorChan
+	<-authorListChan
 	return
 }
 
 //传过来一个诗词详情页的URL，获取数据并保存诗词详情数据
 func (c *Content) GraspContentSaveData(detailUrl string, params []interface{}) {
+	var (
+		bytes []byte
+		err   error
+	)
 	url := config.G_Conf.GuShiWenPoetryUrl + strings.TrimLeft(detailUrl, "/")
-	bytes, err := c.GetContentSource(url)
-	if err != nil {
+	if bytes, err = c.GetContentSource(url); err != nil {
 		data.G_GraspResult.PushError(err)
 		return
 	}
@@ -54,6 +74,8 @@ func (c *Content) GraspContentSaveData(detailUrl string, params []interface{}) {
 		ParseFunc: data.NewContentStore().LoadPoetryContentData,
 	}
 	data.G_GraspResult.SendParseData(sendData)
+	logrus.Infoln("url:", url)
+	logrus.Infof("%+v", content)
 }
 
 //获取诗文详情数据
@@ -72,23 +94,15 @@ func (c *Content) FindDocumentData(html []byte) (poetryContent define.PoetryCont
 		query *goquery.Document
 		err   error
 	)
-	query, err = tools.NewDocumentFromReader(string(html))
-	if err != nil {
+	if query, err = tools.NewDocumentFromReader(string(html)); err != nil {
 		data.G_GraspResult.PushError(err)
 		return
 	}
 	src := ".left>.sons>.cont"
 	poetryContent.Title = query.Find(src + ">h1").Text()
-	poetryContent.DynastyName = query.Find(src + ">.source>a").Eq(0).Text()
-	poetryContent.DynastyUrl, _ = query.Find(src + ">.source>a").Eq(0).Attr("href")
-	poetryContent.AuthorName = query.Find(src + ">.source>a").Eq(1).Text()
-	poetryContent.AuthorSrcUrl, _ = query.Find(src + ">.source>a").Eq(1).Attr("href")
 	poetryContent.Content = query.Find(src + ">.contson").Eq(0).Text()
 	poetryContent.CategoryList = c.getCategory(query)
-	authorData := c.getAuthorData(query)
-	poetryContent.AuthorImgUrl = authorData.AuthorImgUrl
-	poetryContent.AuthorContentUrl = authorData.AuthorContentUrl
-	poetryContent.AuthorTotalPoetry = authorData.AuthorTotalPoetry
+	poetryContent.Author = c.getAuthorData(query)
 	poetryContent.Detail = c.getNotesData(query)
 	poetryContent.CreativeBackground = c.getCreativeBack(query) //创作背景
 	return poetryContent
@@ -206,6 +220,11 @@ func (c *Content) getAuthorData(query *goquery.Document) (author *define.PoetryA
 		AuthorContentUrl:  authorSrcUrl,
 		AuthorTotalPoetry: total,
 	}
+	src := ".left>.sons>.cont"
+	author.DynastyName = query.Find(src + ">.source>a").Eq(0).Text()
+	author.DynastyUrl, _ = query.Find(src + ">.source>a").Eq(0).Attr("href")
+	author.AuthorName = query.Find(src + ">.source>a").Eq(1).Text()
+	author.AuthorSrcUrl, _ = query.Find(src + ">.source>a").Eq(1).Attr("href")
 	return
 }
 
