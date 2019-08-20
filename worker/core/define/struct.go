@@ -40,7 +40,6 @@ type PoetryContentDetail struct {
 	Notes              string //注释
 	Appreciation       string //赏析
 	CreativeBackground string //创作背景
-	Material           string //参考资料
 }
 
 //作者信息
