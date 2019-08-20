@@ -60,7 +60,7 @@ func TestContent(t *testing.T) {
 			ShowPosition: 1,
 		},
 	}
-	Content.NewContent().GraspCategoryData(poetry)
+	Content.NewContent().GraspContentData(poetry)
 }
 
 func TestA(t *testing.T) {

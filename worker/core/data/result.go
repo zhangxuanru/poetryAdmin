@@ -5,7 +5,7 @@ import (
 	"poetryAdmin/worker/core/define"
 )
 
-const ChanMaxLen = 5000
+const ChanMaxLen = 50000
 
 //抓取结果处理
 type GraspResult struct {

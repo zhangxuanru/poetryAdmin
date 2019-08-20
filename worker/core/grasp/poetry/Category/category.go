@@ -101,7 +101,7 @@ func (c *Category) FindDocument(bytes []byte, category *define.TextHrefFormat) (
 	sendData := &define.ParseData{
 		Data:      &dataMap,
 		Params:    category,
-		ParseFunc: data.NewStorage().LoadCategoryPoetryData,
+		ParseFunc: data.NewCategoryStorage().LoadCategoryPoetryData,
 	}
 	data.G_GraspResult.SendParseData(sendData)
 	go c.goPoetryDetail(&dataMap)
@@ -130,7 +130,7 @@ func (c *Category) goPoetryDetail(dataMap *define.PoetryDataMap) {
 	sysMap.Range(func(key, value interface{}) bool {
 		val := value.(*define.PoetryAuthorList)
 		go func() {
-			Content.NewContent().GraspCategoryData(val)
+			Content.NewContent().GraspContentData(val)
 		}()
 		time.Sleep(5 * time.Millisecond)
 		return true

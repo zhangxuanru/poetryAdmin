@@ -14,3 +14,13 @@ func NewAuthor() *Author {
 func (a *Author) GraspByIndexData(data *define.HomeFormat) {
 
 }
+
+//获取作者详情信息
+func (a *Author) GetAuthorDetail(authorUrl string) {
+
+}
+
+//获取作者诗词列表数据，并保存诗词列表
+func (a *Author) GetAuthorPoetryList(authorUrl string) {
+
+}
