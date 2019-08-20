@@ -68,12 +68,8 @@ func (c *Content) FindDocumentData(html []byte) {
 	poetryContent.Notes = strings.Join(notes, "#")
 	appreciation, _ := c.getAppreciation(query)
 	poetryContent.Appreciation = strings.Join(appreciation, "#") //赏析
-
-	//创作背景明天继续.... 这里没想好怎么处理
-	poetryContent.CreativeBackground = query.Find(".left>.sons").Eq(4).Find(".contyishang>p").Eq(0).Text()
-
+	poetryContent.CreativeBackground = c.getCreativeBack(query)  //创作背景
 	logrus.Infof("%+v", poetryContent)
-
 }
 
 //获取译文  译文及注释放在一起
@@ -157,6 +153,17 @@ func (c *Content) getCategory(query *goquery.Document) (categoryList []*define.T
 		categoryList = append(categoryList, format)
 	})
 	return categoryList
+}
+
+//获取诗的创作背景
+func (c *Content) getCreativeBack(query *goquery.Document) (body string) {
+	query.Find(".left>.sons>.contyishang").Each(func(i int, selection *goquery.Selection) {
+		text := selection.Find("div>h2").Text()
+		if text == "创作背景" {
+			body, _ = selection.Find("p").Html()
+		}
+	})
+	return
 }
 
 //读取测试文件内容

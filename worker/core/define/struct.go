@@ -37,6 +37,7 @@ type PoetryContent struct {
 
 //诗词详情注释，介绍相关
 type PoetryContentDetail struct {
+	ContentHtml        string //.sons，所有内容保存在一起， 不同的诗词内容不一样，所以没法单独区分
 	Notes              string //注释
 	Appreciation       string //赏析
 	CreativeBackground string //创作背景
