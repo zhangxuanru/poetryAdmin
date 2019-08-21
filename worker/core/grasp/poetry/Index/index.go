@@ -9,7 +9,6 @@ import (
 	"poetryAdmin/worker/app/tools"
 	"poetryAdmin/worker/core/data"
 	"poetryAdmin/worker/core/define"
-	"poetryAdmin/worker/core/grasp/poetry/Author"
 	"poetryAdmin/worker/core/grasp/poetry/Category"
 	"poetryAdmin/worker/core/grasp/poetry/Famous"
 	"poetryAdmin/worker/core/grasp/poetry/base"
@@ -124,7 +123,6 @@ func (i *Index) GetPoetryAuthor() {
 		Data:       i.AuthorData,
 	}
 	data.G_GraspResult.SendData(home)
-	Author.NewAuthor().GraspByIndexData(home)
 	return
 }
 

@@ -62,7 +62,7 @@ func TestContent(t *testing.T) {
 	}
 	Content.NewContent().GraspContentData(poetry)
 
-	Content.NewContent().GraspContentSaveData("/shiwenv_73add8822103.aspx", nil)
+	//Content.NewContent().GraspContentSaveData("/shiwenv_73add8822103.aspx", nil)
 }
 
 func TestA(t *testing.T) {

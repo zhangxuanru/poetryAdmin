@@ -11,6 +11,7 @@ type Config struct {
 	PubChannelTitle   string `json:"pubChannelTitle"`
 	GuShiWenIndexUrl  string `json:"gushiwenIndexUrl"`
 	GuShiWenPoetryUrl string `json:"gushiwenPoetryUrl"`
+	GushiwenSongUrl   string `json:"gushiwenSongUrl"`
 	ShiCiMingJuUrl    string `json:"shicimingjuUrl"`
 	Env               string `json:"env"`
 	DataSource        string `json:"dataSource"`
