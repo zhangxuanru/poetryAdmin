@@ -10,7 +10,6 @@ import (
 	"poetryAdmin/worker/core/grasp/poetry/Category"
 	"poetryAdmin/worker/core/grasp/poetry/Content"
 	"poetryAdmin/worker/core/parse"
-	"strings"
 	"testing"
 	"time"
 )
@@ -67,11 +66,10 @@ func TestContent(t *testing.T) {
 }
 
 func TestA(t *testing.T) {
-	html := "<p style=\" margin:0px;\">陶渊明（352或365年—427年），字元亮，又名潜，私谥“靖节”，世称靖节先生，浔阳柴桑（今江西省九江市）人。东晋末至南朝宋初期伟大的诗人、辞赋家。曾任江州祭酒、建威参军、镇军参军、彭泽县令等职，最末一次出仕为彭泽县令，八十多天便弃职而去，从此归隐田园。他是中国第一位田园诗人，被称为“古今隐逸诗人之宗”，有《陶渊明集》。<a href=\"/authors/authorvsw_07d17f8539d7A1.aspx\">► 134篇诗文</a></p>"
-	index := strings.LastIndex(html, "<a")
-	logrus.Infoln(index)
-	logrus.Infoln(html[:492])
-	logrus.Infoln(html)
+	src := "https://song.gushiwen.org/authorImg/taoyuanming.jpg"
+	fileName, err2 := data.NewImgStore().UploadImg(src)
+	logrus.Infoln(fileName)
+	logrus.Infoln(err2)
 
 	return
 	file := "D:/server/gitData/goPath/poetryAdmin/worker/test/index.html"

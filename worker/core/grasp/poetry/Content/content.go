@@ -34,23 +34,27 @@ func (c *Content) GraspContentData(poetry *define.PoetryAuthorList) {
 		bytes          []byte
 		query          *goquery.Document
 		err            error
+		urlKey         uint32
 		author         *define.PoetryAuthorDetail
 		authorChan     chan bool
 		authorListChan chan bool
 	)
 	url := config.G_Conf.GuShiWenPoetryUrl + strings.TrimLeft(poetry.PoetrySourceUrl, "/")
 	//过虑重复请求，有可能多个分类下有同一个作者， 这里只取一次作者信息
-	urlKey := tools.Crc32(poetry.PoetrySourceUrl)
-	if _, ok := c.contentMap.Load(urlKey); ok {
+	urlKey = tools.Crc32(poetry.PoetrySourceUrl)
+	if ok := NewLock().ExistsKey(urlKey); ok {
 		logrus.Infoln(url, "重复请求....")
 		return
 	}
+	NewLock().AddKey(urlKey)
 	if bytes, err = c.GetContentSource(url); err != nil {
 		data.G_GraspResult.PushError(err)
+		NewLock().DelKey(urlKey)
 		return
 	}
 	if query, err = tools.NewDocumentFromReader(string(bytes)); err != nil {
 		data.G_GraspResult.PushError(err)
+		NewLock().DelKey(urlKey)
 		return
 	}
 	author = c.getAuthorData(query)
@@ -61,24 +65,25 @@ func (c *Content) GraspContentData(poetry *define.PoetryAuthorList) {
 	go Author.NewAuthor().SetAuthorAttr(author).GraspAuthorPoetryList(author.AuthorContentUrl, authorListChan)
 	<-authorChan
 	<-authorListChan
-	c.contentMap.Store(urlKey, true)
 	return
 }
 
 //传过来一个诗词详情页的URL(/shiwenv_73add8822103.aspx)，获取数据并保存诗词详情数据
 func (c *Content) GraspContentSaveData(detailUrl string, params []interface{}) {
 	var (
-		bytes []byte
-		err   error
+		bytes  []byte
+		err    error
+		urlKey uint32
 	)
 	url := config.G_Conf.GuShiWenPoetryUrl + strings.TrimLeft(detailUrl, "/")
-	urlKey := tools.Crc32(url)
-	if _, ok := c.saveMap.Load(urlKey); ok {
+	urlKey = tools.Crc32(url)
+	if ok := NewLock().ExistsKey(urlKey); ok {
 		logrus.Infoln("GraspContentSaveData:", url, "重复请求....")
 		return
 	}
 	if bytes, err = c.GetContentSource(url); err != nil {
 		data.G_GraspResult.PushError(err)
+		NewLock().DelKey(urlKey)
 		return
 	}
 	content := c.FindDocumentData(bytes)
@@ -88,7 +93,7 @@ func (c *Content) GraspContentSaveData(detailUrl string, params []interface{}) {
 		ParseFunc: data.NewContentStore().LoadPoetryContentData,
 	}
 	data.G_GraspResult.SendParseData(sendData)
-	c.saveMap.Store(urlKey, true)
+	NewLock().AddKey(urlKey)
 }
 
 //获取诗文详情数据

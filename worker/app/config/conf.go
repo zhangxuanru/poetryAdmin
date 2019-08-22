@@ -15,6 +15,9 @@ type Config struct {
 	ShiCiMingJuUrl    string `json:"shicimingjuUrl"`
 	Env               string `json:"env"`
 	DataSource        string `json:"dataSource"`
+	AccessKey         string `json:"accessKey"`
+	SecretKey         string `json:"secretKey"`
+	Bucket            string `json:"bucket"`
 }
 
 var (

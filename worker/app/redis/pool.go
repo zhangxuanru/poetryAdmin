@@ -100,6 +100,18 @@ func Set(args ...interface{}) (reply interface{}, err error) {
 	return
 }
 
+//删除一个key
+func Del(args ...interface{}) (reply interface{}, err error) {
+	var conn redigo.Conn
+	if conn, err = GetConn(); err != nil {
+		logrus.Debug("redis err:", err)
+		return
+	}
+	defer conn.Close()
+	reply, err = conn.Do("DEL", args...)
+	return
+}
+
 //设置一个key，只有不存在时才设置成功
 func SetNx(key string, val string, expire string) (lock bool, err error) {
 	var (

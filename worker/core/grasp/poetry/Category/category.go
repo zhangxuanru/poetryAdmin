@@ -127,12 +127,14 @@ func (c *Category) goPoetryDetail(dataMap *define.PoetryDataMap) {
 		}
 	}
 	//过虑后发送请求
+	contentObj := Content.NewContent()
 	sysMap.Range(func(key, value interface{}) bool {
 		val := value.(*define.PoetryAuthorList)
 		go func() {
-			Content.NewContent().GraspContentData(val)
+			contentObj.GraspContentData(val)
 		}()
-		time.Sleep(5 * time.Millisecond)
+		randI := time.Duration(tools.RandInt64(50, 300))
+		time.Sleep(randI * time.Millisecond)
 		return true
 	})
 }

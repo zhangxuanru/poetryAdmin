@@ -54,9 +54,11 @@ type PoetryAuthorDetail struct {
 	AuthorId          int64
 	AuthorSrcUrl      string //作者介绍页
 	AuthorContentUrl  string //作者诗词列表页
-	AuthorImgUrl      string
+	AuthorImgUrl      string //作者头像
+	AuthorImgFileName string //上传头像七牛后返回的图片名
 	AuthorTotalPoetry int    //诗词总数
 	DynastyName       string //朝代
+	DynastyId         int    //朝代ID
 	DynastyUrl        string
 	Introduction      string //简介
 	Data              []*ContentData
