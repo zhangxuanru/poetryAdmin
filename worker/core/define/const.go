@@ -46,6 +46,7 @@ type ParseData struct {
 	Data      interface{}
 	ParseFunc func(interface{}, interface{})
 	Params    interface{}
+	DataType  interface{}
 }
 
 //显示的位置
@@ -54,4 +55,12 @@ type ShowPosition int
 const (
 	CategoryPosition ShowPosition = 1 //poetry_category表 show_position  1:诗文，2:名句
 	FamousPosition   ShowPosition = 2 //poetry_category表 show_position  1:诗文，2:名句
+)
+
+//诗词信息内容分类
+type DetailNotesType int
+
+const (
+	AuthorType DetailNotesType = 2
+	PoetryType DetailNotesType = 1
 )

@@ -1,6 +1,7 @@
 package Author
 
 import (
+	"bytes"
 	"github.com/PuerkitoBio/goquery"
 	"github.com/sirupsen/logrus"
 	"os"
@@ -29,14 +30,12 @@ func (a *Author) GraspByIndexData(data *define.HomeFormat) {
 
 }
 
-//获取作者详情信息 /authorv_07d17f8539d7.aspx
-func (a *Author) GetAuthorDetail(authorUrl string, endChan chan bool) {
+//抓取作者详情信息 /authorv_07d17f8539d7.aspx
+func (a *Author) GraspAuthorDetail(authorUrl string, endChan chan bool) {
 	defer func() {
 		endChan <- true
 	}()
-	var (
-		err error
-	)
+	var err error
 	if strings.Contains(authorUrl, "http:") == false {
 		authorUrl = config.G_Conf.GuShiWenPoetryUrl + strings.TrimLeft(authorUrl, "/")
 	}
@@ -49,10 +48,18 @@ func (a *Author) GetAuthorDetail(authorUrl string, endChan chan bool) {
 		a.getAuthorDefaultData()
 	}
 	a.getAuthorDetailInfo()
+	if len(a.SourceAuthor.Data) > 0 {
+		sendData := &define.ParseData{
+			Data:      a.SourceAuthor,
+			Params:    nil,
+			ParseFunc: data.NewAuthorStore().LoadAuthorData,
+		}
+		data.G_GraspResult.SendParseData(sendData)
+	}
 }
 
-//获取作者诗词列表数据，并保存诗词列表
-func (a *Author) GetAuthorPoetryList(authorUrl string, endChan chan bool) {
+//抓取作者诗词列表数据，并保存诗词列表
+func (a *Author) GraspAuthorPoetryList(authorUrl string, endChan chan bool) {
 	defer func() {
 		endChan <- true
 	}()
@@ -93,8 +100,42 @@ func (a *Author) getAuthorDefaultData() {
 
 //获取作者详情页作者数据信息
 func (a *Author) getAuthorDetailInfo() {
-	a.SourceAuthor.Introduction, _ = a.query.Find(".main3>.left>.sonspic>.cont>p").Html()
-	//-------未完待续-------
+	//作者简介
+	if introduction, _ := a.query.Find(".main3>.left>.sonspic>.cont>p").Html(); len(introduction) > 0 {
+		index := strings.LastIndex(introduction, "<a")
+		a.SourceAuthor.Introduction = introduction[:index] + "</p>"
+	}
+	//获取资料信息
+	a.query.Find(".main3>.left>.sons").Each(func(i int, selection *goquery.Selection) {
+		var (
+			buf    bytes.Buffer
+			detail define.ContentData
+		)
+		if attrId, ok := selection.Attr("id"); ok && !strings.Contains(attrId, "quan") {
+			dataId := strings.TrimLeft(attrId, "fanyi")
+			if len(dataId) > 0 {
+				detail.DataId, _ = strconv.Atoi(dataId)
+				detail.Title = selection.Find(".contyishang>div>h2").Text()
+				selection.Find(".contyishang>p").Each(func(i int, selection *goquery.Selection) {
+					if html, e := selection.Html(); e == nil {
+						buf.WriteString("<p>" + html + "</p>")
+					}
+				})
+				detail.Introd = buf.String()
+				buf.Reset()
+				dataUrl := config.G_Conf.GuShiWenPoetryUrl + "authors/ajaxziliao.aspx?id=" + dataId
+				if bytes, err := base.GetHtml(dataUrl); err == nil {
+					detail.Content = string(bytes)
+					detail.HtmlSrcUrl = dataUrl
+				}
+				detail.Sort = i
+				detail.Type = int(define.AuthorType)
+				detail.PlaySrcUrl = config.G_Conf.GuShiWenPoetryUrl + "ziliaoplay.aspx?id=" + dataId
+				detail.PlayUrl = config.G_Conf.GushiwenSongUrl + "machine/ziliao/" + dataId + "/ok.mp3"
+				a.SourceAuthor.Data = append(a.SourceAuthor.Data, &detail)
+			}
+		}
+	})
 }
 
 //获取页面信息

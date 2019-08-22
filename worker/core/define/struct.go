@@ -39,8 +39,10 @@ type PoetryContentData struct {
 	AppRecId   int    //赏析ID
 	TransId    int    //翻译ID
 	Sort       int    //排序
+	Introd     string //简介
 	Title      string //标题
 	Content    string //具体内容
+	HtmlSrcUrl string //源内容API路径
 	PlayUrl    string //源声音路径
 	PlaySrcUrl string //源声音API路径
 	FileName   string //下载的文件路径
@@ -57,17 +59,22 @@ type PoetryAuthorDetail struct {
 	DynastyName       string //朝代
 	DynastyUrl        string
 	Introduction      string //简介
-	data              []*ContentData
+	Data              []*ContentData
 }
 
 //诗词正文和作者资料详情数据
 type ContentData struct {
+	DataId     int    //页面上对应的资料ID
 	Sort       int    //排序
+	Type       int    //类别
+	Introd     string //简介
 	Title      string //标题
 	Content    string //具体内容
+	HtmlSrcUrl string //源内容API路径
 	PlayUrl    string //源声音路径
 	PlaySrcUrl string //源声音API路径
 	FileName   string //下载的文件路径
+
 }
 
 //诗词对应分类信息

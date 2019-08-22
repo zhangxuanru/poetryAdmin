@@ -1,6 +1,7 @@
 package Content
 
 import (
+	"bytes"
 	"errors"
 	"github.com/PuerkitoBio/goquery"
 	"github.com/sirupsen/logrus"
@@ -55,9 +56,9 @@ func (c *Content) GraspContentData(poetry *define.PoetryAuthorList) {
 	author = c.getAuthorData(query)
 	authorChan, authorListChan = make(chan bool), make(chan bool)
 	//发送获取作者详情信息请求
-	go Author.NewAuthor().SetAuthorAttr(author).GetAuthorDetail(author.AuthorSrcUrl, authorChan)
+	go Author.NewAuthor().SetAuthorAttr(author).GraspAuthorDetail(author.AuthorSrcUrl, authorChan)
 	//发送获取作者诗词列表所有数据请求
-	go Author.NewAuthor().SetAuthorAttr(author).GetAuthorPoetryList(author.AuthorContentUrl, authorListChan)
+	go Author.NewAuthor().SetAuthorAttr(author).GraspAuthorPoetryList(author.AuthorContentUrl, authorListChan)
 	<-authorChan
 	<-authorListChan
 	c.contentMap.Store(urlKey, true)
@@ -120,7 +121,7 @@ func (c *Content) FindDocumentData(html []byte) (poetryContent define.PoetryCont
 	return poetryContent
 }
 
-//获取译文及注释与赏析数据
+//获取译文及注释与赏析数据  [这里还要抓内容简介，暂时没做... 抓诗词的时候加上]
 func (c *Content) getNotesData(query *goquery.Document) (notesData []*define.PoetryContentData) {
 	var (
 		notesUrl    string
@@ -133,10 +134,16 @@ func (c *Content) getNotesData(query *goquery.Document) (notesData []*define.Poe
 		htmlStr     string
 	)
 	query.Find(".left>.sons").Each(func(i int, selection *goquery.Selection) {
+		var buf bytes.Buffer
 		idStr, exists := selection.Attr("id")
 		attr, ok = selection.Find("a").Attr("href")
 		title := selection.Find(".contyishang>div>h2").Text()
 		if exists == true {
+			selection.Find(".contyishang>p").Each(func(i int, selection *goquery.Selection) {
+				if html, e := selection.Html(); e == nil {
+					buf.WriteString("<p>" + html + "</p>")
+				}
+			})
 			//翻译
 			if strings.Contains(idStr, "fanyi") && !strings.Contains(idStr, "fanyiquan") {
 				id = strings.TrimLeft(idStr, "fanyi")
@@ -144,15 +151,18 @@ func (c *Content) getNotesData(query *goquery.Document) (notesData []*define.Poe
 				if bytes, err := base.GetHtml(notesUrl); err == nil {
 					trId, _ := strconv.Atoi(id)
 					content := &define.PoetryContentData{
-						TransId: trId,
-						Content: string(bytes),
-						Title:   title,
-						Sort:    i,
+						TransId:    trId,
+						Content:    string(bytes),
+						Introd:     buf.String(),
+						HtmlSrcUrl: notesUrl,
+						Title:      title,
+						Sort:       i,
 					}
 					if len(attr) > 0 && strings.Contains(attr, "javascript:PlayFanyi") {
 						content.PlaySrcUrl = config.G_Conf.GuShiWenPoetryUrl + "fanyiplay.aspx?id=" + id
 						content.PlayUrl = config.G_Conf.GushiwenSongUrl + "machine/fanyi/" + id + "/ok.mp3"
 					}
+					buf.Reset()
 					notesData = append(notesData, content)
 					isTransData = true
 				}
@@ -164,15 +174,18 @@ func (c *Content) getNotesData(query *goquery.Document) (notesData []*define.Poe
 				if bytes, err := base.GetHtml(apprecUrl); err == nil {
 					appId, _ := strconv.Atoi(appRecId)
 					content := &define.PoetryContentData{
-						AppRecId: appId,
-						Content:  string(bytes),
-						Title:    title,
-						Sort:     i,
+						AppRecId:   appId,
+						Content:    string(bytes),
+						Introd:     buf.String(),
+						HtmlSrcUrl: apprecUrl,
+						Title:      title,
+						Sort:       i,
 					}
 					if len(attr) > 0 && strings.Contains(attr, "javascript:PlayShangxi") {
 						content.PlayUrl = config.G_Conf.GushiwenSongUrl + "machine/shangxi/" + appRecId + "/ok.mp3"
 						content.PlaySrcUrl = config.G_Conf.GuShiWenPoetryUrl + "/shangxiplay.aspx?id=" + appRecId
 					}
+					buf.Reset()
 					notesData = append(notesData, content)
 				}
 			}
