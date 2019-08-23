@@ -66,6 +66,7 @@ type PoetryAuthorDetail struct {
 
 //诗词正文和作者资料详情数据
 type ContentData struct {
+	Id         int    //数据库ID
 	DataId     int    //页面上对应的资料ID
 	Sort       int    //排序
 	Type       int    //类别

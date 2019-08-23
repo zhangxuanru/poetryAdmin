@@ -25,7 +25,7 @@ func TestGrabsIndex(t *testing.T) {
 			TaskMark: define.GrabPoetryAll,
 		}
 		parse.NewDispatch(SubReceiveMsg).Execution()
-		time.Sleep(5 * time.Second)
+		time.Sleep(20 * time.Second)
 	})
 }
 
@@ -62,12 +62,16 @@ func TestContent(t *testing.T) {
 	}
 	Content.NewContent().GraspContentData(poetry)
 
+	time.Sleep(60 * time.Second)
+
 	//Content.NewContent().GraspContentSaveData("/shiwenv_73add8822103.aspx", nil)
 }
 
 func TestA(t *testing.T) {
+
 	src := "https://song.gushiwen.org/authorImg/taoyuanming.jpg"
-	fileName, err2 := data.NewImgStore().UploadImg(src)
+	//src := "https://song.gushiwen.org/machine/ziliao/1601/ok.mp3"
+	fileName, err2 := data.NewUploadStore().Upload(src)
 	logrus.Infoln(fileName)
 	logrus.Infoln(err2)
 

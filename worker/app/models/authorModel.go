@@ -11,21 +11,22 @@ var TableAuthor = "poetry_author"
 
 //poetry_author作者表
 type Author struct {
-	Id           int    `orm:"column(id);auto"`
-	Author       string `orm:"column(author)"`
-	SourceUrl    string `orm:"column(source_url)"`
-	DynastyId    int    `orm:"column(dynasty_id)"`
-	AuthorsId    int    `orm:"column(authors_id)"`
-	PhotoUrl     string `orm:"column(photo_url)"`
-	PhotoId      int    `orm:"column(photo_id)"`
-	AuthorDetail string `orm:"column(author_detail)"`
-	PoetryCount  int    `orm:"column(poetry_count)"`
-	IsRecommend  int    `orm:"column(is_recommend)"`
-	Pinyin       string `orm:"column(pinyin)"`
-	Acronym      string `orm:"column(acronym)"`
-	AuthorTitle  string `orm:"column(author_title)"`
-	AddDate      int64  `orm:"column(add_date)"`
-	UpdateDate   int64  `orm:"column(update_date)"`
+	Id            int    `orm:"column(id);auto"`
+	Author        string `orm:"column(author)"`
+	SourceUrl     string `orm:"column(source_url)"`
+	WorksUrl      string `orm:"column(works_url)"`
+	DynastyId     int    `orm:"column(dynasty_id)"`
+	AuthorsId     int    `orm:"column(authors_id)"`
+	PhotoUrl      string `orm:"column(photo_url)"`
+	PhotoFileName string `orm:"column(photo_file_name)"`
+	AuthorIntro   string `orm:"column(author_intro)"`
+	PoetryCount   int    `orm:"column(poetry_count)"`
+	IsRecommend   int    `orm:"column(is_recommend)"`
+	Pinyin        string `orm:"column(pinyin)"`
+	Acronym       string `orm:"column(acronym)"`
+	AuthorTitle   string `orm:"column(author_title)"`
+	AddDate       int64  `orm:"column(add_date)"`
+	UpdateDate    int64  `orm:"column(update_date)"`
 }
 
 func init() {
@@ -81,7 +82,7 @@ func InsertMultiAuthorByDataMap(data define.DataMap) (i int64, err error) {
 
 //根据作者姓名查询作者信息
 func GetAuthorDataByAuthorName(authorName string) (author Author, err error) {
-	_, err = orm.NewOrm().QueryTable(TableAuthor).Filter("author", authorName).All(&author, "id")
+	_, err = orm.NewOrm().QueryTable(TableAuthor).Filter("author", authorName).All(&author, "id", "pinyin")
 	return
 }
 
@@ -115,4 +116,43 @@ func (a *Author) SaveAuthor(data *Author) (id int64, err error) {
 	//}
 	id, err = orm.NewOrm().Insert(data)
 	return
+}
+
+//更新作者信息
+func (a *Author) UpdateAuthor(data *Author, fields ...string) (id int64, err error) {
+	var (
+		author  Author
+		acronym string
+		pinyin  string
+	)
+	if author, err = GetAuthorDataByAuthorName(data.Author); err != nil {
+		return
+	}
+	if len(fields) == 0 {
+		fields = []string{"update_date", "source_url", "works_url", "dynasty_id", "photo_url", "photo_file_name", "author_intro", "poetry_count"}
+		if len(author.Pinyin) == 0 {
+			fields = append(fields, "pinyin", "acronym")
+		}
+	}
+	if pinyin = tools.PinYin(data.Author); len(pinyin) > 0 {
+		acronym = pinyin[:1]
+		data.Pinyin = pinyin
+		data.Acronym = acronym
+	}
+	data.AddDate = time.Now().Unix()
+	data.UpdateDate = time.Now().Unix()
+	if author.Id > 0 {
+		data.Id = author.Id
+		id = int64(data.Id)
+		_, err = orm.NewOrm().Update(data, fields...)
+	} else {
+		id, err = orm.NewOrm().Insert(data)
+	}
+	if err != nil {
+		return
+	}
+	if id > 0 {
+		return id, nil
+	}
+	return 0, err
 }

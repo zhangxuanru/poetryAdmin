@@ -9,14 +9,17 @@ import (
 	"strings"
 )
 
-//七牛上传图片
-func UploadImg(src, Bucket, SecretKey, AccessKey string) (fileName string, err error) {
+//七牛上传图片或MP3
+func Upload(src, Bucket, SecretKey, AccessKey string) (fileName string, err error) {
 	var (
 		byt []byte
 	)
 	parse, _ := url.Parse(src)
-	index := strings.LastIndex(parse.Path, "/")
-	fileName = strings.TrimLeft(parse.Path[index:], "/")
+	if len(parse.Path) == 0 {
+		return
+	}
+	urlPath := strings.TrimLeft(parse.Path, "/")
+	fileName = strings.ReplaceAll(urlPath, "/", "_")
 	if _, byt, err = NewHttpReq().HttpGet(src); err != nil || len(byt) == 0 {
 		return
 	}
