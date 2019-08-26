@@ -26,13 +26,25 @@ func (a *NotesStore) SaveNotes(content *define.ContentData) (id int64, err error
 		HtmlSrcUrl: content.HtmlSrcUrl,
 		Type:       content.Type,
 		Introd:     content.Introd,
-		FileName:   content.FileName,
 		AddDate:    time.Now().Unix(),
 		UpdateDate: time.Now().Unix(),
 	}
 	if content.Id > 0 {
 		notes.Id = content.Id
 	}
+	if len(content.FileName) > 0 {
+		notes.FileName = content.FileName
+	}
 	id, err = models.NewNotes().SaveNotes(notes)
+	return
+}
+
+//更新MP3文件路径
+func (a *NotesStore) UpdateMp3Path(content *define.ContentData) (id int64, err error) {
+	store := &models.Notes{
+		Id:       content.Id,
+		FileName: content.FileName,
+	}
+	id, err = models.NewNotes().UpdateNotes(store, "file_name")
 	return
 }

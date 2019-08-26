@@ -156,3 +156,16 @@ func (a *Author) UpdateAuthor(data *Author, fields ...string) (id int64, err err
 	}
 	return 0, err
 }
+
+//更新头像路径
+func (a *Author) UpdateAuthorPhoto(data *Author) (id int64, err error) {
+	var (
+		author Author
+	)
+	if author, err = GetAuthorDataByAuthorName(data.Author); err != nil || author.Id == 0 {
+		return
+	}
+	data.Id = author.Id
+	id, err = orm.NewOrm().Update(data, "photo_file_name")
+	return
+}

@@ -23,11 +23,11 @@ func NewHttpReq() *HttpReq {
 // http get 请求
 func (h *HttpReq) HttpGet(url string) (response *http.Response, bytes []byte, err error) {
 	client := &http.Client{
-		Timeout: 15 * time.Second, //设置请求超时
+		Timeout: 20 * time.Second, //设置请求超时
 		Transport: &http.Transport{
 			DialContext: func(ctx context.Context, network, addr string) (conn net.Conn, e error) {
 				dialer := net.Dialer{
-					Timeout: 5 * time.Second,
+					Timeout: 10 * time.Second,
 				}
 				return dialer.DialContext(ctx, network, addr)
 			},

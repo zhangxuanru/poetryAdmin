@@ -50,7 +50,7 @@ func (a *AuthorData) UpdateAuthorData(data *AuthorData, col ...string) (id int64
 }
 
 //根据author_id|data_id查询资料数据
-func (a *AuthorData) GetNotesByDataId(authorId int64, dataId int64) (author AuthorData, err error) {
+func (a *AuthorData) GetAuthorDataByDataId(authorId int64, dataId int64) (author AuthorData, err error) {
 	_, err = orm.NewOrm().QueryTable(TableAuthorData).Filter("author_id", authorId).Filter("data_id", dataId).All(&author, "id", "notes_id", "sort")
 	return
 }
