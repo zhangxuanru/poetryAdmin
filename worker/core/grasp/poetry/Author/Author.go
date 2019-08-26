@@ -10,6 +10,7 @@ import (
 	"poetryAdmin/worker/core/data"
 	"poetryAdmin/worker/core/define"
 	"poetryAdmin/worker/core/grasp/poetry/base"
+	"qiniupkg.com/x/errors.v7"
 	"strconv"
 	"strings"
 )
@@ -39,7 +40,7 @@ func (a *Author) GraspAuthorDetail(authorUrl string, endChan chan bool) {
 	if strings.Contains(authorUrl, "http:") == false {
 		authorUrl = config.G_Conf.GuShiWenPoetryUrl + strings.TrimLeft(authorUrl, "/")
 	}
-	if err = a.getSourceHtml(authorUrl); err != nil {
+	if err = a.getSourceHtml(authorUrl, "author.html"); err != nil {
 		logrus.Infoln("get url ", authorUrl, "error:", err)
 		data.G_GraspResult.PushError(err)
 		return
@@ -65,14 +66,16 @@ func (a *Author) GraspAuthorPoetryList(authorUrl string, endChan chan bool) {
 	}()
 	logrus.Infoln("authorUrl:", authorUrl)
 
-	//var (
-	//	err error
-	//)
-	//url := ""
-	//if err = a.getSourceHtml(url); err != nil {
-	//	logrus.Infoln("GetSourceHtml error:", err)
-	//	return
-	//}
+	var (
+		err error
+	)
+	if strings.Contains(authorUrl, "http:") == false {
+		authorUrl = config.G_Conf.GuShiWenPoetryUrl + strings.TrimLeft(authorUrl, "/")
+	}
+	if err = a.getSourceHtml(authorUrl, "authorPoetryList.html"); err != nil {
+		logrus.Infoln("GetSourceHtml error:", err)
+		return
+	}
 	//a.GetAuthorDefaultData()
 }
 
@@ -139,15 +142,18 @@ func (a *Author) getAuthorDetailInfo() {
 }
 
 //获取页面信息
-func (a *Author) getSourceHtml(url string) (err error) {
+func (a *Author) getSourceHtml(url string, testFile string) (err error) {
 	var (
 		bytes []byte
 	)
 	if config.G_Conf.Env == define.TestEnv {
 		//获取测试文件内容
-		dir, _ := os.Getwd()
-		file := dir + "/author.html"
-		bytes, err = base.GetTestFile(file)
+		if len(testFile) > 0 {
+			dir, _ := os.Getwd()
+			file := dir + "/" + testFile
+			bytes, err = base.GetTestFile(file)
+		}
+		return errors.New("test file is nil")
 	} else {
 		bytes, err = base.GetHtml(url)
 	}
