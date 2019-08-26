@@ -10,18 +10,13 @@ import (
 
 //保存作者信息
 type AuthorStore struct {
-	filePathChan   chan string
-	saveAuthorChan chan bool
 }
 
 func NewAuthorStore() *AuthorStore {
-	return &AuthorStore{
-		filePathChan:   make(chan string),
-		saveAuthorChan: make(chan bool),
-	}
+	return &AuthorStore{}
 }
 
-//载入作者信息并保存数据
+//载入作者信息和资料信息并保存数据
 func (a *AuthorStore) LoadAuthorData(data interface{}, params interface{}) {
 	var err error
 	detail := data.(*define.PoetryAuthorDetail)
@@ -43,7 +38,7 @@ func (a *AuthorStore) LoadAuthorData(data interface{}, params interface{}) {
 	go a.UploadFile(detail)
 
 	//3.写入poetry_detail_notes表
-	for _, val := range detail.Data {
+	for k, val := range detail.Data {
 		var (
 			notesId    int64
 			authorData models.AuthorData
@@ -53,6 +48,7 @@ func (a *AuthorStore) LoadAuthorData(data interface{}, params interface{}) {
 		if authorData.NotesId > 0 {
 			val.Id = authorData.NotesId
 		}
+		val.Sort = k
 		if notesId, err = NewNotesStore().SaveNotes(val); err != nil {
 			continue
 		}
