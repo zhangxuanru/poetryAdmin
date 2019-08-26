@@ -2,6 +2,7 @@ package data
 
 import (
 	"poetryAdmin/worker/app/models"
+	"poetryAdmin/worker/app/tools"
 	"poetryAdmin/worker/core/define"
 	"time"
 )
@@ -16,6 +17,7 @@ func NewNotesStore() *NotesStore {
 
 //保存详情文本信息
 func (a *NotesStore) SaveNotes(content *define.ContentData) (id int64, err error) {
+	content.Content = tools.TrimDivHtml(content.Content)
 	notes := &models.Notes{
 		Title:      content.Title,
 		Content:    content.Content,

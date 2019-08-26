@@ -18,6 +18,8 @@ require (
 	github.com/mozillazg/go-pinyin v0.15.0
 	github.com/onsi/ginkgo v1.8.0 // indirect
 	github.com/onsi/gomega v1.5.0 // indirect
+	github.com/qiniu/api.v7 v7.2.5+incompatible
+	github.com/qiniu/x v7.0.8+incompatible // indirect
 	github.com/sirupsen/logrus v1.4.2
 	github.com/smartystreets/goconvey v0.0.0-20190731233626-505e41936337
 	github.com/x-cray/logrus-prefixed-formatter v0.5.2
@@ -26,4 +28,5 @@ require (
 	google.golang.org/appengine v1.6.1 // indirect
 	gopkg.in/go-playground/assert.v1 v1.2.1 // indirect
 	gopkg.in/go-playground/validator.v9 v9.29.1
+	qiniupkg.com/x v7.0.8+incompatible // indirect
 )

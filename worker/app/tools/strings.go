@@ -24,3 +24,14 @@ func TrimHtml(src string) string {
 	src = re.ReplaceAllString(src, "\n")
 	return strings.TrimSpace(src)
 }
+
+//去除正文内容多余的HTML
+func TrimDivHtml(str string) (rStr string) {
+	mustCompile := regexp.MustCompile(`(?msU)<div class="contyishang">.*</div>`)
+	rStr = mustCompile.ReplaceAllString(str, "")
+	compile := regexp.MustCompile(`(?msU)<div class="dingpai">.*</div>`)
+	rStr = compile.ReplaceAllString(rStr, "")
+	nr := regexp.MustCompile(`(?m)[\r\n|\t]`)
+	rStr = nr.ReplaceAllString(rStr, "")
+	return
+}

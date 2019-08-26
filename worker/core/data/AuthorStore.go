@@ -16,7 +16,7 @@ func NewAuthorStore() *AuthorStore {
 	return new(AuthorStore)
 }
 
-//载入作者信息并保存数据
+//载入作者信息并保存数据 这里保存数据慢， 下周需要优化.......
 func (a *AuthorStore) LoadAuthorData(data interface{}, params interface{}) {
 	var (
 		err error
@@ -69,7 +69,6 @@ func (a *AuthorStore) LoadAuthorData(data interface{}, params interface{}) {
 			logrus.Infoln("SaveAuthorData error:", err)
 		}
 	}
-
 	//保存作者数据到ES中
 	NewEsStore().SaveAuthorData(detail)
 	logrus.Infoln("LoadAuthorData end .....")
