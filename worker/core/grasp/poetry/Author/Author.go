@@ -15,11 +15,20 @@ import (
 	"strings"
 )
 
+//诗词链接信息
+type linkStr struct {
+	LinkUrl string
+	Title   string
+	Sort    int
+}
+type PoetryLinkMap map[int]linkStr //诗词标题与链接信息
+
 //作者模块  抓取作者
 type Author struct {
 	SourceAuthor *define.PoetryAuthorDetail
 	Html         []byte
 	query        *goquery.Document
+	Url          string
 }
 
 func NewAuthor() *Author {
@@ -59,24 +68,88 @@ func (a *Author) GraspAuthorDetail(authorUrl string, endChan chan bool) {
 	}
 }
 
-//抓取作者诗词列表数据，并保存诗词列表
+//抓取作者诗词列表数据，并保存诗词列表  /authors/authorvsw_07d17f8539d7A1.aspx
 func (a *Author) GraspAuthorPoetryList(authorUrl string, endChan chan bool) {
 	defer func() {
 		endChan <- true
 	}()
-	logrus.Infoln("authorUrl:", authorUrl)
-
-	var (
-		err error
-	)
+	var err error
 	if strings.Contains(authorUrl, "http:") == false {
 		authorUrl = config.G_Conf.GuShiWenPoetryUrl + strings.TrimLeft(authorUrl, "/")
 	}
+	a.Url = authorUrl
 	if err = a.getSourceHtml(authorUrl, "authorPoetryList.html"); err != nil {
 		logrus.Infoln("GetSourceHtml error:", err)
 		return
 	}
-	//a.GetAuthorDefaultData()
+	logrus.Infoln(authorUrl, "..start....")
+	//获取当前页诗词链接信息
+	linkMp := a.parsePoetryListLink(a.Html)
+	for _, link := range linkMp {
+		//go Content.NewContent().GraspContentSaveData(link.LinkUrl, nil)
+	}
+	logrus.Infof("%v", linkMp)
+
+	//a.sendPoetryPageListRequest()
+}
+
+//获取诗词列表总页数并发送每页的请求
+func (a *Author) sendPoetryPageListRequest() {
+	var (
+		pageTotalStr string
+		totalPageNum int
+		err          error
+	)
+	pageTotalStr = a.query.Find(".pagesright>span").Text()
+	if totalPageNum, err = tools.TrimAuthorTotalPageText(pageTotalStr); err != nil {
+		logrus.Infoln("getPoetryPageList err:", err)
+		return
+	}
+	//最多只能获取10页
+	if totalPageNum > 10 {
+		totalPageNum = 10
+	}
+	for i := 2; i <= totalPageNum; i++ {
+		//iStr := strconv.Itoa(i)
+		//url := strings.Replace(a.Url, "A1", "A"+iStr, -1)
+		//go func() {
+		//	logrus.Infoln("url:", url)
+		//	if html, e := base.GetHtml(url); e == nil {
+		//		a.parsePoetryListLink(html)
+		//	}
+		//}()
+		//time.Sleep(5 * time.Millisecond)
+	}
+}
+
+//解析作者诗词列表页诗词链接
+func (a *Author) parsePoetryListLink(html []byte) (linkMap PoetryLinkMap) {
+	var (
+		query    *goquery.Document
+		ok       bool
+		linkUrl  string
+		linkText string
+		err      error
+	)
+	linkMap = make(PoetryLinkMap)
+	if len(html) == 0 {
+		return
+	}
+	if query, err = tools.NewDocumentFromReader(string(html)); err != nil {
+		return
+	}
+	query.Find(".main3>.left>.sons>.cont").Each(func(i int, selection *goquery.Selection) {
+		linkUrl, ok = selection.Find("p").Eq(0).Find("a").Attr("href")
+		linkText = selection.Find("p").Eq(0).Find("a").Text()
+		if ok {
+			linkMap[i] = linkStr{
+				LinkUrl: linkUrl,
+				Title:   linkText,
+				Sort:    i,
+			}
+		}
+	})
+	return
 }
 
 //设置作者信息默认属性值
@@ -148,12 +221,16 @@ func (a *Author) getSourceHtml(url string, testFile string) (err error) {
 	)
 	if config.G_Conf.Env == define.TestEnv {
 		//获取测试文件内容
+		if testFile == "author.html" {
+			return errors.New("stop get file")
+		}
 		if len(testFile) > 0 {
 			dir, _ := os.Getwd()
 			file := dir + "/" + testFile
 			bytes, err = base.GetTestFile(file)
+		} else {
+			return errors.New("test file is nil")
 		}
-		return errors.New("test file is nil")
 	} else {
 		bytes, err = base.GetHtml(url)
 	}

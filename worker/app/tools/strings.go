@@ -1,7 +1,9 @@
 package tools
 
 import (
+	"errors"
 	"regexp"
+	"strconv"
 	"strings"
 )
 
@@ -33,5 +35,18 @@ func TrimDivHtml(str string) (rStr string) {
 	rStr = compile.ReplaceAllString(rStr, "")
 	nr := regexp.MustCompile(`(?m)[\r\n|\t]`)
 	rStr = nr.ReplaceAllString(rStr, "")
+	return
+}
+
+//去除作者诗词列表页，总页数多余文本
+//https://so.gushiwen.org/authors/authorvsw_07d17f8539d7A10.aspx
+func TrimAuthorTotalPageText(str string) (totalPageNum int, err error) {
+	if len(str) == 0 {
+		return 0, errors.New("page is nil")
+	}
+	str = strings.TrimLeft(str, "/")
+	str = strings.TrimRight(str, "页")
+	str = strings.TrimSpace(str)
+	totalPageNum, err = strconv.Atoi(str)
 	return
 }

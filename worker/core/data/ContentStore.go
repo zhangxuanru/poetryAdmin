@@ -1,5 +1,7 @@
 package data
 
+import "github.com/sirupsen/logrus"
+
 //保存诗词正文和赏析注释结果...
 type contentStore struct {
 }
@@ -9,5 +11,6 @@ func NewContentStore() *contentStore {
 }
 
 func (c *contentStore) LoadPoetryContentData(data interface{}, params interface{}) {
-
+	logrus.Infoln("LoadPoetryContentData.............")
+	logrus.Infof("%+v\n", data)
 }

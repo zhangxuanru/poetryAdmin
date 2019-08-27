@@ -1,6 +1,7 @@
 package test
 
 import (
+	"fmt"
 	"github.com/PuerkitoBio/goquery"
 	"github.com/sirupsen/logrus"
 	. "github.com/smartystreets/goconvey/convey"
@@ -62,31 +63,14 @@ func TestContent(t *testing.T) {
 	}
 	Content.NewContent().GraspContentData(poetry)
 
-	time.Sleep(70 * time.Second)
+	time.Sleep(5 * time.Second)
 
 	//Content.NewContent().GraspContentSaveData("/shiwenv_73add8822103.aspx", nil)
 }
 
 func TestA(t *testing.T) {
-	type s struct {
-		a int
-		b int
-	}
-	aa := &s{
-		a: 1,
-		b: 2,
-	}
-	aa.a = 11
-	go func() {
-		aa.a = 10
-	}()
-
-	go func() {
-		aa.b = 20
-	}()
-
-	logrus.Infof("%+v", aa)
-	time.Sleep(1 * time.Second)
+	a := []interface{}{1, 2, 3}
+	fmt.Println(a)
 	return
 
 	src := "https://song.gushiwen.org/authorImg/taoyuanming.jpg"

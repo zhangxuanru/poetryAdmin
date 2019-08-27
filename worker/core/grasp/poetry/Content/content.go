@@ -75,7 +75,10 @@ func (c *Content) GraspContentSaveData(detailUrl string, params []interface{}) {
 		err    error
 		urlKey uint32
 	)
-	url := config.G_Conf.GuShiWenPoetryUrl + strings.TrimLeft(detailUrl, "/")
+	url := detailUrl
+	if strings.Contains(detailUrl, "http:") == false {
+		url = config.G_Conf.GuShiWenPoetryUrl + strings.TrimLeft(detailUrl, "/")
+	}
 	urlKey = tools.Crc32(url)
 	if ok := NewLock().ExistsKey(urlKey); ok {
 		logrus.Infoln("GraspContentSaveData:", url, "重复请求....")
