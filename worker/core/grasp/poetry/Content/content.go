@@ -2,91 +2,47 @@ package Content
 
 import (
 	"bytes"
-	"errors"
 	"github.com/PuerkitoBio/goquery"
 	"github.com/sirupsen/logrus"
-	"os"
 	"poetryAdmin/worker/app/config"
 	"poetryAdmin/worker/app/tools"
 	"poetryAdmin/worker/core/data"
 	"poetryAdmin/worker/core/define"
-	"poetryAdmin/worker/core/grasp/poetry/Author"
+	"poetryAdmin/worker/core/grasp/poetry/Helper"
 	"poetryAdmin/worker/core/grasp/poetry/base"
 	"strconv"
 	"strings"
-	"sync"
 )
 
 //诗文详情模块 抓取诗文详情
 //https://so.gushiwen.org/shiwenv_73add8822103.aspx
 type Content struct {
-	contentMap sync.Map
-	saveMap    sync.Map
 }
 
 func NewContent() *Content {
 	return &Content{}
 }
 
-//通过诗文分类 抓取诗文详情数据 https://so.gushiwen.org/shiwenv_4c5705b99143.aspx
-func (c *Content) GraspContentData(poetry *define.PoetryAuthorList) {
-	var (
-		bytes          []byte
-		query          *goquery.Document
-		err            error
-		urlKey         uint32
-		author         *define.PoetryAuthorDetail
-		authorChan     chan bool
-		authorListChan chan bool
-	)
-	url := config.G_Conf.GuShiWenPoetryUrl + strings.TrimLeft(poetry.PoetrySourceUrl, "/")
-	//过虑重复请求，有可能多个分类下有同一个作者， 这里只取一次作者信息
-	urlKey = tools.Crc32(poetry.PoetrySourceUrl)
-	if ok := NewLock().ExistsKey(urlKey); ok {
-		logrus.Infoln(url, "重复请求....")
-		return
-	}
-	NewLock().AddKey(urlKey)
-	if bytes, err = c.GetContentSource(url); err != nil {
-		data.G_GraspResult.PushError(err)
-		NewLock().DelKey(urlKey)
-		return
-	}
-	if query, err = tools.NewDocumentFromReader(string(bytes)); err != nil {
-		data.G_GraspResult.PushError(err)
-		NewLock().DelKey(urlKey)
-		return
-	}
-	author = c.getAuthorData(query)
-	authorChan, authorListChan = make(chan bool), make(chan bool)
-	//发送获取作者详情信息请求
-	go Author.NewAuthor().SetAuthorAttr(author).GraspAuthorDetail(author.AuthorSrcUrl, authorChan)
-	//发送获取作者诗词列表所有数据请求
-	go Author.NewAuthor().SetAuthorAttr(author).GraspAuthorPoetryList(author.AuthorContentUrl, authorListChan)
-	<-authorChan
-	<-authorListChan
-	return
-}
-
 //传过来一个诗词详情页的URL(/shiwenv_73add8822103.aspx)，获取数据并保存诗词详情数据
-func (c *Content) GraspContentSaveData(detailUrl string, params []interface{}) {
+func (c *Content) GraspContentSaveData(detailUrl string, params interface{}) {
 	var (
 		bytes  []byte
 		err    error
 		urlKey uint32
 	)
 	url := detailUrl
-	if strings.Contains(detailUrl, "http:") == false {
+	if strings.Contains(detailUrl, "http") == false {
 		url = config.G_Conf.GuShiWenPoetryUrl + strings.TrimLeft(detailUrl, "/")
 	}
 	urlKey = tools.Crc32(url)
-	if ok := NewLock().ExistsKey(urlKey); ok {
+	if ok := tools.NewLock().ExistsKey(urlKey); ok {
 		logrus.Infoln("GraspContentSaveData:", url, "重复请求....")
 		return
 	}
-	if bytes, err = c.GetContentSource(url); err != nil {
+	tools.NewLock().AddKey(urlKey)
+	if bytes, err = Helper.GetContentHtml(url); err != nil {
 		data.G_GraspResult.PushError(err)
-		NewLock().DelKey(urlKey)
+		tools.NewLock().DelKey(urlKey)
 		return
 	}
 	content := c.FindDocumentData(bytes)
@@ -96,17 +52,6 @@ func (c *Content) GraspContentSaveData(detailUrl string, params []interface{}) {
 		ParseFunc: data.NewContentStore().LoadPoetryContentData,
 	}
 	data.G_GraspResult.SendParseData(sendData)
-	NewLock().AddKey(urlKey)
-}
-
-//获取诗文详情数据
-func (c *Content) GetContentSource(url string) (bytes []byte, err error) {
-	if config.G_Conf.Env == define.TestEnv {
-		bytes, err = c.getTestFile()
-	} else {
-		bytes, err = base.GetHtml(url)
-	}
-	return
 }
 
 //goquery 查找数据
@@ -123,7 +68,7 @@ func (c *Content) FindDocumentData(html []byte) (poetryContent define.PoetryCont
 	poetryContent.Title = query.Find(src + ">h1").Text()
 	poetryContent.Content = query.Find(src + ">.contson").Eq(0).Text()
 	poetryContent.CategoryList = c.getCategory(query)
-	poetryContent.Author = c.getAuthorData(query)
+	poetryContent.Author = Helper.GetAuthorData(query)
 	poetryContent.Detail = c.getNotesData(query)
 	poetryContent.CreativeBackground = c.getCreativeBack(query) //创作背景
 	return poetryContent
@@ -240,27 +185,6 @@ func (c *Content) getCategory(query *goquery.Document) (categoryList []*define.T
 	return categoryList
 }
 
-//获取作者头像和总诗词数
-func (c *Content) getAuthorData(query *goquery.Document) (author *define.PoetryAuthorDetail) {
-	authorImg, _ := query.Find(".sonspic>.cont>.divimg>a>img").Attr("src")
-	text := query.Find(".sonspic>.cont>p").Eq(1).Find("a").Text()
-	authorSrcUrl, _ := query.Find(".sonspic>.cont>p").Eq(1).Find("a").Attr("href")
-	text = strings.TrimRight(text, "篇诗文")
-	text = strings.TrimLeft(text, " ► ")
-	total, _ := strconv.Atoi(text)
-	author = &define.PoetryAuthorDetail{
-		AuthorImgUrl:      authorImg,
-		AuthorContentUrl:  authorSrcUrl,
-		AuthorTotalPoetry: total,
-	}
-	src := ".left>.sons>.cont"
-	author.DynastyName = query.Find(src + ">.source>a").Eq(0).Text()
-	author.DynastyUrl, _ = query.Find(src + ">.source>a").Eq(0).Attr("href")
-	author.AuthorName = query.Find(src + ">.source>a").Eq(1).Text()
-	author.AuthorSrcUrl, _ = query.Find(src + ">.source>a").Eq(1).Attr("href")
-	return
-}
-
 //获取诗的创作背景
 func (c *Content) getCreativeBack(query *goquery.Document) (body string) {
 	query.Find(".left>.sons>.contyishang").Each(func(i int, selection *goquery.Selection) {
@@ -272,12 +196,35 @@ func (c *Content) getCreativeBack(query *goquery.Document) (body string) {
 	return
 }
 
-//读取测试文件内容
-func (c *Content) getTestFile() (bytes []byte, err error) {
-	dir, _ := os.Getwd()
-	file := dir + "/content1.html"
-	if ret, _ := tools.PathExists(file); ret == true {
-		return tools.ReadFile(file)
+//通过诗文详情数据 获取作者信息 https://so.gushiwen.org/shiwenv_4c5705b99143.aspx
+func (c *Content) GetAuthorContentData(poetry *define.PoetryAuthorList) (author *define.PoetryAuthorDetail) {
+	var (
+		bytes  []byte
+		query  *goquery.Document
+		err    error
+		urlKey uint32
+	)
+	url := poetry.PoetrySourceUrl
+	if strings.Contains(url, "http") == false {
+		url = config.G_Conf.GuShiWenPoetryUrl + strings.TrimLeft(poetry.PoetrySourceUrl, "/")
 	}
-	return nil, errors.New(file + "file is not exists")
+	//过虑重复请求，有可能多个分类下有同一个作者， 这里只取一次作者信息
+	urlKey = tools.Crc32(url)
+	if ok := tools.NewLock().ExistsKey(urlKey); ok {
+		logrus.Infoln(url, "重复请求....")
+		return
+	}
+	tools.NewLock().AddKey(urlKey)
+	if bytes, err = Helper.GetContentHtml(url); err != nil {
+		data.G_GraspResult.PushError(err)
+		tools.NewLock().DelKey(urlKey)
+		return
+	}
+	if query, err = tools.NewDocumentFromReader(string(bytes)); err != nil {
+		data.G_GraspResult.PushError(err)
+		tools.NewLock().DelKey(urlKey)
+		return
+	}
+	author = Helper.GetAuthorData(query)
+	return author
 }

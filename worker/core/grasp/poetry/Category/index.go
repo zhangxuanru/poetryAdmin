@@ -9,6 +9,7 @@ import (
 	"poetryAdmin/worker/app/tools"
 	"poetryAdmin/worker/core/data"
 	"poetryAdmin/worker/core/define"
+	"poetryAdmin/worker/core/grasp/poetry/Author"
 	"poetryAdmin/worker/core/grasp/poetry/Content"
 	"poetryAdmin/worker/core/grasp/poetry/base"
 	"strings"
@@ -127,16 +128,43 @@ func (c *Category) goPoetryDetail(dataMap *define.PoetryDataMap) {
 		}
 	}
 	//过虑后发送请求
-	contentObj := Content.NewContent()
+	authorListMp := make(map[string]*define.PoetryAuthorList)
+	authorList := []*define.PoetryAuthorList{}
 	sysMap.Range(func(key, value interface{}) bool {
-		val := value.(*define.PoetryAuthorList)
-		go func() {
-			contentObj.GraspContentData(val)
-		}()
-		randI := time.Duration(tools.RandInt64(50, 300))
-		time.Sleep(randI * time.Millisecond)
+		if val, ok := value.(*define.PoetryAuthorList); ok {
+			if val.AuthorName != "" {
+				authorListMp[val.AuthorName] = val
+			} else {
+				authorList = append(authorList, val)
+			}
+		}
 		return true
 	})
+	for _, poetryAuthor := range authorListMp {
+		go func() {
+			if author := Content.NewContent().GetAuthorContentData(poetryAuthor); author.AuthorName != "" {
+				Author.NewAuthor().SendGraspAuthorDataReq(author)
+			}
+		}()
+	}
+	for _, poetryAuthor := range authorList {
+		go func() {
+			if author := Content.NewContent().GetAuthorContentData(poetryAuthor); author.AuthorName != "" {
+				Author.NewAuthor().SendGraspAuthorDataReq(author)
+			}
+		}()
+	}
+	//sysMap.Range(func(key, value interface{}) bool {
+	//	val := value.(*define.PoetryAuthorList)
+	//	go func() {
+	//		if author := Content.NewContent().GetAuthorContentData(val); author.AuthorName != "" {
+	//			Author.NewAuthor().SendGraspAuthorDataReq(author)
+	//		}
+	//	}()
+	//	randI := time.Duration(tools.RandInt64(50, 300))
+	//	time.Sleep(randI * time.Millisecond)
+	//	return true
+	//})
 }
 
 //读取测试文件内容

@@ -9,10 +9,12 @@ import (
 	"poetryAdmin/worker/app/tools"
 	"poetryAdmin/worker/core/data"
 	"poetryAdmin/worker/core/define"
+	"poetryAdmin/worker/core/grasp/poetry/Content"
 	"poetryAdmin/worker/core/grasp/poetry/base"
 	"qiniupkg.com/x/errors.v7"
 	"strconv"
 	"strings"
+	"time"
 )
 
 //诗词链接信息
@@ -35,6 +37,21 @@ func NewAuthor() *Author {
 	return &Author{}
 }
 
+//发送获取作者详情和 诗词列表的请求
+func (a *Author) SendGraspAuthorDataReq(author *define.PoetryAuthorDetail) {
+	var (
+		authorChan     chan bool
+		authorListChan chan bool
+	)
+	authorChan, authorListChan = make(chan bool), make(chan bool)
+	//发送获取作者详情信息请求
+	go a.SetAuthorAttr(author).GraspAuthorDetail(author.AuthorSrcUrl, authorChan)
+	//发送获取作者诗词列表所有数据请求
+	go a.SetAuthorAttr(author).GraspAuthorPoetryList(author.AuthorContentUrl, authorListChan)
+	<-authorChan
+	<-authorListChan
+}
+
 //通过首页抓取到的作者列表传到这里，这里循环数据去发送请求
 func (a *Author) GraspByIndexData(data *define.HomeFormat) {
 
@@ -46,7 +63,7 @@ func (a *Author) GraspAuthorDetail(authorUrl string, endChan chan bool) {
 		endChan <- true
 	}()
 	var err error
-	if strings.Contains(authorUrl, "http:") == false {
+	if strings.Contains(authorUrl, "http") == false {
 		authorUrl = config.G_Conf.GuShiWenPoetryUrl + strings.TrimLeft(authorUrl, "/")
 	}
 	if err = a.getSourceHtml(authorUrl, "author.html"); err != nil {
@@ -74,7 +91,7 @@ func (a *Author) GraspAuthorPoetryList(authorUrl string, endChan chan bool) {
 		endChan <- true
 	}()
 	var err error
-	if strings.Contains(authorUrl, "http:") == false {
+	if strings.Contains(authorUrl, "http") == false {
 		authorUrl = config.G_Conf.GuShiWenPoetryUrl + strings.TrimLeft(authorUrl, "/")
 	}
 	a.Url = authorUrl
@@ -86,11 +103,9 @@ func (a *Author) GraspAuthorPoetryList(authorUrl string, endChan chan bool) {
 	//获取当前页诗词链接信息
 	linkMp := a.parsePoetryListLink(a.Html)
 	for _, link := range linkMp {
-		//go Content.NewContent().GraspContentSaveData(link.LinkUrl, nil)
+		go Content.NewContent().GraspContentSaveData(link.LinkUrl, link)
 	}
-	logrus.Infof("%v", linkMp)
-
-	//a.sendPoetryPageListRequest()
+	//	a.sendPoetryPageListRequest()
 }
 
 //获取诗词列表总页数并发送每页的请求
@@ -110,15 +125,18 @@ func (a *Author) sendPoetryPageListRequest() {
 		totalPageNum = 10
 	}
 	for i := 2; i <= totalPageNum; i++ {
-		//iStr := strconv.Itoa(i)
-		//url := strings.Replace(a.Url, "A1", "A"+iStr, -1)
-		//go func() {
-		//	logrus.Infoln("url:", url)
-		//	if html, e := base.GetHtml(url); e == nil {
-		//		a.parsePoetryListLink(html)
-		//	}
-		//}()
-		//time.Sleep(5 * time.Millisecond)
+		iStr := strconv.Itoa(i)
+		url := strings.Replace(a.Url, "A1", "A"+iStr, -1)
+		go func() {
+			logrus.Infoln("url:", url)
+			if html, e := base.GetHtml(url); e == nil {
+				linkMp := a.parsePoetryListLink(html)
+				for _, link := range linkMp {
+					go Content.NewContent().GraspContentSaveData(link.LinkUrl, link)
+				}
+			}
+		}()
+		time.Sleep(5 * time.Millisecond)
 	}
 }
 

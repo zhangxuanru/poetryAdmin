@@ -8,6 +8,7 @@ import (
 	"poetryAdmin/worker/app/tools"
 	"poetryAdmin/worker/core/data"
 	"poetryAdmin/worker/core/define"
+	"poetryAdmin/worker/core/grasp/poetry/Author"
 	"poetryAdmin/worker/core/grasp/poetry/Category"
 	"poetryAdmin/worker/core/grasp/poetry/Content"
 	"poetryAdmin/worker/core/parse"
@@ -61,7 +62,9 @@ func TestContent(t *testing.T) {
 			ShowPosition: 1,
 		},
 	}
-	Content.NewContent().GraspContentData(poetry)
+	if author := Content.NewContent().GetAuthorContentData(poetry); author.AuthorName != "" {
+		Author.NewAuthor().SendGraspAuthorDataReq(author)
+	}
 
 	time.Sleep(5 * time.Second)
 
