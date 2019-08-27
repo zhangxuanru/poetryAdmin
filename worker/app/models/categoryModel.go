@@ -81,3 +81,9 @@ func GetDataByCrcAndCateName(crc32 uint32, cateName string, position int) (categ
 	_, err = orm.NewOrm().QueryTable(TableCategory).Filter("source_url_crc32", crc32).Filter("show_position", position).Filter("cat_name", cateName).All(&categorys, "id")
 	return categorys, err
 }
+
+//保存分类数据
+func SaveCategoryData(data *Category) (id int64, err error) {
+	id, err = orm.NewOrm().Insert(data)
+	return
+}

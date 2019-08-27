@@ -104,8 +104,11 @@ func (a *Author) GraspAuthorPoetryList(authorUrl string, endChan chan bool) {
 	linkMp := a.parsePoetryListLink(a.Html)
 	for _, link := range linkMp {
 		go Content.NewContent().GraspContentSaveData(link.LinkUrl, link)
+		break
 	}
+	//-----上线时把注释打开
 	//	a.sendPoetryPageListRequest()
+	//-----
 }
 
 //获取诗词列表总页数并发送每页的请求

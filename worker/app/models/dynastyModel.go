@@ -1,6 +1,7 @@
 package models
 
 import (
+	"errors"
 	"github.com/astaxie/beego/orm"
 	"time"
 )
@@ -48,6 +49,9 @@ func (d *Dynasty) SaveName(name string) (id int64, err error) {
 //根据名字查询是否保存，如果没有保存则 插入，保存了则返回ID
 func (d *Dynasty) GetIdBySaveName(name string) (id int64, err error) {
 	var data Dynasty
+	if len(name) == 0 {
+		return 0, errors.New("name is nil")
+	}
 	if data, err = d.GetOneByName(name); err != nil {
 		return
 	}

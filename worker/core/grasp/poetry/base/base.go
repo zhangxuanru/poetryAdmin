@@ -10,6 +10,10 @@ import (
 //获取html内容
 func GetHtml(url string) (bytes []byte, err error) {
 	logrus.Infoln("GetHtml.....", url)
+	//test---
+	return []byte("test"), nil
+	//--
+
 	if _, bytes, err = tools.NewHttpReq().HttpGet(url); err != nil {
 		go data.G_GraspResult.PushError(err)
 		return

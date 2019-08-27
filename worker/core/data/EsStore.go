@@ -13,3 +13,8 @@ func NewEsStore() *EsStore {
 func (e *EsStore) SaveAuthorData(data *define.PoetryAuthorDetail) {
 
 }
+
+//保存诗词息到 ES中
+func (e *EsStore) SaveContentDetail(*define.PoetryContent) {
+
+}
