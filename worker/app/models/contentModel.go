@@ -1,6 +1,9 @@
 package models
 
-import "github.com/astaxie/beego/orm"
+import (
+	"errors"
+	"github.com/astaxie/beego/orm"
+)
 
 var TableContent = "poetry_content"
 
@@ -30,12 +33,17 @@ func (c *Content) TableName() string {
 //保存诗词内容
 func (c *Content) SaveContent(data *Content) (id int64, err error) {
 	var content Content
+	if len(data.Title) == 0 {
+		return 0, errors.New("title is nil")
+	}
 	if content, err = c.GetByTitleAuthorId(data.Title, data.AuthorId); err != nil {
 		return 0, err
 	}
 	if content.Id > 0 {
-		//data.Id = content.Id
-		//_, _ = c.UpdateContent(data, "update_date")
+		if len(data.Content) > 0 {
+			data.Id = content.Id
+			_, _ = c.UpdateContent(data, "content", "source_url", "author_id")
+		}
 		return int64(content.Id), nil
 	}
 	id, err = orm.NewOrm().Insert(data)

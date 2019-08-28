@@ -46,6 +46,7 @@ func (c *Content) GraspContentSaveData(detailUrl string, params interface{}) {
 		return
 	}
 	content := c.FindDocumentData(bytes)
+	content.SourceUrl = url
 	sendData := &define.ParseData{
 		Data:      &content,
 		Params:    params,

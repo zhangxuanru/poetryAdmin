@@ -26,6 +26,7 @@ type PoetryAuthorList struct {
 type PoetryContent struct {
 	Title              string
 	Content            string
+	SourceUrl          string //诗词链接URl
 	PoetryId           int64
 	DynastyId          int64
 	CategoryList       []*TextHrefFormat

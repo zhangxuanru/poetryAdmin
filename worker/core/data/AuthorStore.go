@@ -53,7 +53,7 @@ func (a *AuthorStore) LoadAuthorData(data interface{}, params interface{}) {
 			continue
 		}
 		//上传mp3
-		go a.uploadMp3(notesId, val.PlayUrl)
+		go a.UploadMp3(notesId, val.PlayUrl)
 
 		//4.写入poetry_author_data表
 		info := &models.AuthorData{
@@ -114,7 +114,7 @@ func (a *AuthorStore) UploadFile(detail *define.PoetryAuthorDetail) {
 }
 
 //上传mp3
-func (a *AuthorStore) uploadMp3(id int64, mp3Url string) {
+func (a *AuthorStore) UploadMp3(id int64, mp3Url string) {
 	var (
 		fileName string
 		err      error

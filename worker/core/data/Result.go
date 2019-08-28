@@ -31,7 +31,7 @@ func NewGraspResult() *GraspResult {
 }
 
 //发送错误消息
-func (g *GraspResult) PushError(err error) {
+func (g *GraspResult) PushError(err error, params ...interface{}) {
 	if err != nil {
 		g.err <- err
 	}

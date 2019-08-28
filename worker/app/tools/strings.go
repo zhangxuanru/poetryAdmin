@@ -35,6 +35,7 @@ func TrimDivHtml(str string) (rStr string) {
 	rStr = compile.ReplaceAllString(rStr, "")
 	nr := regexp.MustCompile(`(?m)[\r\n|\t]`)
 	rStr = nr.ReplaceAllString(rStr, "")
+	rStr = strings.TrimSpace(rStr)
 	return
 }
 
