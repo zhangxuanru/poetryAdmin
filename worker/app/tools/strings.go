@@ -2,6 +2,7 @@ package tools
 
 import (
 	"errors"
+	"net/url"
 	"regexp"
 	"strconv"
 	"strings"
@@ -50,4 +51,13 @@ func TrimAuthorTotalPageText(str string) (totalPageNum int, err error) {
 	str = strings.TrimSpace(str)
 	totalPageNum, err = strconv.Atoi(str)
 	return
+}
+
+//获取URL path
+func GetUrlPath(urlStr string) string {
+	if strings.Contains(urlStr, "http") == true {
+		urlParse, _ := url.Parse(urlStr)
+		return urlParse.Path
+	}
+	return urlStr
 }

@@ -82,6 +82,9 @@ func (c *Category) FindDocument(bytes []byte, category *define.TextHrefFormat) (
 		selection.Find("span").Each(func(j int, selection *goquery.Selection) {
 			poetryText := selection.Text()
 			href, _ := selection.Find("a").Attr("href")
+			if strings.Contains(href, "http") == false {
+				href = config.G_Conf.GuShiWenPoetryUrl + strings.TrimLeft(href, "/")
+			}
 			if len(poetryText) > 0 {
 				splitArr := strings.Split(poetryText, "(")
 				AuthorName := ""

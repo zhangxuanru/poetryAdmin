@@ -64,11 +64,12 @@ func (c *categoryStorage) LoadCategoryPoetryData(data interface{}, params interf
 			}
 			//写入诗词表 poetry_content
 			content := &models.Content{
-				Title:      list.PoetryTitle,
-				SourceUrl:  list.PoetrySourceUrl,
-				AuthorId:   authorId,
-				AddDate:    time.Now().Unix(),
-				UpdateDate: time.Now().Unix(),
+				Title:          list.PoetryTitle,
+				SourceUrl:      list.PoetrySourceUrl,
+				SourceUrlCrc32: tools.Crc32(list.PoetrySourceUrl),
+				AuthorId:       authorId,
+				AddDate:        time.Now().Unix(),
+				UpdateDate:     time.Now().Unix(),
 			}
 			if id, err = models.NewContent().SaveContent(content); err != nil {
 				go G_GraspResult.PushError(err)

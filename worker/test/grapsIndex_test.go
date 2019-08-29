@@ -4,6 +4,7 @@ import (
 	"github.com/PuerkitoBio/goquery"
 	"github.com/sirupsen/logrus"
 	. "github.com/smartystreets/goconvey/convey"
+	url2 "net/url"
 	"poetryAdmin/worker/app/tools"
 	"poetryAdmin/worker/core/data"
 	"poetryAdmin/worker/core/define"
@@ -71,13 +72,14 @@ func TestContent(t *testing.T) {
 }
 
 func TestA(t *testing.T) {
-	format := define.TextHrefFormat{
-		Text:         "aa",
-		Href:         "aaa",
-		ShowPosition: 10,
-	}
-	logrus.Infof("%+v", format)
-	logrus.Infoln(int(format.ShowPosition))
+	surl := "/shiwenv_6368d3d62fcd.aspx"
+	str := "https://so.gushiwen.org/shiwenv_73add8822103.aspx"
+	url, _ := url2.Parse(str)
+	logrus.Infof("%+v", url.Path)
+
+	url1, _ := url2.Parse(surl)
+	logrus.Infof("%+v", url1.Path)
+
 	return
 
 	src := "https://song.gushiwen.org/authorImg/taoyuanming.jpg"

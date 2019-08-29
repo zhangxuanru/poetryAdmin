@@ -9,15 +9,16 @@ var TableContentRelation = "poetry_content_relation"
 
 //poetry_content_relation 诗词关联表
 type ContentRelation struct {
-	Id         int   `orm:"column(id);auto"`
-	PoetryId   int64 `orm:"column(poetry_id)"`
-	AuthorId   int64 `orm:"column(author_id)"`
-	CategoryId int64 `orm:"column(category_id)"`
-	GenreId    int64 `orm:"column(genre_id)"`
-	Form       int   `orm:"column(form)"`
-	Sort       int   `orm:"column(sort)"`
-	AddDate    int64 `orm:"column(add_date)"`
-	UpdateDate int64 `orm:"column(update_date)"`
+	Id          int   `orm:"column(id);auto"`
+	PoetryId    int64 `orm:"column(poetry_id)"`
+	AuthorId    int64 `orm:"column(author_id)"`
+	CategoryId  int64 `orm:"column(category_id)"`
+	GenreId     int64 `orm:"column(genre_id)"`
+	CreatBackId int64 `orm:"column(creat_back_id)"`
+	Form        int   `orm:"column(form)"`
+	Sort        int   `orm:"column(sort)"`
+	AddDate     int64 `orm:"column(add_date)"`
+	UpdateDate  int64 `orm:"column(update_date)"`
 }
 
 func init() {
@@ -58,8 +59,20 @@ func (c *ContentRelation) GetDataByMoreId(poetryId, categoryId, genreId, authorI
 //更新关系
 func (c *ContentRelation) UpdateRelation(data *ContentRelation, col ...string) (id int64, err error) {
 	if len(col) == 0 {
-		col = []string{"poetry_id", "author_id", "category_id", "genre_id", "form", "sort", "update_date"}
+		col = []string{"poetry_id", "author_id", "creat_back_id", "category_id", "genre_id", "form", "sort", "update_date"}
 	}
 	id, err = orm.NewOrm().Update(data, col...)
+	return
+}
+
+//根据诗词ID查询
+func (c *ContentRelation) FindDataByPoetryId(poetryId int64) (content ContentRelation, err error) {
+	_, err = orm.NewOrm().QueryTable(TableContentRelation).Filter("poetry_id", poetryId).All(&content, "id", "author_id", "category_id", "genre_id", "creat_back_id")
+	return
+}
+
+//直接写入关系表
+func (c *ContentRelation) InsertRelation(data *ContentRelation) (id int64, err error) {
+	id, err = orm.NewOrm().Insert(data)
 	return
 }

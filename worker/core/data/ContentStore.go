@@ -11,7 +11,8 @@ import (
 
 //保存诗词正文和赏析注释结果...
 type contentStore struct {
-	detail *define.PoetryContent
+	detail     *define.PoetryContent
+	categoryId int64
 }
 
 func NewContentStore() *contentStore {
@@ -46,18 +47,13 @@ func (c *contentStore) LoadPoetryContentData(data interface{}, params interface{
 	}
 	//2.保存分类
 	c.SavePoetryCategory()
-
-	// 3.保存文本内容
+	//3.更新关联表
+	_ = c.SaveRelation()
+	// 4.保存文本内容,翻译表,赏析表
 	c.SaveContentNotes()
-
-	//写入文本内容表
-
 	//保存到 ES中
-	NewEsStore().SaveContentDetail(c.detail)
-
+	go NewEsStore().SaveContentDetail(c.detail)
 	logrus.Infoln("LoadPoetryContentData.............")
-	logrus.Infof("%+v\n", data)
-	logrus.Infof("%+v\n", params)
 }
 
 //设置基本数据
@@ -94,16 +90,17 @@ func (c *contentStore) SetAttrData() (err error) {
 	return
 }
 
-//写入诗词表,保存诗词
+//写入诗词表和关联表,保存诗词
 func (c *contentStore) SaveContent() (err error) {
 	var poetryId int64
 	data := &models.Content{
-		Title:      strings.TrimSpace(c.detail.Title),
-		Content:    strings.TrimSpace(c.detail.Content),
-		AuthorId:   c.detail.Author.AuthorId,
-		SourceUrl:  c.detail.SourceUrl,
-		AddDate:    time.Now().Unix(),
-		UpdateDate: time.Now().Unix(),
+		Title:          strings.TrimSpace(c.detail.Title),
+		Content:        strings.TrimSpace(c.detail.Content),
+		AuthorId:       c.detail.Author.AuthorId,
+		SourceUrl:      c.detail.SourceUrl,
+		SourceUrlCrc32: tools.Crc32(c.detail.SourceUrl),
+		AddDate:        time.Now().Unix(),
+		UpdateDate:     time.Now().Unix(),
 	}
 	if poetryId, err = models.NewContent().SaveContent(data); err == nil {
 		c.detail.PoetryId = poetryId
@@ -153,6 +150,9 @@ func (c *contentStore) SavePoetryCategory() {
 		if _, err = models.NewDetailCategory().SaveDetailCategory(category); err != nil {
 			logrus.Infoln("SaveDetailCategory err:", err)
 			G_GraspResult.PushError(err, "SaveDetailCategory")
+		}
+		if c.categoryId == 0 {
+			c.categoryId = categoryId
 		}
 	}
 	return
@@ -227,5 +227,98 @@ func (c *contentStore) SaveTransNotes(data *define.PoetryContentData) {
 
 //写入赏析信息表和文本表
 func (c *contentStore) SaveRecNotes(data *define.PoetryContentData) {
+	var (
+		err       error
+		recData   models.ContentRec
+		notesData *models.Notes
+		notesId   int64
+	)
+	if recData, err = models.NewContentRec().FindNotesId(int(c.detail.PoetryId), data.AppRecId); err != nil {
+		logrus.Infoln("ContentRec FindNotesId error:", err)
+		return
+	}
+	data.Content = tools.TrimDivHtml(data.Content)
+	notesData = &models.Notes{
+		Title:      strings.TrimSpace(data.Title),
+		Content:    data.Content,
+		PlayUrl:    data.PlayUrl,
+		PlaySrcUrl: data.PlaySrcUrl,
+		HtmlSrcUrl: data.HtmlSrcUrl,
+		Type:       1,
+		Introd:     strings.TrimSpace(data.Introd),
+		AddDate:    time.Now().Unix(),
+		UpdateDate: time.Now().Unix(),
+	}
+	if recData.Id > 0 {
+		notesData.Id = int(recData.NotesId)
+	}
+	//写|更新详情表
+	if notesId, err = models.NewNotes().SaveNotes(notesData); err != nil {
+		logrus.Infoln("SaveNotes error:", err)
+		return
+	}
+	//上传mp3
+	if len(data.PlayUrl) > 0 {
+		go NewAuthorStore().UploadMp3(notesId, data.PlayUrl)
+	}
+	if recData.Id > 0 {
+		return
+	}
+	//写翻译表
+	recData = models.ContentRec{
+		PoetryId:   int(c.detail.PoetryId),
+		ApprecId:   data.AppRecId,
+		NotesId:    notesId,
+		Sort:       data.Sort,
+		AddDate:    time.Now().Unix(),
+		UpdateDate: time.Now().Unix(),
+	}
+	if _, err = models.NewContentRec().InsertRec(&recData); err != nil {
+		logrus.Infoln("InsertTrans error:", err)
+		G_GraspResult.PushError(err, "InsertTrans error")
+		return
+	}
+}
 
+//写关联关系
+func (c *contentStore) SaveRelation() (err error) {
+	var (
+		relationData models.ContentRelation
+		notesData    models.Notes
+		notesId      int64
+	)
+	if relationData, err = models.NewContentRelation().FindDataByPoetryId(c.detail.PoetryId); err != nil {
+		return
+	}
+	if relationData.CreatBackId == 0 && len(c.detail.CreativeBackground) > 0 {
+		notesData = models.Notes{
+			Title:      "创作背景",
+			Content:    c.detail.CreativeBackground,
+			Type:       1,
+			AddDate:    time.Now().Unix(),
+			UpdateDate: time.Now().Unix(),
+		}
+		notesId, err = models.NewNotes().SaveNotes(&notesData)
+	}
+	//写关联关系
+	if relationData.Id > 0 && notesId > 0 {
+		relationData = models.ContentRelation{
+			AuthorId:    c.detail.Author.AuthorId,
+			CreatBackId: notesId,
+			UpdateDate:  time.Now().Unix(),
+		}
+		_, err = models.NewContentRelation().UpdateRelation(&relationData, "update_date", "creat_back_id", "author_id")
+	}
+	if relationData.Id == 0 {
+		relationData = models.ContentRelation{
+			PoetryId:    c.detail.PoetryId,
+			AuthorId:    c.detail.Author.AuthorId,
+			CreatBackId: notesId,
+			CategoryId:  c.categoryId,
+			AddDate:     time.Now().Unix(),
+			UpdateDate:  time.Now().Unix(),
+		}
+		_, err = models.NewContentRelation().InsertRelation(&relationData)
+	}
+	return
 }
