@@ -15,6 +15,9 @@ type Content struct {
 	AuthorId       int64  `orm:"column(author_id)"`
 	SourceUrl      string `orm:"column(source_url)"`
 	SourceUrlCrc32 uint32 `orm:"column(sourceurl_crc32)"`
+	GenreId        int64  `orm:"column(genre_id)"`
+	CreatBackId    int64  `orm:"column(creat_back_id)"`
+	Sort           int    `orm:"column(sort)"`
 	AddDate        int64  `orm:"column(add_date)"`
 	UpdateDate     int64  `orm:"column(update_date)"`
 }
@@ -42,31 +45,42 @@ func (c *Content) SaveContent(data *Content) (id int64, err error) {
 			return 0, err
 		}
 	}
-	if content.Id == 0 {
-		if content, err = c.GetByTitleAuthorId(data.Title, data.AuthorId); err != nil {
-			return 0, err
-		}
-	}
+	//if content.Id == 0 {
+	//	if content, err = c.GetByTitleAuthorId(data.Title, data.AuthorId); err != nil {
+	//		return 0, err
+	//	}
+	//}
 	if content.Id > 0 {
 		if len(data.Content) > 0 {
 			data.Id = content.Id
-			_, _ = c.UpdateContent(data, "title", "content", "source_url", "sourceurl_crc32", "author_id")
+			_, err = c.UpdateContent(data, "title", "content", "source_url", "sourceurl_crc32", "author_id", "genre_id", "creat_back_id")
 		}
-		return int64(content.Id), nil
+		return int64(content.Id), err
 	}
 	id, err = orm.NewOrm().Insert(data)
 	return
 }
 
+//直接保存内容，根据ID判断是否更新
+func (c *Content) SaveUpdate(data *Content) (id int64, err error) {
+	if data.Id > 0 {
+		_, err = c.UpdateContent(data, "title", "content", "source_url", "sourceurl_crc32", "author_id", "genre_id", "creat_back_id", "sort")
+		id = int64(data.Id)
+	} else {
+		id, err = orm.NewOrm().Insert(data)
+	}
+	return
+}
+
 //根据标题搜索诗词信息
 func (c *Content) GetByTitleAuthorId(title string, authorId int64) (data Content, err error) {
-	_, err = orm.NewOrm().QueryTable(TableContent).Filter("title", title).Filter("author_id", authorId).All(&data, "id", "content", "update_date")
+	_, err = orm.NewOrm().QueryTable(TableContent).Filter("title", title).Filter("author_id", authorId).All(&data, "id", "content")
 	return
 }
 
 //根据URL的crc32值查询
 func (c *Content) GetContentByCrc32(crc32 uint32) (data Content, err error) {
-	_, err = orm.NewOrm().QueryTable(TableContent).Filter("sourceurl_crc32", crc32).All(&data, "id", "content")
+	_, err = orm.NewOrm().QueryTable(TableContent).Filter("sourceurl_crc32", crc32).All(&data, "id")
 	return
 }
 

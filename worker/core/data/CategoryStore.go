@@ -22,7 +22,6 @@ func (c *categoryStorage) LoadCategoryPoetryData(data interface{}, params interf
 		format    *define.TextHrefFormat
 		categorys models.Category
 		genreId   int64 //体裁ID
-		id        int64 //诗词ID
 		authorId  int64
 		err       error
 		ok        bool
@@ -68,24 +67,14 @@ func (c *categoryStorage) LoadCategoryPoetryData(data interface{}, params interf
 				SourceUrl:      list.PoetrySourceUrl,
 				SourceUrlCrc32: tools.Crc32(list.PoetrySourceUrl),
 				AuthorId:       authorId,
+				GenreId:        genreId,
 				AddDate:        time.Now().Unix(),
 				UpdateDate:     time.Now().Unix(),
 			}
-			if id, err = models.NewContent().SaveContent(content); err != nil {
+			if _, err = models.NewContent().SaveContent(content); err != nil {
 				go G_GraspResult.PushError(err)
 				logrus.Debug("SaveContent error:", err)
 				continue
-			}
-			//写入诗词关联表 poetry_content_relation
-			relation := &models.ContentRelation{
-				PoetryId:   id,
-				CategoryId: int64(categorys.Id),
-				GenreId:    genreId,
-				AuthorId:   authorId,
-			}
-			if _, err = models.NewContentRelation().SaveContentRelation(relation); err != nil {
-				G_GraspResult.PushError(err)
-				logrus.Debug("SaveContentRelation error:", err)
 			}
 		}
 	}

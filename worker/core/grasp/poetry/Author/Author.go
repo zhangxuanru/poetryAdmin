@@ -17,13 +17,7 @@ import (
 	"time"
 )
 
-//诗词链接信息
-type linkStr struct {
-	LinkUrl string
-	Title   string
-	Sort    int
-}
-type PoetryLinkMap map[int]linkStr //诗词标题与链接信息
+type PoetryLinkMap map[int]define.LinkStr //诗词标题与链接信息
 
 //作者模块  抓取作者
 type Author struct {
@@ -163,7 +157,7 @@ func (a *Author) parsePoetryListLink(html []byte) (linkMap PoetryLinkMap) {
 		linkUrl, ok = selection.Find("p").Eq(0).Find("a").Attr("href")
 		linkText = selection.Find("p").Eq(0).Find("a").Text()
 		if ok {
-			linkMap[i] = linkStr{
+			linkMap[i] = define.LinkStr{
 				LinkUrl: linkUrl,
 				Title:   linkText,
 				Sort:    i,

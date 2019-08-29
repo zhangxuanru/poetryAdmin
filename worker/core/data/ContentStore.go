@@ -1,6 +1,7 @@
 package data
 
 import (
+	"errors"
 	"github.com/sirupsen/logrus"
 	"poetryAdmin/worker/app/models"
 	"poetryAdmin/worker/app/tools"
@@ -11,8 +12,8 @@ import (
 
 //保存诗词正文和赏析注释结果...
 type contentStore struct {
-	detail     *define.PoetryContent
-	categoryId int64
+	detail *define.PoetryContent
+	params define.LinkStr
 }
 
 func NewContentStore() *contentStore {
@@ -37,19 +38,20 @@ func (c *contentStore) LoadPoetryContentData(data interface{}, params interface{
 		logrus.Infoln("LoadPoetryContentData error:data conver define.PoetryContent error")
 		return
 	}
+	if c.params, ok = params.(define.LinkStr); ok == false {
+		logrus.Infoln("LoadPoetryContentData error: params conver LinkStr error")
+	}
 	if err = c.SetAttrData(); err != nil {
 		return
 	}
-	//1.写入诗词表， 先写诗词表，拿到  诗词ID 再做下面的处理
+	//1.写入诗词表， 先写诗词表，拿到诗词ID 再做下面的处理
 	if err = c.SaveContent(); err != nil {
 		logrus.Infoln("SaveContent error:", err)
 		return
 	}
 	//2.保存分类
 	c.SavePoetryCategory()
-	//3.更新关联表
-	_ = c.SaveRelation()
-	// 4.保存文本内容,翻译表,赏析表
+	// 3.保存文本内容,翻译表,赏析表
 	c.SaveContentNotes()
 	//保存到 ES中
 	go NewEsStore().SaveContentDetail(c.detail)
@@ -92,17 +94,45 @@ func (c *contentStore) SetAttrData() (err error) {
 
 //写入诗词表和关联表,保存诗词
 func (c *contentStore) SaveContent() (err error) {
-	var poetryId int64
+	var (
+		poetryId int64
+		notesId  int64
+		urlCrc32 uint32
+		content  models.Content
+	)
+	if len(c.detail.SourceUrl) == 0 {
+		return errors.New("SaveContent SourceUrl is nil")
+	}
+	urlCrc32 = tools.Crc32(c.detail.SourceUrl)
+	if content, err = models.NewContent().GetContentByCrc32(urlCrc32); err != nil {
+		return err
+	}
+	if len(c.detail.CreativeBackground) > 0 && content.CreatBackId == 0 {
+		notesData := models.Notes{
+			Title:      "创作背景",
+			Content:    c.detail.CreativeBackground,
+			Type:       1,
+			AddDate:    time.Now().Unix(),
+			UpdateDate: time.Now().Unix(),
+		}
+		notesId, err = models.NewNotes().SaveNotes(&notesData)
+	}
 	data := &models.Content{
 		Title:          strings.TrimSpace(c.detail.Title),
 		Content:        strings.TrimSpace(c.detail.Content),
 		AuthorId:       c.detail.Author.AuthorId,
+		GenreId:        0,
+		CreatBackId:    notesId,
+		Sort:           c.params.Sort,
 		SourceUrl:      c.detail.SourceUrl,
-		SourceUrlCrc32: tools.Crc32(c.detail.SourceUrl),
+		SourceUrlCrc32: urlCrc32,
 		AddDate:        time.Now().Unix(),
 		UpdateDate:     time.Now().Unix(),
 	}
-	if poetryId, err = models.NewContent().SaveContent(data); err == nil {
+	if content.Id > 0 {
+		data.Id = content.Id
+	}
+	if poetryId, err = models.NewContent().SaveUpdate(data); err == nil {
 		c.detail.PoetryId = poetryId
 	}
 	return
@@ -151,9 +181,6 @@ func (c *contentStore) SavePoetryCategory() {
 			logrus.Infoln("SaveDetailCategory err:", err)
 			G_GraspResult.PushError(err, "SaveDetailCategory")
 		}
-		if c.categoryId == 0 {
-			c.categoryId = categoryId
-		}
 	}
 	return
 }
@@ -164,7 +191,7 @@ func (c *contentStore) SaveContentNotes() {
 		if cont.TransId > 0 {
 			c.SaveTransNotes(cont) //翻译信息
 		}
-		if cont.TransId > 0 {
+		if cont.AppRecId > 0 {
 			c.SaveRecNotes(cont) //赏析信息
 		}
 	}
@@ -278,47 +305,4 @@ func (c *contentStore) SaveRecNotes(data *define.PoetryContentData) {
 		G_GraspResult.PushError(err, "InsertTrans error")
 		return
 	}
-}
-
-//写关联关系
-func (c *contentStore) SaveRelation() (err error) {
-	var (
-		relationData models.ContentRelation
-		notesData    models.Notes
-		notesId      int64
-	)
-	if relationData, err = models.NewContentRelation().FindDataByPoetryId(c.detail.PoetryId); err != nil {
-		return
-	}
-	if relationData.CreatBackId == 0 && len(c.detail.CreativeBackground) > 0 {
-		notesData = models.Notes{
-			Title:      "创作背景",
-			Content:    c.detail.CreativeBackground,
-			Type:       1,
-			AddDate:    time.Now().Unix(),
-			UpdateDate: time.Now().Unix(),
-		}
-		notesId, err = models.NewNotes().SaveNotes(&notesData)
-	}
-	//写关联关系
-	if relationData.Id > 0 && notesId > 0 {
-		relationData = models.ContentRelation{
-			AuthorId:    c.detail.Author.AuthorId,
-			CreatBackId: notesId,
-			UpdateDate:  time.Now().Unix(),
-		}
-		_, err = models.NewContentRelation().UpdateRelation(&relationData, "update_date", "creat_back_id", "author_id")
-	}
-	if relationData.Id == 0 {
-		relationData = models.ContentRelation{
-			PoetryId:    c.detail.PoetryId,
-			AuthorId:    c.detail.Author.AuthorId,
-			CreatBackId: notesId,
-			CategoryId:  c.categoryId,
-			AddDate:     time.Now().Unix(),
-			UpdateDate:  time.Now().Unix(),
-		}
-		_, err = models.NewContentRelation().InsertRelation(&relationData)
-	}
-	return
 }

@@ -86,3 +86,10 @@ type PoetryCategory struct {
 	poetryId    int64
 	CategoryIds []int64
 }
+
+//诗词链接信息
+type LinkStr struct {
+	LinkUrl string
+	Title   string
+	Sort    int
+}

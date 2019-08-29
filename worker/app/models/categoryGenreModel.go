@@ -45,6 +45,6 @@ func (g *CategoryGenre) SaveCategoryGenre(data *CategoryGenre) (id int64, err er
 
 //根据分类ID和体裁ID查询数据
 func (g *CategoryGenre) GetCateGenByIds(catId int, genreId int64) (data CategoryGenre, err error) {
-	_, err = orm.NewOrm().QueryTable(TableCategoryGenre).Filter("cat_id", catId).Filter("genre_id", genreId).All(&data, "id", "update_date")
+	_, err = orm.NewOrm().QueryTable(TableCategoryGenre).Filter("cat_id", catId).Filter("genre_id", genreId).All(&data, "id")
 	return
 }
