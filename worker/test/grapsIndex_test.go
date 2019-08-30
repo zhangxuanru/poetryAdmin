@@ -81,18 +81,17 @@ func TestContent(t *testing.T) {
 	//Content.NewContent().GraspContentSaveData("/shiwenv_73add8822103.aspx", nil)
 }
 
-func a(ch chan bool) {
-	defer func() {
-		ch <- true
-	}()
-	time.Sleep(3 * time.Second)
-	return
+//测试古籍
+func TestAncient(t *testing.T) {
+
 }
+
 func TestA(t *testing.T) {
-	ch := make(chan bool)
-	go a(ch)
-	<-ch
-	logrus.Infoln("tttttt")
+	crc32 := tools.Crc32("https://so.gushiwen.org/gushi/chunjie.aspx")
+	logrus.Infoln("crc32:", crc32)
+
+	u := tools.Crc32("/gushi/chunjie.aspx")
+	logrus.Infoln("u:", u)
 	return
 
 	src := "https://song.gushiwen.org/authorImg/taoyuanming.jpg"

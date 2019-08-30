@@ -48,7 +48,7 @@ func InsertMultiCategoryByDataMap(data define.DataMap) (i int64, err error) {
 			AddDate:        time.Now().Unix(),
 			LastUpdateTime: time.Now().Unix(),
 		}
-		categories, _ := GetDataByCrcAndCateName(category.SourceUrlCrc32, category.CatName, category.ShowPosition)
+		categories, _ := GetDataByCateName(category.CatName, category.ShowPosition)
 		if categories.Id > 0 {
 			category.Id = categories.Id
 			_, _ = orm.NewOrm().Update(&category, "cat_name", "source_url", "source_url_crc32", "show_position", "pid", "last_update_time")
@@ -76,9 +76,9 @@ func GetCategoryDataByPosition(showPosition define.ShowPosition) (maps uintMaps,
 	return
 }
 
-//根据url,分类名和位置查询数据
-func GetDataByCrcAndCateName(crc32 uint32, cateName string, position int) (categorys Category, err error) {
-	_, err = orm.NewOrm().QueryTable(TableCategory).Filter("source_url_crc32", crc32).Filter("show_position", position).Filter("cat_name", cateName).All(&categorys, "id")
+//根据分类名和位置查询数据
+func GetDataByCateName(cateName string, position int) (categorys Category, err error) {
+	_, err = orm.NewOrm().QueryTable(TableCategory).Filter("show_position", position).Filter("cat_name", cateName).All(&categorys, "id")
 	return categorys, err
 }
 

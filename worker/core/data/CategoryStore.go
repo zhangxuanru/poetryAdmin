@@ -33,7 +33,7 @@ func (c *categoryStorage) LoadCategoryPoetryData(data interface{}, params interf
 	format, ok = params.(*define.TextHrefFormat)
 	for genreTitle, authorList := range *dataMap {
 		if genreTitle != "无" && ok {
-			if categorys, err = models.GetDataByCrcAndCateName(tools.Crc32(format.Href), format.Text, int(format.ShowPosition)); err != nil {
+			if categorys, err = models.GetDataByCateName(format.Text, int(format.ShowPosition)); err != nil {
 				G_GraspResult.PushError(err)
 				continue
 			}

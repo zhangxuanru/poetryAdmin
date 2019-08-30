@@ -162,8 +162,7 @@ func (c *contentStore) SavePoetryCategory() {
 		return
 	}
 	for _, cate := range categoryList {
-		urlCrc := tools.Crc32(cate.Href)
-		if categorys, err = models.GetDataByCrcAndCateName(urlCrc, cate.Text, int(cate.ShowPosition)); err != nil {
+		if categorys, err = models.GetDataByCateName(cate.Text, int(cate.ShowPosition)); err != nil {
 			logrus.Infoln("GetDataByCrcAndCateName err:", err)
 			continue
 		}

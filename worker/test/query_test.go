@@ -20,14 +20,12 @@ func TestCategoryHtml(t *testing.T) {
 	query, _ := tools.NewDocumentFromReader(string(bytes))
 	author := Helper.GetAuthorData(query)
 
-	authorImg, _ := query.Find(".sonspic>.cont>.divimg>img").Attr("src")
-	logrus.Infoln(authorImg)
 	logrus.Infof("%+v", author)
 }
 
 func getHtml() (bytes []byte, err error) {
 	dir, _ := os.Getwd()
-	file := dir + "/content3.html"
+	file := dir + "/temp/content1.html"
 	if ret, _ := tools.PathExists(file); ret == true {
 		return tools.ReadFile(file)
 	}

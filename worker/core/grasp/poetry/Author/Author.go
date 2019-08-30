@@ -14,7 +14,6 @@ import (
 	"qiniupkg.com/x/errors.v7"
 	"strconv"
 	"strings"
-	"time"
 )
 
 type PoetryLinkMap map[int]define.LinkStr //诗词标题与链接信息
@@ -33,22 +32,13 @@ func NewAuthor() *Author {
 
 //发送获取作者详情和 诗词列表的请求
 func (a *Author) SendGraspAuthorDataReq(author *define.PoetryAuthorDetail, srcUrl string) {
-	var (
-		authorChan     chan bool
-		authorListChan chan bool
-	)
-
 	logrus.Infoln("AuthorContentUrl:", author.AuthorContentUrl)
 	logrus.Infof("author:%+v\n------------\n", author)
-
-	authorChan, authorListChan = make(chan bool), make(chan bool)
 	//发送获取作者详情信息请求
-	a.SetAuthorAttr(author).GraspAuthorDetail(author.AuthorSrcUrl, authorChan)
-	<-authorChan
+	a.SetAuthorAttr(author).GraspAuthorDetail(author.AuthorSrcUrl)
 	//发送获取作者诗词列表所有数据请求
 	if len(author.AuthorContentUrl) > 0 {
-		a.SetAuthorAttr(author).GraspAuthorPoetryList(author.AuthorContentUrl, authorListChan)
-		<-authorListChan
+		a.SetAuthorAttr(author).GraspAuthorPoetryList(author.AuthorContentUrl)
 	} else {
 		logrus.Infoln("srcUrl:", srcUrl)
 		logrus.Infof("%s---%s---%v\n", srcUrl, "err:AuthorContentUrl is nil", author)
@@ -62,10 +52,7 @@ func (a *Author) GraspByIndexData(data *define.HomeFormat) {
 }
 
 //抓取作者详情信息 /authorv_07d17f8539d7.aspx
-func (a *Author) GraspAuthorDetail(authorUrl string, endChan chan bool) {
-	defer func() {
-		endChan <- true
-	}()
+func (a *Author) GraspAuthorDetail(authorUrl string) {
 	var err error
 	logrus.Infoln("GraspAuthorDetail start..........")
 	if strings.Contains(authorUrl, "http") == false {
@@ -91,10 +78,7 @@ func (a *Author) GraspAuthorDetail(authorUrl string, endChan chan bool) {
 }
 
 //抓取作者诗词列表数据，并保存诗词列表  /authors/authorvsw_07d17f8539d7A1.aspx
-func (a *Author) GraspAuthorPoetryList(authorUrl string, endChan chan bool) {
-	defer func() {
-		endChan <- true
-	}()
+func (a *Author) GraspAuthorPoetryList(authorUrl string) {
 	var (
 		err        error
 		reqUrlList map[uint32]string
@@ -151,23 +135,20 @@ func (a *Author) sendPoetryPageListRequest() {
 	for i := 2; i <= totalPageNum; i++ {
 		iStr := strconv.Itoa(i)
 		url := strings.Replace(a.Url, "A1", "A"+iStr, -1)
-		go func() {
-			logrus.Infoln("url:", url)
-			if html, e := base.GetHtml(url); e == nil {
-				linkMp := a.parsePoetryListLink(html)
-				for _, link := range linkMp {
-					key := tools.Crc32(link.LinkUrl)
-					if _, ok := reqUrlList[key]; ok {
-						logrus.Infoln("--", link.LinkUrl, "--已存在")
-						continue
-					}
-					Content.NewContent().GraspContentSaveData(link.LinkUrl, link)
-					reqUrlList[key] = link.LinkUrl
-					logrus.Infoln("sendPoetryPageListRequest reqUrlList len :", len(reqUrlList))
+		logrus.Infoln("url:", url)
+		if html, e := base.GetHtml(url); e == nil {
+			linkMp := a.parsePoetryListLink(html)
+			for _, link := range linkMp {
+				key := tools.Crc32(link.LinkUrl)
+				if _, ok := reqUrlList[key]; ok {
+					logrus.Infoln("--", link.LinkUrl, "--已存在")
+					continue
 				}
+				Content.NewContent().GraspContentSaveData(link.LinkUrl, link)
+				reqUrlList[key] = link.LinkUrl
+				logrus.Infoln("sendPoetryPageListRequest reqUrlList len :", len(reqUrlList))
 			}
-		}()
-		time.Sleep(50 * time.Millisecond)
+		}
 	}
 }
 
