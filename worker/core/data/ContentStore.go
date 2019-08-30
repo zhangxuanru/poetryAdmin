@@ -179,7 +179,7 @@ func (c *contentStore) SavePoetryCategory() {
 		}
 		if _, err = models.NewDetailCategory().SaveDetailCategory(category); err != nil {
 			logrus.Infoln("SaveDetailCategory err:", err)
-			G_GraspResult.PushError(err, "SaveDetailCategory")
+			go G_GraspResult.PushError(err, "SaveDetailCategory")
 		}
 	}
 	return

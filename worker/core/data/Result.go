@@ -33,7 +33,9 @@ func NewGraspResult() *GraspResult {
 //发送错误消息
 func (g *GraspResult) PushError(err error, params ...interface{}) {
 	if err != nil {
-		g.err <- err
+		go func() {
+			g.err <- err
+		}()
 	}
 }
 
@@ -73,6 +75,7 @@ func (g *GraspResult) PrintMsg() {
 		select {
 		case err = <-g.err:
 			logrus.Debug("Execution error:", err)
+			g.WriteErrLog(err)
 		case data = <-g.Data:
 			g.storage.LoadData(data)
 		case parseData = <-g.ParseData:
@@ -80,6 +83,7 @@ func (g *GraspResult) PrintMsg() {
 				parseData.ParseFunc(parseData.Data, parseData.Params)
 			}()
 		case close = <-g.close:
+			logrus.Infoln("close:", close)
 			if len(g.Data) > 0 {
 				autoClose = true
 				logrus.Info("data 还有数据，暂时不能退出")
@@ -93,4 +97,26 @@ func (g *GraspResult) PrintMsg() {
 PRINTERR:
 	logrus.Debug("PrintMsg 结果处理结束......")
 	return
+}
+
+func (g *GraspResult) WriteErrLog(err error) {
+	if err == nil {
+		return
+	}
+	logrus.Infoln("WriteErrLog err:", err)
+	//logFile := fmt.Sprintf("error-log-%d-%d-%d", time.Now().Year(), time.Now().Month(), time.Now().Hour())
+	//file, err := os.OpenFile(logFile, os.O_CREATE|os.O_WRONLY|os.O_APPEND, os.ModePerm)
+	//defer file.Close()
+	///*
+	//		file.Write()
+	//		file.WriteString()
+	//	 io.WriteString()
+	//	ioutil.WriteFile()
+	//*/
+	//
+	//writeObj := bufio.NewWriterSize(file, 4096)
+	//buf := []byte(err)
+	//if _, err := writeObj.Write(buf); err == nil {
+	//	writeObj.Flush()
+	//}
 }

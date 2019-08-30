@@ -1,10 +1,10 @@
 package test
 
 import (
+	"errors"
 	"github.com/PuerkitoBio/goquery"
 	"github.com/sirupsen/logrus"
 	. "github.com/smartystreets/goconvey/convey"
-	url2 "net/url"
 	"poetryAdmin/worker/app/tools"
 	"poetryAdmin/worker/core/data"
 	"poetryAdmin/worker/core/define"
@@ -12,12 +12,21 @@ import (
 	"poetryAdmin/worker/core/grasp/poetry/Category"
 	"poetryAdmin/worker/core/grasp/poetry/Content"
 	"poetryAdmin/worker/core/parse"
+	"runtime"
 	"testing"
 	"time"
 )
 
 //单元测试--抓取首页
 func TestGrabsIndex(t *testing.T) {
+	runtime.GOMAXPROCS(runtime.NumCPU())
+	go data.NewGraspResult().PrintMsg()
+	go func() {
+		for {
+			logrus.Infoln("NumGoroutine:", runtime.NumGoroutine())
+			time.Sleep(10 * time.Second)
+		}
+	}()
 	var SubReceiveMsg parse.SubscribeMsg
 	Convey("测试抓取所有", t, func() {
 		SubReceiveMsg = parse.SubscribeMsg{
@@ -27,7 +36,9 @@ func TestGrabsIndex(t *testing.T) {
 			TaskMark: define.GrabPoetryAll,
 		}
 		parse.NewDispatch(SubReceiveMsg).Execution()
-		time.Sleep(20 * time.Second)
+		for {
+			time.Sleep(10 * time.Second)
+		}
 	})
 }
 
@@ -63,7 +74,7 @@ func TestContent(t *testing.T) {
 		},
 	}
 	if author := Content.NewContent().GetAuthorContentData(poetry); author.AuthorName != "" {
-		Author.NewAuthor().SendGraspAuthorDataReq(author)
+		Author.NewAuthor().SendGraspAuthorDataReq(author, "https://so.gushiwen.org/gushi/tangshi.aspx")
 	}
 
 	time.Sleep(15 * time.Second)
@@ -72,14 +83,11 @@ func TestContent(t *testing.T) {
 }
 
 func TestA(t *testing.T) {
-	surl := "/shiwenv_6368d3d62fcd.aspx"
-	str := "https://so.gushiwen.org/shiwenv_73add8822103.aspx"
-	url, _ := url2.Parse(str)
-	logrus.Infof("%+v", url.Path)
+	var err error
+	err = errors.New("aaaa")
 
-	url1, _ := url2.Parse(surl)
-	logrus.Infof("%+v", url1.Path)
-
+	logrus.Infoln(err == nil)
+	logrus.Infoln(err)
 	return
 
 	src := "https://song.gushiwen.org/authorImg/taoyuanming.jpg"

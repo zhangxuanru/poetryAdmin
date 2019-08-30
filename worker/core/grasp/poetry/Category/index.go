@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/PuerkitoBio/goquery"
+	"github.com/sirupsen/logrus"
 	"os"
 	"poetryAdmin/worker/app/config"
 	"poetryAdmin/worker/app/tools"
@@ -19,7 +20,8 @@ import (
 
 //诗文分类模块 抓取诗文分类
 type Category struct {
-	wg *sync.WaitGroup
+	wg  *sync.WaitGroup
+	url string
 }
 
 func NewCategory() *Category {
@@ -36,7 +38,7 @@ func (c *Category) GraspByIndexData(data *define.HomeFormat) {
 	}
 	c.wg.Add(len(datas))
 	for _, ret := range datas {
-		go c.GetCategorySource(ret.Href, ret)
+		c.GetCategorySource(ret.Href, ret)
 		time.Sleep(2 * time.Millisecond)
 	}
 	c.wg.Wait()
@@ -58,6 +60,8 @@ func (c *Category) GetCategorySource(url string, category *define.TextHrefFormat
 		data.G_GraspResult.PushError(err)
 		return
 	}
+	logrus.Infoln("GetCategorySource url:", url)
+	c.url = url
 	c.FindDocument(bytes, category)
 	return
 }
@@ -92,11 +96,12 @@ func (c *Category) FindDocument(bytes []byte, category *define.TextHrefFormat) (
 					AuthorName = strings.TrimRight(splitArr[1], ")")
 				}
 				poetryAuthors := &define.PoetryAuthorList{
-					AuthorName:      AuthorName,
-					PoetryTitle:     splitArr[0],
-					PoetrySourceUrl: href,
-					GenreTitle:      genreTitle,
-					Category:        category,
+					AuthorName:        AuthorName,
+					PoetryTitle:       splitArr[0],
+					PoetrySourceUrl:   href,
+					CategoryAuthorUrl: c.url,
+					GenreTitle:        genreTitle,
+					Category:          category,
 				}
 				dataMap[genreTitle] = append(dataMap[genreTitle], poetryAuthors)
 			}
@@ -108,7 +113,7 @@ func (c *Category) FindDocument(bytes []byte, category *define.TextHrefFormat) (
 		ParseFunc: data.NewCategoryStorage().LoadCategoryPoetryData,
 	}
 	data.G_GraspResult.SendParseData(sendData)
-	go c.goPoetryDetail(&dataMap)
+	c.goPoetryDetail(&dataMap)
 	return dataMap
 }
 
@@ -144,18 +149,14 @@ func (c *Category) goPoetryDetail(dataMap *define.PoetryDataMap) {
 		return true
 	})
 	for _, poetryAuthor := range authorListMp {
-		go func() {
-			if author := Content.NewContent().GetAuthorContentData(poetryAuthor); author.AuthorName != "" {
-				Author.NewAuthor().SendGraspAuthorDataReq(author)
-			}
-		}()
+		if author := Content.NewContent().GetAuthorContentData(poetryAuthor); author != nil && author.AuthorName != "" {
+			Author.NewAuthor().SendGraspAuthorDataReq(author, c.url)
+		}
 	}
 	for _, poetryAuthor := range authorList {
-		go func() {
-			if author := Content.NewContent().GetAuthorContentData(poetryAuthor); author.AuthorName != "" {
-				Author.NewAuthor().SendGraspAuthorDataReq(author)
-			}
-		}()
+		if author := Content.NewContent().GetAuthorContentData(poetryAuthor); author != nil && author.AuthorName != "" {
+			Author.NewAuthor().SendGraspAuthorDataReq(author, c.url)
+		}
 	}
 	//sysMap.Range(func(key, value interface{}) bool {
 	//	val := value.(*define.PoetryAuthorList)

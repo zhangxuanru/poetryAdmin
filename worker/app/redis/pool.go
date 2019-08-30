@@ -5,6 +5,7 @@ import (
 	redigo "github.com/gomodule/redigo/redis"
 	"github.com/sirupsen/logrus"
 	"reflect"
+	"strings"
 )
 
 func RedisPool() *redigo.Pool {
@@ -121,12 +122,18 @@ func SetNx(key string, val string, expire string) (lock bool, err error) {
 	if reply, err = Set(key, val, "EX", expire, "NX"); err != nil {
 		return false, err
 	}
-	if reply == nil {
-		return false, errors.New("设置失败")
-	}
-	locRet = reflect.ValueOf(reply).String()
-	if locRet != "OK" || locRet != "ok" {
+	locRet = strings.TrimSpace(reflect.ValueOf(reply).String())
+	logrus.Infoln("locRet:", locRet)
+	if locRet != "OK" && locRet != "ok" {
 		return false, errors.New("设置失败")
 	}
 	return true, nil
+}
+
+func IsNil(i interface{}) bool {
+	vi := reflect.ValueOf(i)
+	if vi.Kind() == reflect.Ptr {
+		return vi.IsNil()
+	}
+	return false
 }

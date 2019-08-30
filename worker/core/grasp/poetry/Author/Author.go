@@ -32,18 +32,28 @@ func NewAuthor() *Author {
 }
 
 //发送获取作者详情和 诗词列表的请求
-func (a *Author) SendGraspAuthorDataReq(author *define.PoetryAuthorDetail) {
+func (a *Author) SendGraspAuthorDataReq(author *define.PoetryAuthorDetail, srcUrl string) {
 	var (
 		authorChan     chan bool
 		authorListChan chan bool
 	)
+
+	logrus.Infoln(author.AuthorContentUrl)
+	logrus.Infof("%+v\n", author)
+
 	authorChan, authorListChan = make(chan bool), make(chan bool)
 	//发送获取作者详情信息请求
 	go a.SetAuthorAttr(author).GraspAuthorDetail(author.AuthorSrcUrl, authorChan)
 	//发送获取作者诗词列表所有数据请求
-	go a.SetAuthorAttr(author).GraspAuthorPoetryList(author.AuthorContentUrl, authorListChan)
+	if len(author.AuthorContentUrl) > 0 {
+		go a.SetAuthorAttr(author).GraspAuthorPoetryList(author.AuthorContentUrl, authorListChan)
+		<-authorListChan
+	} else {
+		logrus.Infoln("srcUrl:", srcUrl)
+		logrus.Infof("%s---%s---%v\n", srcUrl, "err:AuthorContentUrl is nil", author)
+		logrus.Infof("%+v\n\n", author)
+	}
 	<-authorChan
-	<-authorListChan
 }
 
 //通过首页抓取到的作者列表传到这里，这里循环数据去发送请求
@@ -84,7 +94,14 @@ func (a *Author) GraspAuthorPoetryList(authorUrl string, endChan chan bool) {
 	defer func() {
 		endChan <- true
 	}()
-	var err error
+	var (
+		err        error
+		reqUrlList map[uint32]string
+	)
+	if len(authorUrl) == 0 {
+		return
+	}
+	reqUrlList = make(map[uint32]string)
 	if strings.Contains(authorUrl, "http") == false {
 		authorUrl = config.G_Conf.GuShiWenPoetryUrl + strings.TrimLeft(authorUrl, "/")
 	}
@@ -97,12 +114,14 @@ func (a *Author) GraspAuthorPoetryList(authorUrl string, endChan chan bool) {
 	//获取当前页诗词链接信息
 	linkMp := a.parsePoetryListLink(a.Html)
 	for _, link := range linkMp {
+		key := tools.Crc32(link.LinkUrl)
+		if _, ok := reqUrlList[key]; ok {
+			continue
+		}
 		go Content.NewContent().GraspContentSaveData(link.LinkUrl, link)
-		break
+		reqUrlList[key] = link.LinkUrl
 	}
-	//-----上线时把注释打开
-	//	a.sendPoetryPageListRequest()
-	//-----
+	a.sendPoetryPageListRequest()
 }
 
 //获取诗词列表总页数并发送每页的请求
@@ -111,7 +130,9 @@ func (a *Author) sendPoetryPageListRequest() {
 		pageTotalStr string
 		totalPageNum int
 		err          error
+		reqUrlList   map[uint32]string
 	)
+	reqUrlList = make(map[uint32]string)
 	pageTotalStr = a.query.Find(".pagesright>span").Text()
 	if totalPageNum, err = tools.TrimAuthorTotalPageText(pageTotalStr); err != nil {
 		logrus.Infoln("getPoetryPageList err:", err)
@@ -129,7 +150,12 @@ func (a *Author) sendPoetryPageListRequest() {
 			if html, e := base.GetHtml(url); e == nil {
 				linkMp := a.parsePoetryListLink(html)
 				for _, link := range linkMp {
+					key := tools.Crc32(link.LinkUrl)
+					if _, ok := reqUrlList[key]; ok {
+						continue
+					}
 					go Content.NewContent().GraspContentSaveData(link.LinkUrl, link)
+					reqUrlList[key] = link.LinkUrl
 				}
 			}
 		}()

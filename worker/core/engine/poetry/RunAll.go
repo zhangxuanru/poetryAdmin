@@ -1,6 +1,10 @@
 package poetry
 
 import (
+	"github.com/sirupsen/logrus"
+	"poetryAdmin/worker/app/config"
+	"poetryAdmin/worker/app/redis"
+	"poetryAdmin/worker/core/data"
 	"poetryAdmin/worker/core/define"
 	"poetryAdmin/worker/core/grasp/poetry/Index"
 	"reflect"
@@ -17,6 +21,13 @@ func NewRunAll() *RunAll {
 //执行全站抓取
 func (r *RunAll) Run() {
 	//先获取锁  临时注释
+	if config.G_Conf.Env != define.TestEnv {
+		if _, err := redis.SetNx(r.GetLockKey(), "1", "3600"); err != nil {
+			logrus.Infoln("err:", err)
+			go data.G_GraspResult.PushErrorAndClose(err)
+			return
+		}
+	}
 	//if _, err := redis.SetNx(r.GetLockKey(), "1", "3600"); err != nil {
 	//	go data.G_GraspResult.PushErrorAndClose(err)
 	//	return
@@ -35,6 +46,8 @@ func (r *RunAll) GetLockKey() (key string) {
 //执行抓取
 func (r *RunAll) Execution() {
 	Index.NewIndex().GetAllData()
+	//抓取古籍
+
 	//临时关掉， 还没确定在哪一步关闭获取结果的goroutine
 	//defer data.G_GraspResult.PushCloseMark(true)
 }

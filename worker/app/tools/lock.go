@@ -13,9 +13,9 @@ func NewLock() *Lock {
 }
 
 func (l *Lock) AddKey(key interface{}) bool {
-	//test
-	return true
-	//test
+	////test
+	//return true
+	////test
 	if _, err := redis.Set(key, 1); err != nil {
 		return false
 	}
@@ -23,16 +23,16 @@ func (l *Lock) AddKey(key interface{}) bool {
 }
 
 func (l *Lock) DelKey(key interface{}) {
-	//test---
-	return
-	//test--
+	////test---
+	//return
+	////test--
 	redis.Del(key)
 }
 
 func (l *Lock) ExistsKey(key interface{}) bool {
-	//test--
-	return false
-	//test--
+	////test--
+	//return false
+	////test--
 	var (
 		data interface{}
 		err  error
