@@ -79,9 +79,7 @@ func (g *GraspResult) PrintMsg() {
 		case data = <-g.Data:
 			g.storage.LoadData(data)
 		case parseData = <-g.ParseData:
-			go func() {
-				parseData.ParseFunc(parseData.Data, parseData.Params)
-			}()
+			parseData.ParseFunc(parseData.Data, parseData.Params)
 		case close = <-g.close:
 			logrus.Infoln("close:", close)
 			if len(g.Data) > 0 {
@@ -104,7 +102,7 @@ func (g *GraspResult) WriteErrLog(err error) {
 		return
 	}
 	logrus.Infoln("WriteErrLog err:", err)
-	//logFile := fmt.Sprintf("error-log-%d-%d-%d", time.Now().Year(), time.Now().Month(), time.Now().Hour())
+	//logFile := fmt.Sprintf("error-log-%d-%d-%d.log", time.Now().Year(), time.Now().Month(), time.Now().Hour())
 	//file, err := os.OpenFile(logFile, os.O_CREATE|os.O_WRONLY|os.O_APPEND, os.ModePerm)
 	//defer file.Close()
 	///*

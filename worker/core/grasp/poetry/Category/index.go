@@ -150,12 +150,16 @@ func (c *Category) goPoetryDetail(dataMap *define.PoetryDataMap) {
 	})
 	for _, poetryAuthor := range authorListMp {
 		if author := Content.NewContent().GetAuthorContentData(poetryAuthor); author != nil && author.AuthorName != "" {
+			logrus.Infoln("开始抓取：", author.AuthorName, "的诗词,来源页:", c.url, "--start")
 			Author.NewAuthor().SendGraspAuthorDataReq(author, c.url)
+			logrus.Infoln("抓取：", author.AuthorName, "的诗词,来源页:", c.url, "--end")
 		}
 	}
 	for _, poetryAuthor := range authorList {
 		if author := Content.NewContent().GetAuthorContentData(poetryAuthor); author != nil && author.AuthorName != "" {
+			logrus.Infoln("开始抓取：", author.AuthorName, "的诗词,来源页:", c.url, "--start")
 			Author.NewAuthor().SendGraspAuthorDataReq(author, c.url)
+			logrus.Infoln("抓取：", author.AuthorName, "的诗词,来源页:", c.url, "--end")
 		}
 	}
 	//sysMap.Range(func(key, value interface{}) bool {

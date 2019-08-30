@@ -38,22 +38,22 @@ func (a *Author) SendGraspAuthorDataReq(author *define.PoetryAuthorDetail, srcUr
 		authorListChan chan bool
 	)
 
-	logrus.Infoln(author.AuthorContentUrl)
-	logrus.Infof("%+v\n", author)
+	logrus.Infoln("AuthorContentUrl:", author.AuthorContentUrl)
+	logrus.Infof("author:%+v\n------------\n", author)
 
 	authorChan, authorListChan = make(chan bool), make(chan bool)
 	//发送获取作者详情信息请求
-	go a.SetAuthorAttr(author).GraspAuthorDetail(author.AuthorSrcUrl, authorChan)
+	a.SetAuthorAttr(author).GraspAuthorDetail(author.AuthorSrcUrl, authorChan)
+	<-authorChan
 	//发送获取作者诗词列表所有数据请求
 	if len(author.AuthorContentUrl) > 0 {
-		go a.SetAuthorAttr(author).GraspAuthorPoetryList(author.AuthorContentUrl, authorListChan)
+		a.SetAuthorAttr(author).GraspAuthorPoetryList(author.AuthorContentUrl, authorListChan)
 		<-authorListChan
 	} else {
 		logrus.Infoln("srcUrl:", srcUrl)
 		logrus.Infof("%s---%s---%v\n", srcUrl, "err:AuthorContentUrl is nil", author)
 		logrus.Infof("%+v\n\n", author)
 	}
-	<-authorChan
 }
 
 //通过首页抓取到的作者列表传到这里，这里循环数据去发送请求
@@ -67,6 +67,7 @@ func (a *Author) GraspAuthorDetail(authorUrl string, endChan chan bool) {
 		endChan <- true
 	}()
 	var err error
+	logrus.Infoln("GraspAuthorDetail start..........")
 	if strings.Contains(authorUrl, "http") == false {
 		authorUrl = config.G_Conf.GuShiWenPoetryUrl + strings.TrimLeft(authorUrl, "/")
 	}
@@ -98,7 +99,9 @@ func (a *Author) GraspAuthorPoetryList(authorUrl string, endChan chan bool) {
 		err        error
 		reqUrlList map[uint32]string
 	)
+	logrus.Infoln("GraspAuthorPoetryList start..........")
 	if len(authorUrl) == 0 {
+		logrus.Infoln("GraspAuthorPoetryList  err: authorUrl is nil")
 		return
 	}
 	reqUrlList = make(map[uint32]string)
@@ -116,12 +119,15 @@ func (a *Author) GraspAuthorPoetryList(authorUrl string, endChan chan bool) {
 	for _, link := range linkMp {
 		key := tools.Crc32(link.LinkUrl)
 		if _, ok := reqUrlList[key]; ok {
+			logrus.Infoln("--", link.LinkUrl, "--已存在")
 			continue
 		}
-		go Content.NewContent().GraspContentSaveData(link.LinkUrl, link)
+		Content.NewContent().GraspContentSaveData(link.LinkUrl, link)
 		reqUrlList[key] = link.LinkUrl
+		logrus.Infoln("GraspAuthorPoetryList reqUrlList len:", len(reqUrlList))
 	}
 	a.sendPoetryPageListRequest()
+	return
 }
 
 //获取诗词列表总页数并发送每页的请求
@@ -152,14 +158,16 @@ func (a *Author) sendPoetryPageListRequest() {
 				for _, link := range linkMp {
 					key := tools.Crc32(link.LinkUrl)
 					if _, ok := reqUrlList[key]; ok {
+						logrus.Infoln("--", link.LinkUrl, "--已存在")
 						continue
 					}
-					go Content.NewContent().GraspContentSaveData(link.LinkUrl, link)
+					Content.NewContent().GraspContentSaveData(link.LinkUrl, link)
 					reqUrlList[key] = link.LinkUrl
+					logrus.Infoln("sendPoetryPageListRequest reqUrlList len :", len(reqUrlList))
 				}
 			}
 		}()
-		time.Sleep(5 * time.Millisecond)
+		time.Sleep(50 * time.Millisecond)
 	}
 }
 

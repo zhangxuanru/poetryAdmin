@@ -1,7 +1,6 @@
 package test
 
 import (
-	"errors"
 	"github.com/PuerkitoBio/goquery"
 	"github.com/sirupsen/logrus"
 	. "github.com/smartystreets/goconvey/convey"
@@ -82,12 +81,18 @@ func TestContent(t *testing.T) {
 	//Content.NewContent().GraspContentSaveData("/shiwenv_73add8822103.aspx", nil)
 }
 
+func a(ch chan bool) {
+	defer func() {
+		ch <- true
+	}()
+	time.Sleep(3 * time.Second)
+	return
+}
 func TestA(t *testing.T) {
-	var err error
-	err = errors.New("aaaa")
-
-	logrus.Infoln(err == nil)
-	logrus.Infoln(err)
+	ch := make(chan bool)
+	go a(ch)
+	<-ch
+	logrus.Infoln("tttttt")
 	return
 
 	src := "https://song.gushiwen.org/authorImg/taoyuanming.jpg"

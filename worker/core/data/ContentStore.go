@@ -42,6 +42,7 @@ func (c *contentStore) LoadPoetryContentData(data interface{}, params interface{
 		logrus.Infoln("LoadPoetryContentData error: params conver LinkStr error")
 	}
 	if err = c.SetAttrData(); err != nil {
+		logrus.Infoln("SetAttrData err:", err)
 		return
 	}
 	//1.写入诗词表， 先写诗词表，拿到诗词ID 再做下面的处理
@@ -74,6 +75,10 @@ func (c *contentStore) SetAttrData() (err error) {
 	} else {
 		if dynastyId, err = models.NewDynasty().GetIdBySaveName(c.detail.Author.DynastyName); err == nil {
 			c.detail.Author.DynastyId = int(dynastyId)
+		} else {
+			time.Sleep(10 * time.Millisecond)
+			dynastyId, err = models.NewDynasty().GetIdBySaveName(c.detail.Author.DynastyName)
+			c.detail.Author.DynastyId = int(dynastyId)
 		}
 		authorMod := &models.Author{
 			Author:      c.detail.Author.AuthorName,
@@ -84,10 +89,15 @@ func (c *contentStore) SetAttrData() (err error) {
 			AuthorIntro: c.detail.Author.Introduction,
 			PoetryCount: c.detail.Author.AuthorTotalPoetry,
 		}
-		c.detail.Author.AuthorId, err = models.NewAuthor().SaveAuthor(authorMod)
+		if c.detail.Author.AuthorId, err = models.NewAuthor().SaveAuthor(authorMod); err != nil {
+			time.Sleep(100 * time.Millisecond)
+			author, err = models.GetAuthorDataByAuthorName(c.detail.Author.AuthorName)
+			c.detail.Author.AuthorId = int64(author.Id)
+		}
 	}
 	if c.detail.Author.AuthorId == 0 {
 		logrus.Infoln("content.Author.AuthorId eq 0; err:", err)
+		err = errors.New("c.detail.Author.AuthorId is eq 0")
 	}
 	return
 }
