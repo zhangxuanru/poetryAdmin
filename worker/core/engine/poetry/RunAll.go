@@ -6,6 +6,7 @@ import (
 	"poetryAdmin/worker/app/redis"
 	"poetryAdmin/worker/core/data"
 	"poetryAdmin/worker/core/define"
+	"poetryAdmin/worker/core/grasp/ancient/Entrance"
 	"poetryAdmin/worker/core/grasp/poetry/Index"
 	"reflect"
 )
@@ -45,8 +46,12 @@ func (r *RunAll) GetLockKey() (key string) {
 
 //执行抓取
 func (r *RunAll) Execution() {
-	Index.NewIndex().GetAllData()
 	//抓取古籍
+	go Entrance.NewGrab().Exec()
+	//抓取诗词
+	Index.NewIndex().GetAllData()
+
+	//抓取名句
 
 	//临时关掉， 还没确定在哪一步关闭获取结果的goroutine
 	//defer data.G_GraspResult.PushCloseMark(true)

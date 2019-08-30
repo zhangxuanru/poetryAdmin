@@ -7,17 +7,18 @@ import (
 )
 
 type Config struct {
-	RedisHost         string `json:"redis_host"`
-	PubChannelTitle   string `json:"pubChannelTitle"`
-	GuShiWenIndexUrl  string `json:"gushiwenIndexUrl"`
-	GuShiWenPoetryUrl string `json:"gushiwenPoetryUrl"`
-	GushiwenSongUrl   string `json:"gushiwenSongUrl"`
-	ShiCiMingJuUrl    string `json:"shicimingjuUrl"`
-	Env               string `json:"env"`
-	DataSource        string `json:"dataSource"`
-	AccessKey         string `json:"accessKey"`
-	SecretKey         string `json:"secretKey"`
-	Bucket            string `json:"bucket"`
+	RedisHost          string `json:"redis_host"`
+	PubChannelTitle    string `json:"pubChannelTitle"`
+	GuShiWenIndexUrl   string `json:"gushiwenIndexUrl"`
+	GuShiWenPoetryUrl  string `json:"gushiwenPoetryUrl"`
+	GushiwenSongUrl    string `json:"gushiwenSongUrl"`
+	ShiCiMingJuUrl     string `json:"shicimingjuUrl"`
+	GushiwenAncientUrl string `json:"gushiwenAncientUrl"`
+	Env                string `json:"env"`
+	DataSource         string `json:"dataSource"`
+	AccessKey          string `json:"accessKey"`
+	SecretKey          string `json:"secretKey"`
+	Bucket             string `json:"bucket"`
 }
 
 var (
