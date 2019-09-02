@@ -23,3 +23,14 @@ type GuWenCategoryBookHtml struct {
 	GuWenCategory
 	Html []byte
 }
+
+//分类下的书籍信息
+type GuWenBookCover struct {
+	Title        string
+	LinkUrl      string
+	SongUrl      string
+	SongSrcUrl   string
+	Introduction string
+	FamousTotal  int
+	CoverChart   string
+}
