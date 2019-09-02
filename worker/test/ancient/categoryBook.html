@@ -1,0 +1,514 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head><meta http-equiv="Cache-Control" content="no-siteapp" /><meta http-equiv="Cache-Control" content="no-transform " /><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><title>
+        礼类_古诗文网
+    </title>
+    <script type="text/javascript">
+        if ((navigator.userAgent.match(/(phone|pad|pod|iPhone|iPod|ios|iPad|Android|Mobile|BlackBerry|IEMobile|MQQBrowser|JUC|Fennec|wOSBrowser|BrowserNG|WebOS|Symbian|Windows Phone)/i))) {
+            window.location.href = "https://m.gushiwen.org/guwen/Default.aspx?p=1&type=%e7%a4%bc%e7%b1%bb";
+        } else {
+
+        }
+    </script>
+    <link href="/css/skinSo20190816.css" rel="stylesheet" type="text/css" />
+    <script type="text/javascript">
+        //取得cookie值
+        function getCookie(name) {
+            var arr, reg = new RegExp("(^| )" + name + "=([^;]*)(;|$)");
+
+            if (arr = document.cookie.match(reg))
+
+                return unescape(arr[2]);
+            else
+                return null;
+        }
+
+        //判断收藏
+        function selectLike(id) {
+            document.getElementById('likeImg' + id).name = parseInt(document.getElementById('likeImg' + id).name) + 1;
+            if (document.getElementById('likeImg' + id).name == '1') {
+                var idsShigeLaiyo = getCookie('idsShiwen2017');
+                if (idsShigeLaiyo != null && idsShigeLaiyo != '') {
+                    var ids = idsShigeLaiyo.split(',');
+                    for (var i = 0; i < ids.length; i++) {
+                        if (ids[i] == id) {
+                            document.getElementById('likeImg' + id).src = 'https://song.gushiwen.org/siteimg/shoucangok.png';
+                            document.getElementById('likeImg' + id).alt = '已收藏';
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+
+        //判断收藏名句
+        function selectLikeMingju(id) {
+            document.getElementById('likeImg' + id).name = parseInt(document.getElementById('likeImg' + id).name) + 1;
+            if (document.getElementById('likeImg' + id).name == '1') {
+                var idsShigeLaiyo = getCookie('idsMingju2017');
+                if (idsShigeLaiyo != null && idsShigeLaiyo != '') {
+                    var ids = idsShigeLaiyo.split(',');
+                    for (var i = 0; i < ids.length; i++) {
+                        if (ids[i] == id) {
+                            document.getElementById('likeImg' + id).src = 'https://song.gushiwen.org/siteimg/shoucangok.png';
+                            document.getElementById('likeImg' + id).alt = '已收藏';
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+
+        //判断收藏作者
+        function selectLikeAuthor(id) {
+            document.getElementById('likeImg' + id).name = parseInt(document.getElementById('likeImg' + id).name) + 1;
+            if (document.getElementById('likeImg' + id).name == '1') {
+                var idsShigeLaiyo = getCookie('idsAuthor2017');
+                if (idsShigeLaiyo != null && idsShigeLaiyo != '') {
+                    var ids = idsShigeLaiyo.split(',');
+                    for (var i = 0; i < ids.length; i++) {
+                        if (ids[i] == id) {
+                            document.getElementById('likeImg' + id).src = 'https://song.gushiwen.org/siteimg/shoucangok.png';
+                            document.getElementById('likeImg' + id).alt = '已收藏';
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+
+        //判断收藏古籍
+        function selectLikeGuwen(id) {
+            document.getElementById('likeImg' + id).name = parseInt(document.getElementById('likeImg' + id).name) + 1;
+            if (document.getElementById('likeImg' + id).name == '1') {
+                var idsShigeLaiyo = getCookie('idsGuji2017');
+                if (idsShigeLaiyo != null && idsShigeLaiyo != '') {
+                    var ids = idsShigeLaiyo.split(',');
+                    for (var i = 0; i < ids.length; i++) {
+                        if (ids[i] == id) {
+                            document.getElementById('likeImg' + id).src = 'https://song.gushiwen.org/siteimg/shoucangok.png';
+                            document.getElementById('likeImg' + id).alt = '已收藏';
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <script>
+        var _hmt = _hmt || [];
+        (function () {
+            var hm = document.createElement("script");
+            hm.src = "//hm.baidu.com/hm.js?04660099568f561a75456483228a9516";
+            var s = document.getElementsByTagName("script")[0];
+            s.parentNode.insertBefore(hm, s);
+        })();
+    </script>
+</head>
+<body onclick="closeshowBos()">
+<div class="main1">
+    <div class="cont">
+        <div class="left">
+            <a href="https://www.gushiwen.org/">古诗文网</a>
+        </div>
+        <div class="right">
+            <div class="son1">
+                <a style="margin-left:1px;" href="https://www.gushiwen.org/">推荐</a>
+
+                <a href="https://so.gushiwen.org/shiwen/">诗文</a>
+
+                <a href="/mingju/">名句</a>
+
+                <a href="/authors/">作者</a>
+
+                <a href="/guwen/" style="background-color:#757863;border-bottom:3px solid #F0EFE2;line-height:43px; height:43px;">古籍</a>
+
+                <a href="/user/collect.aspx" rel="nofollow">我的</a>
+
+
+                <a style="width:65px;" href="/app/" target="_blank">手机版</a>
+            </div>
+            <div class="son2">
+                <div class="search">
+                    <form action="/search.aspx" onsubmit="return selectSearch()" contentType="text/html; charset=utf-8">
+                        <input onkeydown="noajaxkeyUp()" onfocus="setInterval('showBos()',1000)" id="txtKey" name="value" type="text" value="" maxlength="40" autocomplete="off" style="height:25px; line-height:25px; float:left; padding-left:5px; width:264px; font-size:14px; clear:left; border:0px;" />
+                        <input type="submit" style="float:right; width:20px; height:20px; clear:right; margin-top:4px; margin-right:3px; background-image:url(https://song.gushiwen.org/siteimg/docSearch.png); background-repeat:no-repeat; background-size:20px 20px; border:0px;cursor:pointer;" value="" />
+                        <input id="b" style="display:none;" type="text" />
+                    </form>
+                </div>
+                <div id="box"></div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<div class="main3">
+    <div class="left">
+        <div class="titletype">
+            <div class="son1"><h1>礼类<span>1 / 1页</span></h1></div>
+
+            <div class="son2">
+                <div class="sleft">
+
+                    <a style="float:left; margin-top:14px; font-size:14px;" href="/guwen/Default.aspx?p=1&type=%e7%bb%8f%e9%83%a8">经部：</a>
+
+
+                </div>
+                <div class="sright">
+
+                    <a style=" width:auto; margin-right:16px;" href="/guwen/Default.aspx?p=1&type=%e6%98%93%e7%b1%bb">易类</a>
+
+                    <a style=" width:auto; margin-right:16px;" href="/guwen/Default.aspx?p=1&type=%e4%b9%a6%e7%b1%bb">书类</a>
+
+                    <a style=" width:auto; margin-right:16px;" href="/guwen/Default.aspx?p=1&type=%e8%af%97%e7%b1%bb">诗类</a>
+                    <span  style="width:auto; margin-right:16px;" >礼类</span>
+                    <a style="width:auto; margin-right:16px;" href="/guwen/Default.aspx?p=1&type=%e6%98%a5%e7%a7%8b%e7%b1%bb">春秋类</a>
+
+                    <a style="width:auto; margin-right:16px;" href="/guwen/Default.aspx?p=1&type=%e5%ad%9d%e7%bb%8f%e7%b1%bb">孝经类</a>
+
+                    <a style="width:auto; margin-right:16px;" href="/guwen/Default.aspx?p=1&type=%e4%ba%94%e7%bb%8f%e6%80%bb%e4%b9%89%e7%b1%bb">五经总义类</a>
+
+                    <a style="width:auto; margin-right:16px;" href="/guwen/Default.aspx?p=1&type=%e5%9b%9b%e4%b9%a6%e7%b1%bb">四书类</a>
+
+                    <a style=" width:auto; margin-right:16px;" href="/guwen/Default.aspx?p=1&type=%e4%b9%90%e7%b1%bb">乐类</a>
+
+                    <a style="width:auto; margin-right:16px;" href="/guwen/Default.aspx?p=1&type=%e5%b0%8f%e5%ad%a6%e7%b1%bb">小学类</a>
+
+                </div>
+            </div>
+            <div id="type1" class="son2" style=" height:26px;">
+                <div class="sleft">
+
+                    <a style="float:left; margin-top:14px; font-size:14px;" href="/guwen/Default.aspx?p=1&type=%e5%8f%b2%e9%83%a8">史部：</a>
+
+                </div>
+                <div class="sright" style="width:550px;">
+
+                    <a style="width:auto; margin-right:16px;" href="/guwen/Default.aspx?p=1&type=%e6%ad%a3%e5%8f%b2%e7%b1%bb">正史类</a>
+
+                    <a style="width:auto; margin-right:16px;" href="/guwen/Default.aspx?p=1&type=%e7%bc%96%e5%b9%b4%e7%b1%bb">编年类</a>
+
+                    <a style="width:auto; margin-right:16px;" href="/guwen/Default.aspx?p=1&type=%e7%ba%aa%e4%ba%8b%e6%9c%ac%e6%9c%ab%e7%b1%bb">纪事本末类</a>
+
+                    <a style="width:auto; margin-right:16px;" href="/guwen/Default.aspx?p=1&type=%e6%9d%82%e5%8f%b2%e7%b1%bb">杂史类</a>
+
+                    <a style="width:auto; margin-right:16px;" href="/guwen/Default.aspx?p=1&type=%e5%88%ab%e5%8f%b2%e7%b1%bb">别史类</a>
+
+                    <a style="width:auto; margin-right:16px;" href="/guwen/Default.aspx?p=1&type=%e8%af%8f%e4%bb%a4%e5%a5%8f%e8%ae%ae%e7%b1%bb">诏令奏议类</a>
+
+                    <a style="width:auto; margin-right:16px;" href="/guwen/Default.aspx?p=1&type=%e4%bc%a0%e8%ae%b0%e7%b1%bb">传记类</a>
+
+                    <a style="width:auto; margin-right:16px;" href="/guwen/Default.aspx?p=1&type=%e5%8f%b2%e9%92%9e%e7%b1%bb">史钞类</a>
+
+                    <a style="width:auto; margin-right:16px;" href="/guwen/Default.aspx?p=1&type=%e8%bd%bd%e8%ae%b0%e7%b1%bb">载记类</a>
+
+                    <a style="width:auto; margin-right:16px;" href="/guwen/Default.aspx?p=1&type=%e6%97%b6%e4%bb%a4%e7%b1%bb">时令类</a>
+
+                    <a style="width:auto; margin-right:16px;" href="/guwen/Default.aspx?p=1&type=%e5%9c%b0%e7%90%86%e7%b1%bb">地理类</a>
+
+                    <a style="width:auto; margin-right:16px;" href="/guwen/Default.aspx?p=1&type=%e8%81%8c%e5%ae%98%e7%b1%bb">职官类</a>
+
+                    <a style="width:auto; margin-right:16px;" href="/guwen/Default.aspx?p=1&type=%e6%94%bf%e4%b9%a6%e7%b1%bb">政书类</a>
+
+                    <a style="width:auto; margin-right:16px;" href="/guwen/Default.aspx?p=1&type=%e7%9b%ae%e5%bd%95%e7%b1%bb">目录类</a>
+
+                    <a style="width:auto; margin-right:16px;" href="/guwen/Default.aspx?p=1&type=%e5%8f%b2%e8%af%84%e7%b1%bb">史评类</a>
+
+                </div>
+                <div class="sright2"><img id="imgType1" src="https://song.gushiwen.org/siteimg/jianTop.png" alt="展开" width="12" height="12" onclick="clickType()" /></div>
+            </div>
+            <div  id="type2"class="son2" style=" height:26px;">
+                <div class="sleft">
+
+                    <a style="float:left; margin-top:14px; font-size:14px;" href="/guwen/Default.aspx?p=1&type=%e5%ad%90%e9%83%a8">子部：</a>
+
+                </div>
+                <div class="sright" style="width:550px;">
+
+                    <a style="width:auto; margin-right:16px;" href="/guwen/Default.aspx?p=1&type=%e5%84%92%e5%ae%b6%e7%b1%bb">儒家类</a>
+
+                    <a style="width:auto; margin-right:16px;" href="/guwen/Default.aspx?p=1&type=%e5%85%b5%e5%ae%b6%e7%b1%bb">兵家类</a>
+
+                    <a style="width:auto; margin-right:16px;" href="/guwen/Default.aspx?p=1&type=%e6%b3%95%e5%ae%b6%e7%b1%bb">法家类</a>
+
+                    <a style="width:auto; margin-right:16px;" href="/guwen/Default.aspx?p=1&type=%e5%86%9c%e5%ae%b6%e7%b1%bb">农家类</a>
+
+                    <a style="width:auto; margin-right:16px;" href="/guwen/Default.aspx?p=1&type=%e5%8c%bb%e5%ae%b6%e7%b1%bb">医家类</a>
+
+                    <a style="width:auto; margin-right:16px;" href="/guwen/Default.aspx?p=1&type=%e5%a4%a9%e6%96%87%e7%ae%97%e6%b3%95%e7%b1%bb">天文算法类</a>
+
+                    <a style="width:auto; margin-right:16px;" href="/guwen/Default.aspx?p=1&type=%e6%9c%af%e6%95%b0%e7%b1%bb">术数类</a>
+
+                    <a style="width:auto; margin-right:16px;" href="/guwen/Default.aspx?p=1&type=%e8%89%ba%e6%9c%af%e7%b1%bb">艺术类</a>
+
+                    <a style="width:auto; margin-right:16px;" href="/guwen/Default.aspx?p=1&type=%e8%b0%b1%e5%bd%95%e7%b1%bb">谱录类</a>
+
+                    <a style="width:auto; margin-right:16px;" href="/guwen/Default.aspx?p=1&type=%e6%9d%82%e5%ae%b6%e7%b1%bb">杂家类</a>
+
+                    <a style="width:auto; margin-right:16px;" href="/guwen/Default.aspx?p=1&type=%e7%b1%bb%e4%b9%a6%e7%b1%bb">类书类</a>
+
+                    <a style="width:auto; margin-right:16px;" href="/guwen/Default.aspx?p=1&type=%e5%b0%8f%e8%af%b4%e5%ae%b6%e7%b1%bb">小说家类</a>
+
+                    <a style="width:auto; margin-right:16px;" href="/guwen/Default.aspx?p=1&type=%e9%87%8a%e5%ae%b6%e7%b1%bb">释家类</a>
+
+                    <a style="width:auto; margin-right:16px;" href="/guwen/Default.aspx?p=1&type=%e9%81%93%e5%ae%b6%e7%b1%bb">道家类</a>
+
+                </div>
+                <div class="sright2"><img id="imgType2" src="https://song.gushiwen.org/siteimg/jianTop.png" alt="展开" width="12" height="12" onclick="clickType2()" /></div>
+            </div>
+            <div class="son2" style=" margin-bottom:5px;border-bottom:0px;">
+                <div class="sleft">
+
+                    <a style="float:left; margin-top:14px; font-size:14px;" href="/guwen/Default.aspx?p=1&type=%e9%9b%86%e9%83%a8">集部：</a>
+
+                </div>
+                <div class="sright" style="width:550px;">
+
+                    <a style="width:auto; margin-right:16px;" href="/guwen/Default.aspx?p=1&type=%e6%a5%9a%e8%be%9e%e7%b1%bb">楚辞类</a>
+
+                    <a style="width:auto; margin-right:16px;" href="/guwen/Default.aspx?p=1&type=%e5%88%ab%e9%9b%86%e7%b1%bb">别集类</a>
+
+                    <a style="width:auto; margin-right:16px;" href="/guwen/Default.aspx?p=1&type=%e6%80%bb%e9%9b%86%e7%b1%bb">总集类</a>
+
+                    <a style="width:auto; margin-right:16px;" href="/guwen/Default.aspx?p=1&type=%e8%af%97%e6%96%87%e8%af%84%e7%b1%bb">诗文评类</a>
+
+                    <a style="width:auto; margin-right:16px;" href="/guwen/Default.aspx?p=1&type=%e8%af%8d%e6%9b%b2%e7%b1%bb">词曲类</a>
+
+                </div>
+            </div>
+        </div>
+
+        <div style=" width:1px; height:1px; overflow:hidden;">
+            <textarea style=" background-color:#F0EFE2; border:0px;overflow:hidden;" cols="1" rows="1" id="txtareAuthor20">《大学章句集注》是由宋代哲学家、思想家朱熹所著。是朱熹对《大学章句》的注释，它是朱熹用力最勤的著作。《四书集注》是朱熹的代表著作之一，也是四书上升为儒家经典的地位以后，诸多注解中最有权威和影响最大的一种。https://so.gushiwen.org/guwen/book_20.aspx</textarea>
+        </div>
+        <div class="sonspic">
+            <div class="cont" style="margin-top:13px;">
+                <div class="divimg" style="margin-top:2px;">
+                    <a href="/guwen/book_20.aspx" target="_blank"><img src="https://song.gushiwen.org/bookPic/daxuezhangjujizhu.jpg" width="105" height="150" alt="大学章句集注"/></a>
+                </div>
+                <p style="height:22px;">
+                    <a target="_blank" style="font-size:18px; line-height:22px; height:22px;" href="/guwen/book_20.aspx"><b>大学章句集注</b></a>
+                    <a style="margin-left:5px;" href="javascript:PlayBook(20)"><img id="speakerimgBook20" src="https://song.gushiwen.org/siteimg/speaker.png" / alt="" width="16" height="16"/></a>
+                    <span id="bookPlay20" style=" display:none;width:1px; height:1px;"></span>
+                </p>
+                <p style=" margin:0px;">《大学章句集注》是由宋代哲学家、思想家朱熹所著。是朱熹对《大学章句》的注释，它是朱熹用力最勤的著作。《四书集注》是朱熹的代表著作之一，也是四书上升为儒家经典的地位以后，诸多注解中最有权威和影响最大的一种。</p>
+            </div>
+            <div class="tool">
+                <div class="shoucang"><img id="likeImg20" name="0" onload="selectLikeGuwen(20)" onclick="changeLikeGuwen(20,'http://so.gushiwen.org/guwen/Default.aspx?p=1&type=%e7%a4%bc%e7%b1%bb')" src="https://song.gushiwen.org/siteimg/shoucang.png" alt="收藏" width="18" height="18" /></div>
+                <div class="toolpinglun"><a href="https://so.gushiwen.org/app/"><img src="https://song.gushiwen.org/siteimg/download.png" alt="下载" width="18" height="18" /></a></div>
+                <div class="toolpinglun"><a href="javascript:copyAuthor(20)"><img src="https://song.gushiwen.org/siteimg/copy.png" alt="复制" width="18" height="18" /></a></div>
+                <div class="jiucuo"><a href="/jiucuo.aspx?u=%e5%8f%a4%e7%b1%8d20%e3%80%8a%e5%a4%a7%e5%ad%a6%e7%ab%a0%e5%8f%a5%e9%9b%86%e6%b3%a8%e3%80%8b" target="_blank">完善</a></div>
+            </div>
+        </div>
+
+        <div style=" width:1px; height:1px; overflow:hidden;">
+            <textarea style=" background-color:#F0EFE2; border:0px;overflow:hidden;" cols="1" rows="1" id="txtareAuthor11">《孟子》是中国儒家典籍中的一部，记录了战国时期思想家孟子的治国思想和政治策略，是孟子和他的弟子记录并整理而成的。《孟子》在儒家典籍中占有很重要的地位，为“四书”之一。https://so.gushiwen.org/guwen/book_11.aspx</textarea>
+        </div>
+        <div class="sonspic">
+            <div class="cont" style="margin-top:13px;">
+                <div class="divimg" style="margin-top:2px;">
+                    <a href="/guwen/book_11.aspx" target="_blank"><img src="https://song.gushiwen.org/bookPic/mengzi.jpg" width="105" height="150" alt="孟子"/></a>
+                </div>
+                <p style="height:22px;">
+                    <a target="_blank" style="font-size:18px; line-height:22px; height:22px;" href="/guwen/book_11.aspx"><b>孟子</b></a>
+                    <a style="margin-left:5px;" href="javascript:PlayBook(11)"><img id="speakerimgBook11" src="https://song.gushiwen.org/siteimg/speaker.png" / alt="" width="16" height="16"/></a>
+                    <span id="bookPlay11" style=" display:none;width:1px; height:1px;"></span>
+                </p>
+                <p style=" margin:0px;">《孟子》是中国儒家典籍中的一部，记录了战国时期思想家孟子的治国思想和政治策略，是孟子和他的弟子记录并整理而成的。《孟子》在儒家典籍中占有很重要的地位，为“四书”之一。<a target="_blank" href="/mingju/Default.aspx?p=1&c=%e5%8f%a4%e7%b1%8d&t=%e5%ad%9f%e5%ad%90">► 168条名句</a> </p>
+            </div>
+            <div class="tool">
+                <div class="shoucang"><img id="likeImg11" name="0" onload="selectLikeGuwen(11)" onclick="changeLikeGuwen(11,'http://so.gushiwen.org/guwen/Default.aspx?p=1&type=%e7%a4%bc%e7%b1%bb')" src="https://song.gushiwen.org/siteimg/shoucang.png" alt="收藏" width="18" height="18" /></div>
+                <div class="toolpinglun"><a href="https://so.gushiwen.org/app/"><img src="https://song.gushiwen.org/siteimg/download.png" alt="下载" width="18" height="18" /></a></div>
+                <div class="toolpinglun"><a href="javascript:copyAuthor(11)"><img src="https://song.gushiwen.org/siteimg/copy.png" alt="复制" width="18" height="18" /></a></div>
+                <div class="jiucuo"><a href="/jiucuo.aspx?u=%e5%8f%a4%e7%b1%8d11%e3%80%8a%e5%ad%9f%e5%ad%90%e3%80%8b" target="_blank">完善</a></div>
+            </div>
+        </div>
+
+        <div style=" width:1px; height:1px; overflow:hidden;">
+            <textarea style=" background-color:#F0EFE2; border:0px;overflow:hidden;" cols="1" rows="1" id="txtareAuthor23">《礼记》，是中国古代一部重要的典章制度书籍，儒家经典著作之一。该书编定是西汉戴圣对秦汉以前各种礼仪著作加以辑录，编纂而成，共49篇。《礼记》大约是战国末年或秦汉之际儒家学者托名孔子答问的著作。https://so.gushiwen.org/guwen/book_23.aspx</textarea>
+        </div>
+        <div class="sonspic">
+            <div class="cont" style="margin-top:13px;">
+                <div class="divimg" style="margin-top:2px;">
+                    <a href="/guwen/book_23.aspx" target="_blank"><img src="https://song.gushiwen.org/bookPic/liji.jpg" width="105" height="150" alt="礼记"/></a>
+                </div>
+                <p style="height:22px;">
+                    <a target="_blank" style="font-size:18px; line-height:22px; height:22px;" href="/guwen/book_23.aspx"><b>礼记</b></a>
+                    <a style="margin-left:5px;" href="javascript:PlayBook(23)"><img id="speakerimgBook23" src="https://song.gushiwen.org/siteimg/speaker.png" / alt="" width="16" height="16"/></a>
+                    <span id="bookPlay23" style=" display:none;width:1px; height:1px;"></span>
+                </p>
+                <p style=" margin:0px;">《礼记》，是中国古代一部重要的典章制度书籍，儒家经典著作之一。该书编定是西汉戴圣对秦汉以前各种礼仪著作加以辑录，编纂而成，共49篇。《礼记》大约是战国末年或秦汉之际儒家学者托名孔子答问的著作。<a target="_blank" href="/mingju/Default.aspx?p=1&c=%e5%8f%a4%e7%b1%8d&t=%e7%a4%bc%e8%ae%b0">► 40条名句</a> </p>
+            </div>
+            <div class="tool">
+                <div class="shoucang"><img id="likeImg23" name="0" onload="selectLikeGuwen(23)" onclick="changeLikeGuwen(23,'http://so.gushiwen.org/guwen/Default.aspx?p=1&type=%e7%a4%bc%e7%b1%bb')" src="https://song.gushiwen.org/siteimg/shoucang.png" alt="收藏" width="18" height="18" /></div>
+                <div class="toolpinglun"><a href="https://so.gushiwen.org/app/"><img src="https://song.gushiwen.org/siteimg/download.png" alt="下载" width="18" height="18" /></a></div>
+                <div class="toolpinglun"><a href="javascript:copyAuthor(23)"><img src="https://song.gushiwen.org/siteimg/copy.png" alt="复制" width="18" height="18" /></a></div>
+                <div class="jiucuo"><a href="/jiucuo.aspx?u=%e5%8f%a4%e7%b1%8d23%e3%80%8a%e7%a4%bc%e8%ae%b0%e3%80%8b" target="_blank">完善</a></div>
+            </div>
+        </div>
+
+        <div style=" width:1px; height:1px; overflow:hidden;">
+            <textarea style=" background-color:#F0EFE2; border:0px;overflow:hidden;" cols="1" rows="1" id="txtareAuthor24">《周礼》是儒家经典，西周时期的著名政治家、思想家、文学家、军事家周公旦所著，今从其思想内容分析，则说明儒家思想发展到战国后期，融合道、法、阴阳等家思想，与春秋孔子时思想发生极大变化。《周礼》所涉及之内容极为丰富。大至天下九州，天文历象；小至沟洫道路，草木虫鱼。凡邦国建制，政法文教，礼乐兵刑，赋税度支，膳食衣饰，寝庙车马，农商医卜，工艺制作，各种名物、典章、制度，无所不包。堪称为上古文化史之宝库。https://so.gushiwen.org/guwen/book_24.aspx</textarea>
+        </div>
+        <div class="sonspic">
+            <div class="cont" style="margin-top:13px;">
+                <div class="divimg" style="margin-top:2px;">
+                    <a href="/guwen/book_24.aspx" target="_blank"><img src="https://song.gushiwen.org/bookPic/zhouli.jpg" width="105" height="150" alt="周礼"/></a>
+                </div>
+                <p style="height:22px;">
+                    <a target="_blank" style="font-size:18px; line-height:22px; height:22px;" href="/guwen/book_24.aspx"><b>周礼</b></a>
+                    <a style="margin-left:5px;" href="javascript:PlayBook(24)"><img id="speakerimgBook24" src="https://song.gushiwen.org/siteimg/speaker.png" / alt="" width="16" height="16"/></a>
+                    <span id="bookPlay24" style=" display:none;width:1px; height:1px;"></span>
+                </p>
+                <p style=" margin:0px;">《周礼》是儒家经典，西周时期的著名政治家、思想家、文学家、军事家周公旦所著，今从其思想内容分析，则说明儒家思想发展到战国后期，融合道、法、阴阳等家思想，与春秋孔子时思想发生极大变化。《周礼》所涉及之内容极为丰富。大至天下九州，天文历象；小至沟洫道路，草木虫鱼。凡邦国建制，政法文教，礼乐兵刑，赋税度支，膳食衣饰，寝庙车马，农商医卜，工艺制作，各种名物、典章、制度，无所不包。堪称为上古文化史之宝库。</p>
+            </div>
+            <div class="tool">
+                <div class="shoucang"><img id="likeImg24" name="0" onload="selectLikeGuwen(24)" onclick="changeLikeGuwen(24,'http://so.gushiwen.org/guwen/Default.aspx?p=1&type=%e7%a4%bc%e7%b1%bb')" src="https://song.gushiwen.org/siteimg/shoucang.png" alt="收藏" width="18" height="18" /></div>
+                <div class="toolpinglun"><a href="https://so.gushiwen.org/app/"><img src="https://song.gushiwen.org/siteimg/download.png" alt="下载" width="18" height="18" /></a></div>
+                <div class="toolpinglun"><a href="javascript:copyAuthor(24)"><img src="https://song.gushiwen.org/siteimg/copy.png" alt="复制" width="18" height="18" /></a></div>
+                <div class="jiucuo"><a href="/jiucuo.aspx?u=%e5%8f%a4%e7%b1%8d24%e3%80%8a%e5%91%a8%e7%a4%bc%e3%80%8b" target="_blank">完善</a></div>
+            </div>
+        </div>
+
+        <div style=" width:1px; height:1px; overflow:hidden;">
+            <textarea style=" background-color:#F0EFE2; border:0px;overflow:hidden;" cols="1" rows="1" id="txtareAuthor25">《仪礼》为儒家十三经之一，内容记载着周代的冠、婚、丧、祭、乡、射、朝、聘等各种礼仪，其中以记载士大夫的礼仪为主。秦代以前篇目不详，汉代初期高堂生传仪礼17篇。https://so.gushiwen.org/guwen/book_25.aspx</textarea>
+        </div>
+        <div class="sonspic">
+            <div class="cont" style="margin-top:13px;">
+                <div class="divimg" style="margin-top:2px;">
+                    <a href="/guwen/book_25.aspx" target="_blank"><img src="https://song.gushiwen.org/bookPic/yili.jpg" width="105" height="150" alt="仪礼"/></a>
+                </div>
+                <p style="height:22px;">
+                    <a target="_blank" style="font-size:18px; line-height:22px; height:22px;" href="/guwen/book_25.aspx"><b>仪礼</b></a>
+                    <a style="margin-left:5px;" href="javascript:PlayBook(25)"><img id="speakerimgBook25" src="https://song.gushiwen.org/siteimg/speaker.png" / alt="" width="16" height="16"/></a>
+                    <span id="bookPlay25" style=" display:none;width:1px; height:1px;"></span>
+                </p>
+                <p style=" margin:0px;">《仪礼》为儒家十三经之一，内容记载着周代的冠、婚、丧、祭、乡、射、朝、聘等各种礼仪，其中以记载士大夫的礼仪为主。秦代以前篇目不详，汉代初期高堂生传仪礼17篇。</p>
+            </div>
+            <div class="tool">
+                <div class="shoucang"><img id="likeImg25" name="0" onload="selectLikeGuwen(25)" onclick="changeLikeGuwen(25,'http://so.gushiwen.org/guwen/Default.aspx?p=1&type=%e7%a4%bc%e7%b1%bb')" src="https://song.gushiwen.org/siteimg/shoucang.png" alt="收藏" width="18" height="18" /></div>
+                <div class="toolpinglun"><a href="https://so.gushiwen.org/app/"><img src="https://song.gushiwen.org/siteimg/download.png" alt="下载" width="18" height="18" /></a></div>
+                <div class="toolpinglun"><a href="javascript:copyAuthor(25)"><img src="https://song.gushiwen.org/siteimg/copy.png" alt="复制" width="18" height="18" /></a></div>
+                <div class="jiucuo"><a href="/jiucuo.aspx?u=%e5%8f%a4%e7%b1%8d25%e3%80%8a%e4%bb%aa%e7%a4%bc%e3%80%8b" target="_blank">完善</a></div>
+            </div>
+        </div>
+
+        <form id="FromPage" method="get" action="/guwen/Default.aspx" onsubmit="return PageSubmit()">
+            <div class="pagesright">
+
+                <a class="amore" style=" color:#808080;background-color:#e7e6d8;">下一页</a>
+
+                <a style=" color:#808080;background-color:#e7e6d8;">上一页</a>
+
+                <span style=" background-color:#E1E0C7; border:0px; margin-top:22px; width:auto;">/ 1页</span>
+                <span class="curent"><input id="putpage" name="p" value="1" autocomplete="off" onblur="SubPage()" /></span>
+                <label id="temppage" style="display:none;">1</label>
+                <label id="sumPage" style="display:none;">1</label>
+                <input type="hidden" name="type" value="礼类" />
+            </div>
+        </form>
+    </div>
+    <div class="right">
+        <div class="sons">
+            <div class="title">
+                <div class="titleleft"></div>
+                古籍
+            </div>
+            <div class="cont">
+                <a href="/guwen/book_2.aspx">论语</a>
+                <a href="/guwen/book_5.aspx">史记</a>
+                <a href="/guwen/book_6.aspx">周易</a>
+                <a href="/guwen/book_7.aspx">易传</a>
+                <a href="/guwen/book_11.aspx">孟子</a>
+                <a href="/guwen/book_19.aspx">左传</a>
+                <a href="/guwen/book_20.aspx">大学</a>
+                <a href="/guwen/book_21.aspx">中庸</a>
+                <a href="/guwen/book_22.aspx">尚书</a>
+                <a href="/guwen/book_23.aspx">礼记</a>
+                <a href="/guwen/book_24.aspx">周礼</a>
+                <a href="/guwen/book_25.aspx">仪礼</a>
+                <a href="/guwen/book_26.aspx">庄子</a>
+                <a href="/guwen/book_28.aspx">老子</a>
+                <a href="/guwen/book_11.aspx">孟子</a>
+                <a href="/guwen/book_29.aspx">墨子</a>
+                <a href="/guwen/book_30.aspx">荀子</a>
+                <a href="/guwen/book_32.aspx">列子</a>
+                <a href="/guwen/book_34.aspx">管子</a>
+                <a href="/guwen/book_36.aspx">吴子</a>
+                <a href="/guwen/book_39.aspx">素书</a>
+                <a href="/guwen/book_45.aspx">孝经</a>
+                <a href="/guwen/book_55.aspx">将苑</a>
+                <a href="/guwen/book_56.aspx">六韬</a>
+                <a href="/guwen/book_57.aspx">反经</a>
+                <a href="/guwen/book_71.aspx">冰鉴</a>
+                <a href="/guwen/book_74.aspx">论衡</a>
+                <a href="/guwen/book_78.aspx">智囊</a>
+                <a href="/guwen/book_40.aspx">汉书</a>
+                <a href="/guwen/book_41.aspx">后汉书</a>
+                <a href="/guwen/book_31.aspx">韩非子</a>
+                <a href="/guwen/book_33.aspx">淮南子</a>
+                <a href="/guwen/book_35.aspx">尉缭子</a>
+                <a href="/guwen/book_1.aspx">山海经</a>
+                <a href="/guwen/book_15.aspx">三字经</a>
+                <a href="/guwen/book_16.aspx">百家姓</a>
+                <a href="/guwen/book_17.aspx">千字文</a>
+                <a href="/guwen/book_27.aspx">鬼谷子</a>
+                <a href="/guwen/book_37.aspx">伤寒论</a>
+                <a href="/guwen/book_42.aspx">商君书</a>
+                <a href="/guwen/book_53.aspx">战国策</a>
+                <a href="/guwen/book_54.aspx">三国志</a>
+                <a href="/guwen/book_59.aspx">司马法</a>
+                <a href="/guwen/book_60.aspx">逸周书</a>
+                <a href="/guwen/book_49.aspx">搜神记</a>
+                <a href="/guwen/book_63.aspx">金刚经</a>
+                <a href="/guwen/book_66.aspx">地藏经</a>
+                <a href="/guwen/book_68.aspx">弟子规</a>
+                <a href="/guwen/book_75.aspx">菜根谭</a>
+                <a href="/guwen/book_77.aspx">水经注</a>
+                <a href="/guwen/book_3.aspx">孙子兵法</a>
+                <a href="/guwen/book_4.aspx">三十六计</a>
+                <a href="/guwen/book_8.aspx">资治通鉴</a>
+                <a href="/guwen/book_9.aspx">续资治通</a>
+                <a href="/guwen/book_10.aspx">黄帝内经</a>
+                <a href="/guwen/book_12.aspx">本草纲目</a>
+                <a href="/guwen/book_13.aspx">了凡四训</a>
+                <a href="/guwen/book_14.aspx">梦溪笔谈</a>
+                <a href="/guwen/book_18.aspx">世说新语</a>
+                <a href="/guwen/book_38.aspx">天工开物</a>
+                <a href="/guwen/book_43.aspx">文心雕龙</a>
+                <a href="/guwen/book_44.aspx">吕氏春秋</a>
+                <a href="/guwen/book_46.aspx">孔子家语</a>
+                <a href="/guwen/book_47.aspx">颜氏家训</a>
+                <a href="/guwen/book_48.aspx">孙膑兵法</a>
+                <a href="/guwen/book_51.aspx">笑林广记</a>
+                <a href="/guwen/book_52.aspx">百战奇略</a>
+                <a href="/guwen/book_58.aspx">公孙龙子</a>
+                <a href="/guwen/book_114.aspx">声律启蒙</a>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+
+
+
+<div class="main4">
+    © 2019 <a href="https://www.gushiwen.org/">古诗文网</a> | <a href="https://so.gushiwen.org/shiwen/">诗文</a> | <a href="/mingju/">名句</a> | <a href="/authors/">作者</a> | <a href="/guwen/">古籍</a> | <a href="/jiucuo.aspx?u=" target="_blank" rel="nofollow">纠错</a>
+</div>
+
+
+<script type="text/javascript">
+    window.onload = function () {
+        setIframeHeight(document.getElementById('external-frame'));
+    };
+</script>
+
+<script defer="defer" src="/js/skinso20190903.js" type="text/javascript"></script>
+</body>
+</html>
