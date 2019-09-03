@@ -44,6 +44,8 @@ func ParseGuWenCategoryBook(html []byte) (bookCoverList []*define.GuWenBookCover
 			compile := regexp.MustCompile(`<a(.*)</a>`)
 			bookCover.Introduction = compile.ReplaceAllString(bookCover.Introduction, "")
 		}
+		bookCover.Title = strings.TrimSpace(bookCover.Title)
+		bookCover.Introduction = strings.TrimSpace(bookCover.Introduction)
 		bookCoverList = append(bookCoverList, &bookCover)
 	})
 	return

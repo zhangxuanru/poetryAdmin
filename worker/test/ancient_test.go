@@ -17,5 +17,5 @@ import (
 func TestAncient(t *testing.T) {
 	go data.NewGraspResult().PrintMsg()
 	Entrance.NewGrab().Exec()
-	time.Sleep(8 * time.Second)
+	time.Sleep(60 * time.Second)
 }

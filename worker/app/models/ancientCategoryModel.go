@@ -39,7 +39,7 @@ func (a *AncientCategory) InsertCategory(data *AncientCategory) (id int64, err e
 }
 
 //根据分类名称查询数据
-func (a *AncientCategory) getCategoryDataByName(catName string) (data AncientCategory, err error) {
+func (a *AncientCategory) GetCategoryDataByName(catName string) (data AncientCategory, err error) {
 	_, err = orm.NewOrm().QueryTable(TableAncientCategory).Filter("cat_name", catName).All(&data, "id", "pid", "sort")
 	return
 }
@@ -49,7 +49,7 @@ func (a *AncientCategory) SaveCategory(data *AncientCategory) (id int64, err err
 	var (
 		category AncientCategory
 	)
-	if category, err = a.getCategoryDataByName(data.CatName); err != nil {
+	if category, err = a.GetCategoryDataByName(data.CatName); err != nil {
 		return
 	}
 	if category.Id > 0 {

@@ -43,7 +43,7 @@ func (b *Book) ReceiveCategoryBook() {
 				logrus.Infoln("ParseGuWenCategoryBook error:", err)
 				continue
 			}
-			b.SaveAndSendBookCover(bookCoverList)
+			b.SaveAndSendBookCover(bookCoverList, &htmlCategory.GuWenCategory)
 		case <-b.closeChan:
 			if len(b.categoryHtmlChan) > 0 {
 				logrus.Infoln("categoryHtmlChan还有数据....处理完后才会退出")
@@ -59,13 +59,14 @@ END:
 }
 
 //保存书籍封面信息并且发送书籍详情的请求
-func (b *Book) SaveAndSendBookCover(bookCoverList []*define.GuWenBookCover) {
+func (b *Book) SaveAndSendBookCover(bookCoverList []*define.GuWenBookCover, category *define.GuWenCategory) {
 	sendData := &define.ParseData{
 		Data:      bookCoverList,
-		Params:    nil,
+		Params:    category,
 		ParseFunc: data.NewAncientBookStore().LoadBookData,
 	}
 	data.G_GraspResult.SendParseData(sendData)
+	//发送书籍详情页请求
 
 }
 
