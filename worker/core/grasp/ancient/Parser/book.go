@@ -8,6 +8,7 @@ package Parser
 
 import (
 	"github.com/PuerkitoBio/goquery"
+	"poetryAdmin/worker/app/config"
 	"poetryAdmin/worker/app/tools"
 	"poetryAdmin/worker/core/define"
 	"regexp"
@@ -46,6 +47,9 @@ func ParseGuWenCategoryBook(html []byte) (bookCoverList []*define.GuWenBookCover
 		}
 		bookCover.Title = strings.TrimSpace(bookCover.Title)
 		bookCover.Introduction = strings.TrimSpace(bookCover.Introduction)
+		if strings.Contains(bookCover.LinkUrl, "http") == false {
+			bookCover.LinkUrl = config.G_Conf.GuShiWenPoetryUrl + strings.TrimLeft(bookCover.LinkUrl, "/")
+		}
 		bookCoverList = append(bookCoverList, &bookCover)
 	})
 	return

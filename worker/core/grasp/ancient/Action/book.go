@@ -13,6 +13,7 @@ import (
 	"poetryAdmin/worker/core/grasp/ancient/Parser"
 )
 
+//书籍封面信息
 type Book struct {
 	categoryHtmlChan chan *define.GuWenCategoryBookHtml
 	closeChan        chan bool
@@ -66,8 +67,8 @@ func (b *Book) SaveAndSendBookCover(bookCoverList []*define.GuWenBookCover, cate
 		ParseFunc: data.NewAncientBookStore().LoadBookData,
 	}
 	data.G_GraspResult.SendParseData(sendData)
-	//发送书籍详情页请求
-
+	//发送书籍目录页请求
+	NewCataLog().LoadBookCoverList(bookCoverList, category)
 }
 
 //发送抓取的分类书籍信息

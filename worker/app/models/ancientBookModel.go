@@ -17,6 +17,7 @@ type AncientBook struct {
 	BookTitle        string `orm:"column(book_title)"`
 	BookIntroduction string `orm:"column(book_introduction)"`
 	LinkUrl          string `orm:"column(link_url)"`
+	LinkUrlCrc32     uint32 `orm:"column(link_url_crc32)"`
 	SongUrl          string `orm:"column(song_url)"`
 	SongFilePath     string `orm:"column(song_file_path)"`
 	SongSrcUrl       string `orm:"column(song_src_url)"`
@@ -56,6 +57,12 @@ func (a *AncientBook) SaveBook(data *AncientBook) (id int64, err error) {
 //根据标题和分类查询书籍数据
 func (a *AncientBook) GetBookByTitleAndCatId(title string, catId int) (data AncientBook, err error) {
 	_, err = orm.NewOrm().QueryTable(TableAncientBook).Filter("cat_id", catId).Filter("book_title", title).All(&data, "id")
+	return
+}
+
+//根据标题和urlcrc32值查询
+func (a *AncientBook) GetBookByTitleANDUrlCrc32(title string, urlCrc uint32) (data AncientBook, err error) {
+	_, err = orm.NewOrm().QueryTable(TableAncientBook).Filter("title", title).Filter("link_url_crc32", urlCrc).All(&data, "id")
 	return
 }
 

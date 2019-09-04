@@ -9,6 +9,7 @@ package data
 import (
 	"github.com/sirupsen/logrus"
 	"poetryAdmin/worker/app/models"
+	"poetryAdmin/worker/app/tools"
 	"poetryAdmin/worker/core/define"
 	"time"
 )
@@ -67,6 +68,7 @@ func (a *AncientBookStore) LoadBookData(data interface{}, params interface{}) {
 			BookTitle:        book.Title,
 			BookIntroduction: book.Introduction,
 			LinkUrl:          book.LinkUrl,
+			LinkUrlCrc32:     tools.Crc32(book.LinkUrl),
 			SongUrl:          book.SongUrl,
 			SongSrcUrl:       book.SongSrcUrl,
 			FamousTotal:      book.FamousTotal,

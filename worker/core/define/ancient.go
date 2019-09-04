@@ -33,4 +33,19 @@ type GuWenBookCover struct {
 	Introduction string
 	FamousTotal  int
 	CoverChart   string
+	GuWenCategory
+}
+
+//书籍目录信息
+type CataLogData struct {
+	CateName    string
+	Sort        int
+	CatalogList []CataLog
+}
+
+type CataLog struct {
+	CatalogTitle string
+	Sort         int
+	LinkUrl      string
+	BookId       int64
 }
