@@ -38,7 +38,7 @@ func (b *BookCatalogue) Save(data *BookCatalogue) (id int64, err error) {
 	var (
 		catalogue BookCatalogue
 	)
-	if catalogue, err = b.GetCatalogueData(data.BookId, data.CatalogTitle); err != nil {
+	if catalogue, err = b.GetCatalogueData(data.BookId, data.CatalogTitle, data.CatalogCatgoryId); err != nil {
 		return 0, err
 	}
 	if catalogue.Id > 0 {
@@ -50,7 +50,13 @@ func (b *BookCatalogue) Save(data *BookCatalogue) (id int64, err error) {
 }
 
 //根据书ID和目录标题查询是否有数据
-func (b *BookCatalogue) GetCatalogueData(bookId int64, title string) (data BookCatalogue, err error) {
-	_, err = orm.NewOrm().QueryTable(TableBookCatalogue).Filter("book_id", bookId).Filter("catalog_title", title).All(&data, "id")
+func (b *BookCatalogue) GetCatalogueData(bookId int64, title string, categoryId int64) (data BookCatalogue, err error) {
+	_, err = orm.NewOrm().QueryTable(TableBookCatalogue).Filter("book_id", bookId).Filter("catalog_title", title).Filter("catalog_catgory_id", categoryId).All(&data, "id")
+	return
+}
+
+//根据目录标题和链接地址查询目录信息
+func (b *BookCatalogue) GetDataByTitleAndUrl(title string, linkUrl string) (data BookCatalogue, err error) {
+	_, err = orm.NewOrm().QueryTable(TableBookCatalogue).Filter("catalog_title", title).Filter("link_url", linkUrl).All(&data, "id", "book_id")
 	return
 }

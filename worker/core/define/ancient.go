@@ -49,3 +49,25 @@ type CataLog struct {
 	LinkUrl      string
 	BookId       int64
 }
+
+//书籍信息和对应目录
+type BookCatalogue struct {
+	BookTitle   string
+	BookLinkUrl string
+	CatalogList []CataLog
+}
+
+//书籍目录详情
+type BookCatalogueContent struct {
+	ShortCatalogueTitle string //目录短标题
+	CatalogueLinkUrl    string //目录链接
+	CatalogueTitle      string //目录长标题
+	SongId              int    //声音ID
+	SongUrl             string //声音URL文件
+	AuthorName          string //作者姓名
+	AuthorLinkUrl       string //作者链接地址
+	Content             string //正文内容
+	Translation         string //译文内容
+	TranslationUrl      string //译文URL
+	TranslationId       int    //译文ID
+}

@@ -53,6 +53,29 @@ func TrimAuthorTotalPageText(str string) (totalPageNum int, err error) {
 	return
 }
 
+//去除古籍详情页朗诵链接多余字符，只保留ID
+//href="javascript:PlayBookv(3218)" ，只保留3218
+func TrimPlayBookKv(str string) string {
+	if len(str) == 0 {
+		return str
+	}
+	str = strings.TrimLeft(str, "javascript:PlayBookv(")
+	str = strings.TrimRight(str, ")")
+	str = strings.TrimSpace(str)
+	return str
+}
+
+//去除特殊字符，只保留ID javascript:ShowYizhu(1748)
+func TrimYiZhu(str string) string {
+	if len(str) == 0 {
+		return str
+	}
+	str = strings.TrimLeft(str, "javascript:ShowYizhu(")
+	str = strings.TrimRight(str, ")")
+	str = strings.TrimSpace(str)
+	return str
+}
+
 //获取URL path
 func GetUrlPath(urlStr string) string {
 	if strings.Contains(urlStr, "http") == true {
