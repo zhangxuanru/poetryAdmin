@@ -28,7 +28,7 @@ func (b *BookContentStore) LoadBookContentData(data interface{}, params interfac
 		saveData      *models.BookContent
 		catalogueData models.BookCatalogue
 		content       models.BookContent
-		authorData    *models.Author
+		authorData    *models.AncientAuthor
 		authorId      int64
 		id            int64
 		err           error
@@ -56,11 +56,11 @@ func (b *BookContentStore) LoadBookContentData(data interface{}, params interfac
 		return
 	}
 	//查询作者是否存在
-	authorData = &models.Author{
-		Author:    bookContent.AuthorName,
-		SourceUrl: bookContent.AuthorLinkUrl,
+	authorData = &models.AncientAuthor{
+		AuthorName: bookContent.AuthorName,
+		SourceUrl:  bookContent.AuthorLinkUrl,
 	}
-	if authorId, err = models.NewAuthor().SaveAuthor(authorData); err != nil {
+	if authorId, err = models.NewAncientAuthor().SaveAuthor(authorData); err != nil {
 		logrus.Infoln("保存作者信息失败......")
 	}
 	saveData = &models.BookContent{

@@ -14,6 +14,7 @@ type Config struct {
 	GushiwenSongUrl    string `json:"gushiwenSongUrl"`
 	ShiCiMingJuUrl     string `json:"shicimingjuUrl"`
 	GushiwenAncientUrl string `json:"gushiwenAncientUrl"`
+	GushiwenMingJuUrl  string `json:"gushiwenMingJuUrl"`
 	Env                string `json:"env"`
 	DataSource         string `json:"dataSource"`
 	AccessKey          string `json:"accessKey"`
