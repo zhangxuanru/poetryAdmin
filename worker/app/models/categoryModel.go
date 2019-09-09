@@ -82,6 +82,12 @@ func GetDataByCateName(cateName string, position int) (categorys Category, err e
 	return categorys, err
 }
 
+//根据分类名和位置和PID查询数据
+func GetDataByCateNameAndPid(cateName string, position int, pid int) (category Category, err error) {
+	_, err = orm.NewOrm().QueryTable(TableCategory).Filter("show_position", position).Filter("cat_name", cateName).Filter("pid", pid).All(&category, "id")
+	return category, err
+}
+
 //保存分类数据
 func SaveCategoryData(data *Category) (id int64, err error) {
 	id, err = orm.NewOrm().Insert(data)

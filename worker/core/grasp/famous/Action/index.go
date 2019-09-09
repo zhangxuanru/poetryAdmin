@@ -46,8 +46,8 @@ func (i *index) Start() {
 		ParseFunc: data.NewFamousStorage().LoadFamousClassifyData,
 	}
 	data.G_GraspResult.SendParseData(sendData)
-	//发送各分类的请求，获取具体内容
-
+	//发送各主题的请求，获取分类内容
+	NewCategory().LoadClassifyList(&classifyList)
 }
 
 //获取首页内容
