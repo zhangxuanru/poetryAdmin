@@ -14,7 +14,7 @@ import (
 	"time"
 )
 
-//单元测试--抓取首页
+//单元测试--抓取全部
 func TestGrabsIndex(t *testing.T) {
 	runtime.GOMAXPROCS(runtime.NumCPU())
 	go data.NewGraspResult().PrintMsg()

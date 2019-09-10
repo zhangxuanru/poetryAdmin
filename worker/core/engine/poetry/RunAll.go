@@ -22,6 +22,9 @@ func NewRunAll() *RunAll {
 
 //执行全站抓取
 func (r *RunAll) Run() {
+	defer func() {
+		_, _ = redis.Del(r.GetLockKey())
+	}()
 	//先获取锁  临时注释
 	if config.G_Conf.Env != define.TestEnv {
 		if _, err := redis.SetNx(r.GetLockKey(), "1", "3600"); err != nil {
