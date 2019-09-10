@@ -30,6 +30,18 @@ func ParseFamousContent(html []byte) (contentList []define.Content, page define.
 		content.PoetryText = selection.Find("a").Eq(1).Text()
 		content.PoetryLink, _ = selection.Find("a").Eq(1).Attr("href")
 		content.Sort = i
+		if len(content.PoetryLink) > 0 && strings.Contains(content.PoetryLink, "http") == false {
+			content.PoetryLink = config.G_Conf.GuShiWenPoetryUrl + strings.TrimLeft(content.PoetryLink, "/")
+		}
+		if len(content.PoetryText) > 0 {
+			content.PoetryText = strings.TrimSpace(content.PoetryText)
+			if index := strings.Index(content.PoetryText, "《"); index > 0 {
+				content.AuthorName = content.PoetryText[:index]
+				content.PoetryTitle = content.PoetryText[index:]
+				content.PoetryTitle = strings.TrimLeft(content.PoetryTitle, "《")
+				content.PoetryTitle = strings.TrimRight(content.PoetryTitle, "》")
+			}
+		}
 		contentList = append(contentList, content)
 	})
 	page.IsNextPage = false

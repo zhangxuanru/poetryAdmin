@@ -24,12 +24,13 @@ type ThemeCategory struct {
 
 //名句-正文内容
 type Content struct {
-	Text       string
-	LinkUrl    string
-	Sort       int
-	PoetryText string
-	PoetryLink string
-	AuthorName string
+	Text        string
+	LinkUrl     string
+	Sort        int
+	PoetryText  string
+	PoetryTitle string
+	PoetryLink  string
+	AuthorName  string
 }
 
 //名句-正文列表分页

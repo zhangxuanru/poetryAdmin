@@ -18,7 +18,7 @@ import (
 	"time"
 )
 
-//获取分类下详情数据
+//名句获取分类下详情数据
 type content struct {
 }
 
@@ -26,7 +26,7 @@ func NewContent() *content {
 	return &content{}
 }
 
-//载入主题下分类数据，发送分类请求获取分类下详情数据
+//名句载入主题下分类数据，发送分类请求获取分类下详情数据
 //see:https://so.gushiwen.org/mingju/Default.aspx?p=1&c=%e6%8a%92%e6%83%85&t=%e7%88%b1%e6%83%85
 func (c *content) LoadThemeCategory(allThemeCategory []*define.ThemeCategory) {
 	var (
@@ -64,13 +64,7 @@ func (c *content) LoadThemeCategory(allThemeCategory []*define.ThemeCategory) {
 				time.Sleep(50 * time.Millisecond)
 			}
 			time.Sleep(100 * time.Millisecond)
-			//test
-			break
-			//test
 		}
-		//test
-		break
-		//test
 	}
 	return
 }

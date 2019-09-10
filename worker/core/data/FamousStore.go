@@ -117,26 +117,55 @@ func (f *FamousStorage) LoadFamousCategoryData(data interface{}, params interfac
 //保存名句-分类下的名句列表
 func (f *FamousStorage) LoadClassifyContentData(data interface{}, params interface{}) {
 	var (
-		ok       bool
-		classify *define.Classify
-		category models.Category
-		err      error
+		ok           bool
+		classify     *define.Classify
+		category     models.Category
+		content      define.Content
+		sentenceData *models.FamousSentence
+		sentenceObj  *models.FamousSentence
+		err          error
+		id           int64
 	)
 	if classify, ok = data.(*define.Classify); ok == false {
 		logrus.Infoln("LoadClassifyContentData data conver to Classify error")
 		return
 	}
-	if category, err = models.GetDataByCateNameAndPid(classify.ThemeTitle, 2, 0); err != nil {
+	if category, err = models.GetDataByCateNameAndPid(classify.ThemeTitle, 2, 0); err != nil || category.Id == 0 {
 		logrus.Infoln("GetDataByCateNameAndPid err:", err)
 		return
 	}
-	if category, err = models.GetDataByCateNameAndPid(classify.Title, 2, category.Id); err != nil {
+	if category, err = models.GetDataByCateNameAndPid(classify.Title, 2, category.Id); err != nil || category.Id == 0 {
 		logrus.Infoln("GetDataByCateNameAndPid get ", classify.Title, "-err:", err)
 		return
 	}
-	//写入 poetry_ancient_book_content表 明日继续
-
-	logrus.Infoln("category:", category)
-	logrus.Infof("%+v\n", classify)
-
+	//写入 poetry_famous_sentence
+	sentenceObj = models.NewFamousSentence()
+	for _, content = range classify.ContentList {
+		title := content.PoetryTitle
+		if len(title) == 0 {
+			title = content.PoetryText
+		}
+		sentenceData = &models.FamousSentence{
+			CatId:        category.Id,
+			Content:      content.Text,
+			ContentCrc32: tools.Crc32(content.Text),
+			PoetryTitle:  title,
+			Sort:         content.Sort,
+			SourceUrl:    content.PoetryLink,
+			SourceCrc32:  tools.Crc32(content.PoetryLink),
+			AddDate:      time.Now().Unix(),
+		}
+		if sentence, err := sentenceObj.GetDataByCrc32(sentenceData.SourceCrc32, sentenceData.ContentCrc32); err != nil || sentence.Id > 0 {
+			logrus.Infoln("sentenceObj GetDataByCrc32 err:", err, "-Id:", sentence.Id)
+			continue
+		}
+		if id, err = sentenceObj.Save(sentenceData); err != nil {
+			logrus.Infoln("sentenceObj save error:", err)
+			continue
+		}
+		if id == 0 {
+			logrus.Infoln("保存--", title, "--名句失败.....")
+			continue
+		}
+	}
 }
