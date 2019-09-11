@@ -43,6 +43,10 @@ func (c *content) procGetContent(catalogue define.CataLog) {
 		bookContent *define.BookCatalogueContent
 	)
 	url = catalogue.LinkUrl
+	if len(url) == 0 {
+		logrus.Infoln("catalogue.LinkUrl is nil:%+v", catalogue)
+		return
+	}
 	if strings.Contains(url, "http") == false {
 		url = config.G_Conf.GuShiWenPoetryUrl + strings.TrimLeft(url, "/")
 	}
@@ -54,19 +58,27 @@ func (c *content) procGetContent(catalogue define.CataLog) {
 		logrus.Infoln("ParseGuWenContent error:", err)
 		return
 	}
-	if bytes, err = base.GetHtml(bookContent.TranslationUrl); err == nil {
-		bookContent.Translation = string(bytes)
+	if len(bookContent.TranslationUrl) == 0 {
+		logrus.Infoln("bookContent.TranslationUrl is nil:%+v", bookContent)
+	} else {
+		if bytes, err = base.GetHtml(bookContent.TranslationUrl); err == nil {
+			bookContent.Translation = string(bytes)
+		}
 	}
 	bookContent.ShortCatalogueTitle = catalogue.CatalogTitle
 	bookContent.CatalogueLinkUrl = catalogue.LinkUrl
 
 	//保存数据
-	sendData := &define.ParseData{
-		Data:      bookContent,
-		Params:    nil,
-		ParseFunc: data.NewBookContentStore().LoadBookContentData,
-	}
-	data.G_GraspResult.SendParseData(sendData)
+	/*
+		sendData := &define.ParseData{
+			Data:      bookContent,
+			Params:    nil,
+			ParseFunc: data.NewBookContentStore().LoadBookContentData,
+		}
+		data.G_GraspResult.SendParseData(sendData)
+	*/
+
+	data.NewBookContentStore().LoadBookContentData(bookContent, nil)
 	return
 }
 

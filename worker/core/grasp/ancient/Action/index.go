@@ -47,12 +47,7 @@ func (i *Index) StartGrab() {
 		data.G_GraspResult.PushError(err)
 		return
 	}
-	sendData := &define.ParseData{
-		Data:      &categoryData,
-		Params:    nil,
-		ParseFunc: data.NewAncientCategoryStore().LoadCategoryData,
-	}
-	data.G_GraspResult.SendParseData(sendData)
+	data.NewAncientCategoryStore().LoadCategoryData(&categoryData, nil)
 	go i.bookAddr.ReceiveCategoryBook()
 	i.sendCategoryRequest(categoryData)
 }
@@ -75,7 +70,7 @@ func (i *Index) sendCategoryRequest(categoryData []define.GuWenCategoryList) {
 			if strings.Contains(cateNode.LinkUrl, "http") == false {
 				cateNode.LinkUrl = config.G_Conf.GuShiWenPoetryUrl + strings.TrimLeft(cateNode.LinkUrl, "/")
 			}
-			go func() {
+			go func(cateNode define.GuWenCategory) {
 				defer func(wg *sync.WaitGroup) {
 					wg.Done()
 				}(&wg)
@@ -91,7 +86,7 @@ func (i *Index) sendCategoryRequest(categoryData []define.GuWenCategoryList) {
 					Html: bytes,
 				}
 				i.bookAddr.SendCategoryBook(cateBookHtml)
-			}()
+			}(cateNode)
 		}
 	}
 	wg.Wait()

@@ -15,6 +15,7 @@ import (
 	"poetryAdmin/worker/core/define"
 	"poetryAdmin/worker/core/grasp/famous/Parser"
 	"poetryAdmin/worker/core/grasp/poetry/base"
+	"strings"
 	"time"
 )
 
@@ -52,32 +53,42 @@ func (c *content) LoadThemeCategory(allThemeCategory []*define.ThemeCategory) {
 			}
 			//todo 循环发送下每页请求
 			for page.IsNextPage == true || len(url) > 0 {
-				if len(page.NextPageUrl) > 0 {
+				if len(page.NextPageUrl) > 0 && strings.Contains(page.NextPageUrl, "http") == true {
 					url = page.NextPageUrl
 				}
 				logrus.Infoln("名句-主题:", themeCategory.Title, "名句-分类:", classify.Title, "url:", url)
 				if _, ok := mp[tools.Crc32(url)]; ok {
 					logrus.Infoln("---名句分类URL已存在")
-					continue
+					url = ""
+					break
 				}
 				if contentList, page, err = c.callContentPage(url); err != nil {
 					logrus.Infoln("callContentNextPage err:", err)
 					url = ""
+					page.IsNextPage = false
+					break
+				}
+				if len(contentList) == 0 {
+					url = ""
+					page.IsNextPage = false
+					page.NextPageUrl = ""
 					break
 				}
 				classify.ContentList = contentList
-				//todo 保存contentList数据
-				sendData := &define.ParseData{
-					Data:      classify,
-					Params:    nil,
-					ParseFunc: data.NewFamousStorage().LoadClassifyContentData,
-				}
-				data.G_GraspResult.SendParseData(sendData)
+				/*
+					sendData := &define.ParseData{
+						Data:      classify,
+						Params:    nil,
+						ParseFunc: data.NewFamousStorage().LoadClassifyContentData,
+					}
+					data.G_GraspResult.SendParseData(sendData)
+				*/
+				data.NewFamousStorage().LoadClassifyContentData(classify, nil)
 				mp[tools.Crc32(url)] = url
 				url = ""
 				time.Sleep(50 * time.Millisecond)
 			}
-			time.Sleep(100 * time.Millisecond)
+			time.Sleep(50 * time.Millisecond)
 			mp[tools.Crc32(url)] = url
 		}
 	}

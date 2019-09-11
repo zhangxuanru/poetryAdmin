@@ -44,6 +44,9 @@ func (c *CataLog) procBookSource(book *define.GuWenBookCover) {
 		catalogData   []*define.CataLogData
 		bookCatalogue define.BookCatalogue
 	)
+	if len(book.LinkUrl) == 0 {
+		logrus.Infof("book.LinkUrl is nil, book:%+v\n", book)
+	}
 	if html, err = c.GetCataLogHtml(book.LinkUrl); err != nil {
 		logrus.Infoln("getCataLogHtml error:", err)
 		return
@@ -53,12 +56,17 @@ func (c *CataLog) procBookSource(book *define.GuWenBookCover) {
 		return
 	}
 	//保存数据
-	sendData := &define.ParseData{
-		Data:      catalogData,
-		Params:    book,
-		ParseFunc: data.NewBookCatalogueStore().LoadCatalogueData,
-	}
-	data.G_GraspResult.SendParseData(sendData)
+	/*
+		sendData := &define.ParseData{
+			Data:      catalogData,
+			Params:    book,
+			ParseFunc: data.NewBookCatalogueStore().LoadCatalogueData,
+		}
+		data.G_GraspResult.SendParseData(sendData)
+	*/
+
+	data.NewBookCatalogueStore().LoadCatalogueData(catalogData, book)
+
 	//发送书籍详情内容的请求
 	bookCatalogue.BookTitle = book.Title
 	bookCatalogue.BookLinkUrl = book.LinkUrl

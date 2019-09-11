@@ -23,6 +23,9 @@ func NewHttpReq() *HttpReq {
 
 // http get 请求
 func (h *HttpReq) HttpGet(url string) (response *http.Response, bytes []byte, err error) {
+	if len(url) == 0 {
+		return nil, bytes, errors.New("url is nil")
+	}
 	if strings.Contains(url, "http") == false {
 		url = "https://" + url
 	}

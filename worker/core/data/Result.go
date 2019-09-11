@@ -3,6 +3,7 @@ package data
 import (
 	"github.com/sirupsen/logrus"
 	"poetryAdmin/worker/core/define"
+	"reflect"
 )
 
 const ChanMaxLen = 50000
@@ -32,11 +33,15 @@ func NewGraspResult() *GraspResult {
 
 //发送错误消息
 func (g *GraspResult) PushError(err error, params ...interface{}) {
-	if err != nil {
-		go func() {
-			g.err <- err
-		}()
+	logrus.Infoln("PushError err:", err)
+	valid := reflect.ValueOf(err).IsValid()
+	if valid == false {
+		logrus.Infoln("valid=false, err:=", err)
+		return
 	}
+	//if err != nil {
+	//		g.err <- err
+	//}
 }
 
 //发送错误消息并关闭协和

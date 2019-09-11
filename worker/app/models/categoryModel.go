@@ -67,7 +67,7 @@ func InsertMultiCategoryByDataMap(data define.DataMap) (i int64, err error) {
 func GetCategoryDataByPosition(showPosition define.ShowPosition) (maps uintMaps, err error) {
 	var categorys []Category
 	maps = make(uintMaps)
-	_, err = orm.NewOrm().QueryTable(TableCategory).Filter("show_position", showPosition).All(&categorys, "id", "cat_name", "source_url_crc32")
+	_, err = orm.NewOrm().QueryTable(TableCategory).Filter("show_position", showPosition).All(&categorys, "id", "cat_name", "source_url", "pid", "source_url_crc32")
 	if len(categorys) > 0 {
 		for _, val := range categorys {
 			maps[val.SourceUrlCrc32] = val

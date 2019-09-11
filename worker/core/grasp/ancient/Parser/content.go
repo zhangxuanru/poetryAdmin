@@ -48,5 +48,6 @@ func ParseGuWenContent(html []byte) (content *define.BookCatalogueContent, err e
 	data.AuthorLinkUrl, _ = query.Find(".sons>.cont>.source>a").Attr("href")
 	data.Content, err = query.Find(".sons>.cont>.contson").Html()
 	data.Content = strings.TrimSpace(data.Content)
+	//data.Content = tools.TrimHtml(data.Content)
 	return &data, err
 }

@@ -51,12 +51,15 @@ func (c *category) LoadClassifyList(list *[]define.Classify) {
 		themeCategory.Title = classify.Title
 		themeCategory.LinkUrl = url
 		themeCategory.ClassifyList = classifyList
-		sendData := &define.ParseData{
-			Data:      &themeCategory,
-			Params:    nil,
-			ParseFunc: data.NewFamousStorage().LoadFamousCategoryData,
-		}
-		data.G_GraspResult.SendParseData(sendData)
+		/*
+			sendData := &define.ParseData{
+				Data:      &themeCategory,
+				Params:    nil,
+				ParseFunc: data.NewFamousStorage().LoadFamousCategoryData,
+			}
+			data.G_GraspResult.SendParseData(sendData)
+		*/
+		data.NewFamousStorage().LoadFamousCategoryData(&themeCategory, nil)
 		allThemeCategory = append(allThemeCategory, &themeCategory)
 	}
 	NewContent().LoadThemeCategory(allThemeCategory)
