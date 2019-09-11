@@ -8,6 +8,7 @@ package Parser
 
 import (
 	"github.com/PuerkitoBio/goquery"
+	"poetryAdmin/worker/app/config"
 	"poetryAdmin/worker/app/tools"
 	"poetryAdmin/worker/core/define"
 	"strings"
@@ -30,6 +31,9 @@ func ParseGuWenIndexCategory(html []byte) (categoryData []define.GuWenCategoryLi
 		link, _ := selection.Find(".sleft>a").Attr("href")
 		categoryList.CategoryName = strings.TrimSpace(parentCateText)
 		categoryList.LinkUrl = strings.TrimSpace(link)
+		if strings.Contains(categoryList.LinkUrl, "http") == false {
+			categoryList.LinkUrl = config.G_Conf.GuShiWenPoetryUrl + strings.TrimLeft(categoryList.LinkUrl, "/")
+		}
 		categoryList.Sort = i
 		selection.Find(".sright>a").Each(func(i int, selection *goquery.Selection) {
 			href, _ := selection.Attr("href")

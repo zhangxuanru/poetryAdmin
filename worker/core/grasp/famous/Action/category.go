@@ -32,10 +32,10 @@ func (c *category) LoadClassifyList(list *[]define.Classify) {
 		bytes            []byte
 		classifyList     []*define.Classify
 		allThemeCategory []*define.ThemeCategory
-		themeCategory    define.ThemeCategory
 		err              error
 	)
 	for _, classify := range *list {
+		var themeCategory define.ThemeCategory
 		url := classify.LinkUrl
 		if strings.Contains(url, "http") == false {
 			url = config.G_Conf.GuShiWenPoetryUrl + strings.TrimLeft(url, "/")

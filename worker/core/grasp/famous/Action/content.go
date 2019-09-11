@@ -34,22 +34,36 @@ func (c *content) LoadThemeCategory(allThemeCategory []*define.ThemeCategory) {
 		classify      *define.Classify
 		contentList   []define.Content
 		page          define.ContentPage
+		mp            map[uint32]string
 		url           string
 		err           error
 	)
+	mp = make(map[uint32]string)
 	//发送分类详情请求，获取具体的数据
 	for _, themeCategory = range allThemeCategory {
 		for _, classify = range themeCategory.ClassifyList {
 			classify.ThemeTitle = themeCategory.Title
 			url = classify.LinkUrl
+
+			logrus.Infoln("名句-主题:", themeCategory.Title, "名句-分类:", classify.Title, "start...")
+			if _, ok := mp[tools.Crc32(url)]; ok {
+				logrus.Infoln("名句分类URL已存在")
+				continue
+			}
 			//todo 循环发送下每页请求
 			for page.IsNextPage == true || len(url) > 0 {
 				if len(page.NextPageUrl) > 0 {
 					url = page.NextPageUrl
 				}
+				logrus.Infoln("名句-主题:", themeCategory.Title, "名句-分类:", classify.Title, "url:", url)
+				if _, ok := mp[tools.Crc32(url)]; ok {
+					logrus.Infoln("---名句分类URL已存在")
+					continue
+				}
 				if contentList, page, err = c.callContentPage(url); err != nil {
 					logrus.Infoln("callContentNextPage err:", err)
-					continue
+					url = ""
+					break
 				}
 				classify.ContentList = contentList
 				//todo 保存contentList数据
@@ -59,11 +73,12 @@ func (c *content) LoadThemeCategory(allThemeCategory []*define.ThemeCategory) {
 					ParseFunc: data.NewFamousStorage().LoadClassifyContentData,
 				}
 				data.G_GraspResult.SendParseData(sendData)
-				contentList = nil
+				mp[tools.Crc32(url)] = url
 				url = ""
 				time.Sleep(50 * time.Millisecond)
 			}
 			time.Sleep(100 * time.Millisecond)
+			mp[tools.Crc32(url)] = url
 		}
 	}
 	return

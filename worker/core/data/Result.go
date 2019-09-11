@@ -69,7 +69,7 @@ func (g *GraspResult) PrintMsg() {
 		autoClose bool
 	)
 	for {
-		if autoClose == true && len(g.Data) == 0 {
+		if autoClose == true && len(g.ParseData) == 0 {
 			goto PRINTERR
 		}
 		select {
@@ -80,6 +80,7 @@ func (g *GraspResult) PrintMsg() {
 			g.storage.LoadData(data)
 		case parseData = <-g.ParseData:
 			parseData.ParseFunc(parseData.Data, parseData.Params)
+			logrus.Infoln("g.ParseData len :", len(g.ParseData))
 		case close = <-g.close:
 			logrus.Infoln("close:", close)
 			if len(g.Data) > 0 {

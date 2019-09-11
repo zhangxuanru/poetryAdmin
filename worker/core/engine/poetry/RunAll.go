@@ -57,6 +57,8 @@ func (r *RunAll) Execution() {
 	//抓取诗词
 	Index.NewIndex().GetAllData()
 
+	logrus.Infoln("结果处理结束......")
+
 	//临时关掉， 还没确定在哪一步关闭获取结果的goroutine
 	//defer data.G_GraspResult.PushCloseMark(true)
 }

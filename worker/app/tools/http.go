@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"net"
 	"net/http"
+	"strings"
 	"time"
 )
 
@@ -22,6 +23,9 @@ func NewHttpReq() *HttpReq {
 
 // http get 请求
 func (h *HttpReq) HttpGet(url string) (response *http.Response, bytes []byte, err error) {
+	if strings.Contains(url, "http") == false {
+		url = "https://" + url
+	}
 	client := &http.Client{
 		Timeout: 20 * time.Second, //设置请求超时
 		Transport: &http.Transport{
