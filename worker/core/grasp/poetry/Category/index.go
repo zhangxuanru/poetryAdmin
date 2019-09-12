@@ -107,12 +107,17 @@ func (c *Category) FindDocument(bytes []byte, category *define.TextHrefFormat) (
 			}
 		})
 	})
-	sendData := &define.ParseData{
-		Data:      &dataMap,
-		Params:    category,
-		ParseFunc: data.NewCategoryStorage().LoadCategoryPoetryData,
-	}
-	data.G_GraspResult.SendParseData(sendData)
+
+	/*
+		sendData := &define.ParseData{
+			Data:      &dataMap,
+			Params:    category,
+			ParseFunc: data.NewCategoryStorage().LoadCategoryPoetryData,
+		}
+		data.G_GraspResult.SendParseData(sendData)
+	*/
+
+	data.NewCategoryStorage().LoadCategoryPoetryData(&dataMap, category)
 	c.goPoetryDetail(&dataMap)
 	return dataMap
 }
@@ -162,17 +167,6 @@ func (c *Category) goPoetryDetail(dataMap *define.PoetryDataMap) {
 			logrus.Infoln("抓取：", author.AuthorName, "的诗词,来源页:", c.url, "--end")
 		}
 	}
-	//sysMap.Range(func(key, value interface{}) bool {
-	//	val := value.(*define.PoetryAuthorList)
-	//	go func() {
-	//		if author := Content.NewContent().GetAuthorContentData(val); author.AuthorName != "" {
-	//			Author.NewAuthor().SendGraspAuthorDataReq(author)
-	//		}
-	//	}()
-	//	randI := time.Duration(tools.RandInt64(50, 300))
-	//	time.Sleep(randI * time.Millisecond)
-	//	return true
-	//})
 }
 
 //读取测试文件内容

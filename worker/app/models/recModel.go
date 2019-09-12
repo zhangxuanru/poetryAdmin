@@ -64,3 +64,7 @@ func (c *ContentRec) FindNotesId(poetryId, recId int) (data ContentRec, err erro
 	_, err = orm.NewOrm().QueryTable(TableRec).Filter("poetry_id", poetryId).Filter("apprec_id", recId).All(&data, "id", "notes_id", "sort")
 	return
 }
+
+func (c *ContentRec) GetOrm() orm.Ormer {
+	return orm.NewOrm()
+}

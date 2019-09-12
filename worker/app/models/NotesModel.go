@@ -45,7 +45,7 @@ func (n *Notes) SaveNotes(data *Notes) (id int64, err error) {
 //更新数据
 func (n *Notes) UpdateNotes(data *Notes, col ...string) (id int64, err error) {
 	if len(col) == 0 {
-		col = []string{"play_url", "play_src_url", "html_src_url", "type", "title", "introd", "content", "file_name", "update_date"}
+		col = []string{"play_url", "play_src_url", "html_src_url", "type", "title", "introd", "content", "update_date"}
 	}
 	id, err = orm.NewOrm().Update(data, col...)
 	return

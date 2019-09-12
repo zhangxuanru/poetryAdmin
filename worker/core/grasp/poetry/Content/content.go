@@ -10,6 +10,7 @@ import (
 	"poetryAdmin/worker/core/define"
 	"poetryAdmin/worker/core/grasp/poetry/Helper"
 	"poetryAdmin/worker/core/grasp/poetry/base"
+	"regexp"
 	"strconv"
 	"strings"
 )
@@ -47,12 +48,17 @@ func (c *Content) GraspContentSaveData(detailUrl string, params interface{}) {
 	}
 	content := c.FindDocumentData(bytes)
 	content.SourceUrl = url
-	sendData := &define.ParseData{
-		Data:      &content,
-		Params:    params,
-		ParseFunc: data.NewContentStore().LoadPoetryContentData,
-	}
-	data.G_GraspResult.SendParseData(sendData)
+
+	/*
+		sendData := &define.ParseData{
+			Data:      &content,
+			Params:    params,
+			ParseFunc: data.NewContentStore().LoadPoetryContentData,
+		}
+		data.G_GraspResult.SendParseData(sendData)
+	*/
+	logrus.Infof("content:%+v\n", content)
+	data.NewContentStore().LoadPoetryContentData(&content, params)
 }
 
 //goquery 查找数据
@@ -86,13 +92,17 @@ func (c *Content) getNotesData(query *goquery.Document) (notesData []*define.Poe
 		attr        string
 		isTransData bool
 		htmlStr     string
+		titleMap    map[string]interface{}
 	)
+	titleMap = make(map[string]interface{})
 	query.Find(".left>.sons").Each(func(i int, selection *goquery.Selection) {
 		var buf bytes.Buffer
 		idStr, exists := selection.Attr("id")
 		attr, ok = selection.Find("a").Attr("href")
 		title := selection.Find(".contyishang>div>h2").Text()
-		if exists == true {
+		_, ok := titleMap[title]
+		if exists == true && !ok && len(title) > 0 {
+			titleMap[title] = 1
 			selection.Find(".contyishang>p").Each(func(i int, selection *goquery.Selection) {
 				if html, e := selection.Html(); e == nil {
 					buf.WriteString("<p>" + html + "</p>")
@@ -144,9 +154,43 @@ func (c *Content) getNotesData(query *goquery.Document) (notesData []*define.Poe
 				}
 			}
 		}
+		if exists == false && !ok && len(title) > 0 {
+			content := &define.PoetryContentData{
+				TransId:    0,
+				Content:    "",
+				Introd:     "",
+				HtmlSrcUrl: "",
+				Title:      title,
+				Sort:       i,
+			}
+			if len(attr) > 0 && strings.Contains(attr, "javascript:PlayFanyi") {
+				idStr := strings.Replace(attr, "javascript:PlayFanyi(", "", -1)
+				idStr = strings.TrimRight(idStr, ")")
+				trId, _ := strconv.Atoi(idStr)
+				content.TransId = trId
+				content.PlaySrcUrl = config.G_Conf.GuShiWenPoetryUrl + "fanyiplay.aspx?id=" + idStr
+				content.PlayUrl = config.G_Conf.GushiwenSongUrl + "machine/fanyi/" + idStr + "/ok.mp3"
+			}
+			if len(attr) > 0 && strings.Contains(attr, "javascript:PlayShangxi") {
+				idStr := strings.Replace(attr, "javascript:PlayShangxi(", "", -1)
+				idStr = strings.TrimRight(idStr, ")")
+				appId, _ := strconv.Atoi(idStr)
+				content.AppRecId = appId
+				content.PlayUrl = config.G_Conf.GushiwenSongUrl + "machine/shangxi/" + idStr + "/ok.mp3"
+				content.PlaySrcUrl = config.G_Conf.GuShiWenPoetryUrl + "/shangxiplay.aspx?id=" + idStr
+			}
+			content.Content, _ = selection.Find(".contyishang").Html()
+			if len(content.Content) > 0 {
+				content.Content = tools.TrimDivHtml(content.Content)
+				mustCompile := regexp.MustCompile(`(?msU)<div.*>.*</div>`)
+				content.Content = mustCompile.ReplaceAllString(content.Content, "")
+			}
+			notesData = append(notesData, content)
+		}
+
 	})
 	//https://so.gushiwen.org/shiwenv_58313be2d918.aspx
-	if isTransData == false {
+	if isTransData == false && !ok {
 		conty1 := query.Find(".left>.sons>.contyishang").Eq(0)
 		conty1.Find("p").Each(func(i int, selection *goquery.Selection) {
 			if html, err := selection.Html(); err == nil {

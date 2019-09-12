@@ -26,8 +26,10 @@ func (a *AuthorStore) LoadAuthorData(data interface{}, params interface{}) {
 	}
 	//1.获取朝代信息poetry_dynasty
 	detail.DynastyName = strings.TrimSpace(detail.DynastyName)
-	if dynastyId, err := models.NewDynasty().GetIdBySaveName(detail.DynastyName); err == nil {
-		detail.DynastyId = int(dynastyId)
+	if len(detail.DynastyName) > 0 {
+		if dynastyId, err := models.NewDynasty().GetIdBySaveName(detail.DynastyName); err == nil {
+			detail.DynastyId = int(dynastyId)
+		}
 	}
 	//2.更新作者表poetry_author
 	if detail.AuthorId, err = a.UpdateAuthor(detail); err != nil || detail.AuthorId == 0 {

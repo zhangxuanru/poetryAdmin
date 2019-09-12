@@ -64,3 +64,7 @@ func (c *ContentTrans) FindNotesId(poetryId, transId int) (data ContentTrans, er
 	_, err = orm.NewOrm().QueryTable(TableTrans).Filter("poetry_id", poetryId).Filter("trans_id", transId).All(&data, "id", "notes_id", "sort")
 	return
 }
+
+func (c *ContentTrans) GetOrm() orm.Ormer {
+	return orm.NewOrm()
+}

@@ -169,3 +169,7 @@ func (a *Author) UpdateAuthorPhoto(data *Author) (id int64, err error) {
 	id, err = orm.NewOrm().Update(data, "photo_file_name")
 	return
 }
+
+func (a *Author) GetOrm() orm.Ormer {
+	return orm.NewOrm()
+}

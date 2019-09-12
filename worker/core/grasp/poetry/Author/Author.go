@@ -67,14 +67,16 @@ func (a *Author) GraspAuthorDetail(authorUrl string) {
 		a.getAuthorDefaultData()
 	}
 	a.getAuthorDetailInfo()
-	if len(a.SourceAuthor.Data) > 0 {
+	/*
 		sendData := &define.ParseData{
 			Data:      a.SourceAuthor,
 			Params:    nil,
 			ParseFunc: data.NewAuthorStore().LoadAuthorData,
 		}
 		data.G_GraspResult.SendParseData(sendData)
-	}
+	*/
+	logrus.Infof(" a.SourceAuthor:%+v\n", a.SourceAuthor)
+	data.NewAuthorStore().LoadAuthorData(a.SourceAuthor, nil)
 }
 
 //抓取作者诗词列表数据，并保存诗词列表  /authors/authorvsw_07d17f8539d7A1.aspx

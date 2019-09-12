@@ -89,3 +89,7 @@ func (c *Content) UpdateContent(data *Content, col ...string) (id int64, err err
 	id, err = orm.NewOrm().Update(data, col...)
 	return
 }
+
+func (c *Content) GetOrm() orm.Ormer {
+	return orm.NewOrm()
+}
