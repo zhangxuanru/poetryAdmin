@@ -29,6 +29,7 @@ type PoetryContent struct {
 	Content            string
 	SourceUrl          string //诗词链接URl
 	PoetryId           int64
+	Sort               int
 	DynastyId          int64
 	CategoryList       []*TextHrefFormat
 	CreativeBackground string //创作背景

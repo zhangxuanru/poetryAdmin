@@ -6,7 +6,8 @@ const TestEnv = "test" //单元测试标识
 type RedisTaskMark string
 
 const (
-	GrabPoetryAll RedisTaskMark = "poetryAll" //抓取诗词所有数据
+	GrabPoetryAll       RedisTaskMark = "poetryAll"       //抓取诗词所有数据
+	GrabPoetryRecommend RedisTaskMark = "poetryRecommend" //抓取诗词推荐数据
 )
 
 //任务执行状态

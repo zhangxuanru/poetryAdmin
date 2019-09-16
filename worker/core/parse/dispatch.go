@@ -22,10 +22,12 @@ func (d *Dispatch) Execution() {
 	if d.Msg.TaskMark == "" {
 		return
 	}
+	logrus.Info("Execution start :", d.Msg.PubTile)
 	switch d.Msg.TaskMark {
 	case define.GrabPoetryAll:
-		logrus.Info("Execution start :", d.Msg.PubTile)
 		poetry.NewRunAll().Run()
+	case define.GrabPoetryRecommend:
+		poetry.NewRecommend().Run()
 	}
 	logrus.Info("end Dispatch Execution.......")
 	return
