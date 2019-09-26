@@ -111,7 +111,7 @@ func (c *Content) getNotesData(query *goquery.Document) (notesData []*define.Poe
 			//翻译
 			if strings.Contains(idStr, "fanyi") && !strings.Contains(idStr, "fanyiquan") {
 				id = strings.TrimLeft(idStr, "fanyi")
-				notesUrl = config.G_Conf.GuShiWenPoetryUrl + "shiwen2017/ajaxfanyi.aspx?id=" + id
+				notesUrl = config.G_Conf.GuShiWenPoetryUrl + "nocdn/ajaxfanyi.aspx?id=" + id
 				if bytes, err := base.GetHtml(notesUrl); err == nil {
 					trId, _ := strconv.Atoi(id)
 					content := &define.PoetryContentData{
@@ -134,7 +134,7 @@ func (c *Content) getNotesData(query *goquery.Document) (notesData []*define.Poe
 			//赏析
 			if strings.Contains(idStr, "shangxi") && !strings.Contains(idStr, "shangxiquan") {
 				appRecId = strings.TrimLeft(idStr, "shangxi")
-				apprecUrl = config.G_Conf.GuShiWenPoetryUrl + "shiwen2017/ajaxshangxi.aspx?id=" + appRecId
+				apprecUrl = config.G_Conf.GuShiWenPoetryUrl + "nocdn/ajaxshangxi.aspx?id=" + appRecId
 				if bytes, err := base.GetHtml(apprecUrl); err == nil {
 					appId, _ := strconv.Atoi(appRecId)
 					content := &define.PoetryContentData{

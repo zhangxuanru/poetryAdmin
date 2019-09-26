@@ -10,6 +10,7 @@ import (
 	"fmt"
 	"github.com/sirupsen/logrus"
 	"poetryAdmin/worker/app/models"
+	"poetryAdmin/worker/app/tools"
 	"poetryAdmin/worker/core/data"
 	"poetryAdmin/worker/core/define"
 	"poetryAdmin/worker/core/grasp/ancient/Entrance"
@@ -113,8 +114,8 @@ func TestStoreAuthorPoetry(t *testing.T) {
 		count  int64
 		count1 int64
 	)
-	start = 25000
-	max = 40000
+	start = 45010
+	max = 50000
 	maxId := 0
 	for start < max {
 		logrus.Infoln("start=", start, "-max=", max)
@@ -123,6 +124,9 @@ func TestStoreAuthorPoetry(t *testing.T) {
 		if err != nil {
 			logrus.Infoln("err:", err)
 			return
+		}
+		if len(dataAll) == 0 {
+			break
 		}
 		for _, content := range dataAll {
 			logrus.Infoln("SourceUrl:", content.SourceUrl)
@@ -151,6 +155,58 @@ func TestStoreAuthorPoetry(t *testing.T) {
 		}
 		start = maxId
 	}
+}
+
+//poetry_detail_notes表content为空的情况 保存信息
+func TestStoreNotes(t *testing.T) {
+	var (
+		notesData []models.Notes
+		err       error
+	)
+	if _, err = models.NewNotes().GetOrm().QueryTable(models.TableNotes).Filter("content", "").All(&notesData, "id"); err != nil {
+		logrus.Infoln("notes query error:", err)
+		return
+	}
+	transOrm := models.NewContentTrans().GetOrm()
+	appRecOrm := models.NewContentRec().GetOrm()
+	notesOrm := models.NewNotes().GetOrm()
+	for _, notes := range notesData {
+		var (
+			transData  models.ContentTrans
+			appRecData models.ContentRec
+			bytes      []byte
+			url        string
+		)
+		_, _ = transOrm.QueryTable(models.TableTrans).Filter("notes_id", notes.Id).All(&transData, "trans_id")
+		if transData.TransId > 0 {
+			url = fmt.Sprintf("https://so.gushiwen.org/nocdn/ajaxfanyi.aspx?id=%d", transData.TransId)
+		}
+		if transData.TransId == 0 {
+			_, _ = appRecOrm.QueryTable(models.TableRec).Filter("notes_id", notes.Id).All(&appRecData, "apprec_id")
+		}
+		if appRecData.ApprecId > 0 {
+			url = fmt.Sprintf("https://so.gushiwen.org/nocdn/ajaxshangxi.aspx?id=%d", appRecData.ApprecId)
+		}
+		if len(url) == 0 {
+			logrus.Infoln(notes.Id, "--没有查到对应的诗词信息")
+			continue
+		}
+		if bytes, err = getUrlHtml(url); err != nil {
+			logrus.Infoln("getUrlHtml:", url, "-error:", err)
+			continue
+		}
+		content := string(bytes)
+		content = tools.TrimDivHtml(content)
+		notesUpData := &models.Notes{
+			Id:         notes.Id,
+			Content:    content,
+			HtmlSrcUrl: url,
+		}
+		if _, err = notesOrm.Update(notesUpData, "content"); err != nil {
+			logrus.Infoln("Update error:", notesUpData)
+		}
+	}
+	return
 }
 
 func getUrlHtml(url string) (bytes []byte, err error) {

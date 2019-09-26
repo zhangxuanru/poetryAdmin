@@ -50,3 +50,7 @@ func (n *Notes) UpdateNotes(data *Notes, col ...string) (id int64, err error) {
 	id, err = orm.NewOrm().Update(data, col...)
 	return
 }
+
+func (n *Notes) GetOrm() orm.Ormer {
+	return orm.NewOrm()
+}
