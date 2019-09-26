@@ -197,6 +197,10 @@ func (a *Author) getAuthorDefaultData() {
 		a.SourceAuthor.AuthorImgUrl = strings.TrimSpace(photoImg)
 	}
 	totalNumText := a.query.Find(".main3>.left>.sonspic>.cont>p>a").Text()
+	contentUrl, _ := a.query.Find(".main3>.left>.sonspic>.cont>p>a").Attr("href")
+	if len(contentUrl) > 0 {
+		a.SourceAuthor.AuthorContentUrl = "https://so.gushiwen.org" + contentUrl
+	}
 	if len(totalNumText) > 0 {
 		totalNumText = strings.TrimRight(totalNumText, "篇诗文")
 		totalNumText = strings.TrimLeft(totalNumText, "►")

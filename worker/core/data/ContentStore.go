@@ -72,7 +72,8 @@ func (c *contentStore) SetAttrData() (err error) {
 	if author.Id > 0 {
 		c.detail.Author.AuthorId = int64(author.Id)
 		c.detail.Author.DynastyId = author.DynastyId
-	} else {
+	}
+	if author.Id == 0 || author.DynastyId == 0 {
 		if dynastyId, err = models.NewDynasty().GetIdBySaveName(c.detail.Author.DynastyName); err == nil {
 			c.detail.Author.DynastyId = int(dynastyId)
 		} else {

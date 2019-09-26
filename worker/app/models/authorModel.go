@@ -86,6 +86,12 @@ func GetAuthorDataByAuthorName(authorName string) (author Author, err error) {
 	return
 }
 
+//根据作者姓名和朝代查询作者信息
+func GetAuthorByNameAndDyId(authorName string, dynastyId int) (author Author, err error) {
+	_, err = orm.NewOrm().QueryTable(TableAuthor).Filter("author", authorName).Filter("dynasty_id", dynastyId).All(&author, "id", "pinyin", "dynasty_id")
+	return
+}
+
 //保存作者信息
 func (a *Author) SaveAuthor(data *Author) (id int64, err error) {
 	var (
@@ -98,7 +104,7 @@ func (a *Author) SaveAuthor(data *Author) (id int64, err error) {
 	if author, err = GetAuthorDataByAuthorName(data.Author); err != nil {
 		return 0, err
 	}
-	if author.Id > 0 {
+	if author.Id > 0 && author.DynastyId > 0 {
 		return int64(author.Id), nil
 	}
 	pinyin := tools.PinYin(data.Author)
@@ -109,11 +115,25 @@ func (a *Author) SaveAuthor(data *Author) (id int64, err error) {
 	data.UpdateDate = time.Now().Unix()
 	data.Pinyin = pinyin
 	data.Acronym = acronym
-	//if author.Id > 0 {
-	//data.Id = author.Id
-	//_, _ = orm.NewOrm().Update(data, "update_date", "pinyin", "acronym")
-	//	return int64(author.Id), nil
-	//}
+	if author.Id > 0 {
+		data.Id = author.Id
+		if data.DynastyId > 0 {
+			_, _ = orm.NewOrm().Update(data, "dynasty_id")
+		}
+		if len(data.SourceUrl) > 0 {
+			_, _ = orm.NewOrm().Update(data, "source_url")
+		}
+		if len(data.WorksUrl) > 0 {
+			_, _ = orm.NewOrm().Update(data, "works_url")
+		}
+		if data.PoetryCount > 0 {
+			_, _ = orm.NewOrm().Update(data, "poetry_count")
+		}
+		if len(data.PhotoUrl) > 0 {
+			_, _ = orm.NewOrm().Update(data, "photo_url")
+		}
+		return int64(author.Id), nil
+	}
 	id, err = orm.NewOrm().Insert(data)
 	return
 }
@@ -168,6 +188,10 @@ func (a *Author) UpdateAuthorPhoto(data *Author) (id int64, err error) {
 	data.Id = author.Id
 	id, err = orm.NewOrm().Update(data, "photo_file_name")
 	return
+}
+
+func (a *Author) UpdateAuthorDynasty(data *Author) (int64, error) {
+	return orm.NewOrm().Update(data, "dynasty_id")
 }
 
 func (a *Author) GetOrm() orm.Ormer {
