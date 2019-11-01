@@ -9,7 +9,7 @@
   "apiWriteTimeOut":5000,
 
   "ETCD集群列表":"配置多个,避免单点",
-  "etcdEndPoints":["39.105.141.152:2379"],
+  "etcdEndPoints":["127.0.0.1:2379"],
 
   "ETCD连接超时":"单位豪秒",
   "etcdDialTimeOut":5000,
